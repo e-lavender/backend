@@ -31,6 +31,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.setGlobalPrefix('api/v1');
   await app.listen(configService.getPort('users'));
 }
 bootstrap();
