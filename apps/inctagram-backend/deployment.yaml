@@ -21,3 +21,14 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: POSTGRES_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: POSTGRES_URL
+             - name: POSTGRES_DIRECT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: POSTGRES_DIRECT_URL
