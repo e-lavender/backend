@@ -27,6 +27,11 @@ spec:
                  secretKeyRef:
                    name: fm-incta-back-production-config-secret
                    key: POSTGRES_URL
+             - name: USERS_SERVICES_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: USERS_SERVICES_PORT
              - name: POSTGRES_DIRECT_URL
                valueFrom:
                  secretKeyRef:

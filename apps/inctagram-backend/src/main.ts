@@ -34,7 +34,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   const port = configService.getPort('users');
-  await app.listen(3172);
+  await app.listen(port);
   console.log('Server running on port:', port);
 }
 bootstrap();
