@@ -32,6 +32,9 @@ async function bootstrap() {
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.setGlobalPrefix('api/v1');
-  await app.listen(configService.getPort('users'));
+
+  const port = configService.getPort('users');
+  await app.listen(port);
+  console.log('Server running on port:', port);
 }
 bootstrap();
