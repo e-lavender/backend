@@ -6,6 +6,11 @@ export enum InternalCode {
   Unauthorized = -3,
 }
 
+export enum EmailEvents {
+  Registration,
+  Recover_password,
+}
+
 export enum ApproachType {
   http = 'selectHttpException',
   qraphql = 'selectGraphQLExceptions',
