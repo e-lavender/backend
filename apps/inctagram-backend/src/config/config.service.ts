@@ -32,4 +32,9 @@ export class GlobalConfigService {
   getDomain(): string {
     return this.defaultConfigServices.get('global', { infer: true }).domain;
   }
+
+  getFrontDomain(): string {
+    return this.defaultConfigServices.get('global', { infer: true })
+      .frontDomain;
+  }
 }

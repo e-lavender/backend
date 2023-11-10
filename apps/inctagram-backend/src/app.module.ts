@@ -14,6 +14,10 @@ import { EmailAdapter } from './features/email/adapter/email.adapter';
 import { EmailManager } from './features/email/manager/email.manager';
 import { DeleteUserUseCase } from './features/users/application/use-cases/delete-user.use-case';
 import { DoOperationUseCase } from './features/email/application/use-cases/do-operation-use-case';
+import { IsValidConfirmCodePipe } from './features/infrastructure/pipes/validConfirmCode.pipe';
+import { ConfirmEmailUseCase } from './features/users/application/use-cases/confirm-email.use-case';
+import { ResendEmailConfirmationUseCase } from './features/auth/application/use-cases/resend-email-confirmation.use-case';
+import { IsValidAndNotConfirmedCodePipe } from './features/infrastructure/pipes/validAndNotConfirmedCode.pipe';
 
 const services = [GlobalConfigService, AppService, PrismaService];
 
@@ -24,6 +28,8 @@ const useCases = [
   CreateUserUseCase,
   DeleteUserUseCase,
   DoOperationUseCase,
+  ConfirmEmailUseCase,
+  ResendEmailConfirmationUseCase,
 ];
 
 const repositories = [UsersRepository];
@@ -38,6 +44,8 @@ const repositories = [UsersRepository];
     ...repositories,
     EmailAdapter,
     EmailManager,
+    IsValidConfirmCodePipe,
+    IsValidAndNotConfirmedCodePipe,
   ],
 })
 export class AppModule {}

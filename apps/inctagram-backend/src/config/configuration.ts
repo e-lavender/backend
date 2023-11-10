@@ -1,6 +1,7 @@
 export const getConfiguration = () => ({
   global: {
     domain: process.env.DOMAIN,
+    frontDomain: process.env.FRONT_DOMAIN,
   },
   services: {
     users: {

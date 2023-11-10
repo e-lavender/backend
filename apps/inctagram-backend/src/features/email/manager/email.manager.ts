@@ -20,7 +20,7 @@ export class EmailManager {
     const message =
       '<h1>Thank for your registration</h1>' +
       '<p>To finish registration please follow the link below:' +
-      `<a href="${domain}registration-confirmation?code=${confirmationCode}">complete registration</a>` +
+      `<a href="${domain}auth/registration-confirmation?code=${confirmationCode}">complete registration</a>` +
       '</p>';
 
     const subject = 'Registration Confirmation';
