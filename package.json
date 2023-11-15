@@ -12,7 +12,7 @@
     "start": "nest start inctagram-backend",
     "start:inctagram-backend": "nest start inctagram-backend",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:debug:inctagram-backend": "nest start inctagram-backend  --debug --watch",
     "start:prod": "node dist/apps/inctagram-backend/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",

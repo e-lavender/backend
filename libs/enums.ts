@@ -4,6 +4,7 @@ export enum InternalCode {
   Internal_Server = -1,
   Forbidden = -2,
   Unauthorized = -3,
+  Expired = -4,
 }
 
 export enum EmailEvents {

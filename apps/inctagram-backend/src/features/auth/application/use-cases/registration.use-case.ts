@@ -19,6 +19,7 @@ export class RegistrationUseCase
   implements ICommandHandler<RegistrationCommand>
 {
   constructor(private commandBus: CommandBus) {}
+
   async execute(command: RegistrationCommand): Promise<ResultDTO<User>> {
     const userResult = await this.commandBus.execute(
       new CreateUserCommand(command.login, command.email, command.password),

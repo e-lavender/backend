@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../../prisma/prisma.service';
-import { Prisma, User, UserEmailConfirmation } from '@prisma/client';
+import {
+  Prisma,
+  User,
+  UserEmailConfirmation,
+  UserPasswordRecovery,
+} from '@prisma/client';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
 
@@ -33,6 +38,23 @@ export class UsersRepository {
     });
   }
 
+  async createOrUpdateRecoveryData(
+    userId: number,
+    expirationDate: Date,
+    newCode: string,
+  ): Promise<ResultDTO<UserPasswordRecovery>> {
+    const recoveryData = await this.prisma.userPasswordRecovery.upsert({
+      where: { userId },
+      update: { expirationDate, recoveryCode: newCode },
+      create: {
+        expirationDate,
+        userId,
+      },
+    });
+
+    return new ResultDTO(InternalCode.Success, recoveryData);
+  }
+
   async findConfirmData(
     code: string,
   ): Promise<ResultDTO<UserEmailConfirmation>> {
@@ -43,6 +65,18 @@ export class UsersRepository {
     if (!confirmData) return new ResultDTO(InternalCode.NotFound);
 
     return new ResultDTO(InternalCode.Success, confirmData);
+  }
+
+  async findRecoveryData(
+    code: string,
+  ): Promise<ResultDTO<UserPasswordRecovery>> {
+    const recoveryData = await this.prisma.userPasswordRecovery.findFirst({
+      where: { recoveryCode: code },
+    });
+
+    if (!recoveryData) return new ResultDTO(InternalCode.NotFound);
+
+    return new ResultDTO(InternalCode.Success, recoveryData);
   }
 
   async findUserByConfirmCode(code: string): Promise<ResultDTO<User>> {
@@ -76,24 +110,54 @@ export class UsersRepository {
   }
 
   async confirmEmail(userId: number): Promise<ResultDTO<null>> {
-    const res = await this.prisma.userEmailConfirmation.update({
+    await this.prisma.userEmailConfirmation.update({
       where: {
-        userId: userId,
+        userId,
       },
       data: {
         isConfirmed: true,
       },
     });
 
-    console.log('------------Confirm Email', res);
-
     return new ResultDTO(InternalCode.Success);
+  }
+
+  async confirmRecoveryPassword(
+    userId: number,
+  ): Promise<ResultDTO<{ code: string }>> {
+    const res = await this.prisma.userPasswordRecovery.update({
+      where: {
+        userId,
+      },
+      data: {
+        isConfirmed: true,
+      },
+      select: {
+        recoveryCode: true,
+      },
+    });
+
+    return new ResultDTO(InternalCode.Success, { code: res.recoveryCode });
   }
 
   async deleteUser(userId: number): Promise<ResultDTO<null>> {
     const res = await this.prisma.user.delete({ where: { id: userId } });
 
     console.log('-----------Delete User: ', res);
+
+    return new ResultDTO(InternalCode.Success);
+  }
+
+  async updatePassword(
+    userId: number,
+    passwordHash: string,
+  ): Promise<ResultDTO<null>> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash,
+      },
+    });
 
     return new ResultDTO(InternalCode.Success);
   }
@@ -111,7 +175,7 @@ export class UsersRepository {
         ],
       },
     });
-    console.log(user);
+
     if (!user) return new ResultDTO(InternalCode.NotFound);
 
     return new ResultDTO(InternalCode.Success, user);

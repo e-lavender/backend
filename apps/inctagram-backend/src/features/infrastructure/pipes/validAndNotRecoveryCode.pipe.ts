@@ -8,12 +8,12 @@ import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { isAfter } from 'date-fns';
 
 @Injectable()
-export class IsValidAndNotConfirmedCodePipe implements PipeTransform {
+export class IsValidAndNotConfirmedRecoveryCodePipe implements PipeTransform {
   constructor(private usersRepository: UsersRepository) {}
 
   async transform(value: string, metadata: ArgumentMetadata): Promise<string> {
     try {
-      const confirmDataResult = await this.usersRepository.findConfirmData(
+      const confirmDataResult = await this.usersRepository.findRecoveryData(
         value,
       );
       if (confirmDataResult.hasError()) throw new BadRequestException();

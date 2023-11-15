@@ -25,11 +25,16 @@ export class DoOperationUseCase implements ICommandHandler<DoOperationCommand> {
           command.code,
         );
         break;
+      case EmailEvents.Recover_password:
+        sendResult = await this.emailManager.sendEmailRecoverPasswordMessage(
+          command.email,
+          command.code,
+        );
       default:
         sendResult = new ResultDTO(InternalCode.Internal_Server);
         break;
     }
 
-    return sendResult;
+    return new ResultDTO(InternalCode.Success);
   }
 }

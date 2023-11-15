@@ -21,11 +21,21 @@ model User {
   passwordHash String
   createdAt DateTime? @db.Timestamp() @default(now())
   confirmationInfo UserEmailConfirmation?
+  passwordRecoveryInfo UserPasswordRecovery?
 }
 
 model UserEmailConfirmation {
   @@map("users_email_confirmation")
   confirmationCode String @db.Uuid() @default(dbgenerated("uuid_generate_v4()"))
+  expirationDate DateTime @db.Timestamp()
+  isConfirmed Boolean? @default(false)
+  userId Int @id()
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPasswordRecovery {
+  @@map("users_password_recovery")
+  recoveryCode String @db.Uuid() @default(dbgenerated("uuid_generate_v4()"))
   expirationDate DateTime @db.Timestamp()
   isConfirmed Boolean? @default(false)
   userId Int @id()
