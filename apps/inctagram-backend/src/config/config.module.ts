@@ -12,5 +12,6 @@ export const configModule = ConfigModule.forRoot({
     GMAIL_PASS: Joi.string().required(),
     DOMAIN: Joi.string().required(),
     FRONT_DOMAIN: Joi.string().required(),
+    JWT_SECRET: Joi.string().required(),
   }),
 });

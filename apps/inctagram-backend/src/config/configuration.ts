@@ -2,6 +2,7 @@ export const getConfiguration = () => ({
   global: {
     domain: process.env.DOMAIN,
     frontDomain: process.env.FRONT_DOMAIN,
+    jwtSecret: process.env.JWT_SECRET,
   },
   services: {
     users: {

@@ -25,6 +25,10 @@ export class GlobalConfigService {
       .salt;
   }
 
+  getJwtSecret(): string {
+    return this.defaultConfigServices.get('global', { infer: true }).jwtSecret;
+  }
+
   getEmailCredentials(): { gmail: string; password: string } {
     return this.defaultConfigServices.get('services', { infer: true }).email;
   }

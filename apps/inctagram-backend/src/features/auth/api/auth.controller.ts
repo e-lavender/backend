@@ -6,9 +6,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Ip,
   Post,
   Query,
   Res,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { RegistrationUserModel } from './models/input/RegistrationUserModel';
 import { CommandBus } from '@nestjs/cqrs';
@@ -25,12 +28,24 @@ import { ConfirmPasswordRecoveryCommand } from '../../users/application/use-case
 import { IsValidAndNotConfirmedRecoveryCodePipe } from '../../infrastructure/pipes/validAndNotRecoveryCode.pipe';
 import { UpdatePasswordModel } from './models/input/UpdatePasswordModel';
 import { UpdatePasswordCommand } from '../../users/application/use-cases/update-password.use-case';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { LoginModel } from './models/input/LoginModel';
+import { LoginCommand } from '../application/use-cases/login.use-case';
+import { JwtAccessAuthGuard } from '../guards/jwt-access-auth.guard';
+import { CurrentUserId } from '../../infrastructure/decorators/params/current-user-id.decorator';
+import { ViewUserModel } from '../../users/api/models/output/ViewUserModel';
+import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
+import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
+import { RefreshTokenPayload } from '../../infrastructure/decorators/params/refresh-token.decorator';
+import { RefreshToken } from '../../../../../../libs/types';
+import { RefreshSessionCommand } from '../application/use-cases/refresh-session.use-case';
 
 @Controller('auth')
 export class AuthController extends ExceptionAndResponseHelper {
   constructor(
     private commandBus: CommandBus,
     private configService: GlobalConfigService,
+    private usersQueryRepository: UsersQueryRepository,
   ) {
     super(ApproachType.http);
   }
@@ -141,5 +156,64 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
 
     return this.sendExceptionOrResponse(updatePasswordResult);
+  }
+
+  @Post('login')
+  @UseGuards(LocalAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Headers('user-agent') deviceName: string,
+    @Body() inputModel: LoginModel,
+    @Ip() ip: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ accessToken: string }> {
+    const loginResult = await this.commandBus.execute(
+      new LoginCommand(inputModel.email, inputModel.password, deviceName, ip),
+    );
+    this.sendExceptionOrResponse(loginResult);
+
+    res.cookie(
+      'refreshToken',
+      loginResult.payload.refreshToken /*, {
+      httpOnly: true,
+      secure: true,
+    }*/,
+    );
+
+    return { accessToken: loginResult.payload.accessToken };
+  }
+
+  @Post('refresh-token')
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async refreshSession(
+    @CurrentUserId() userId: number,
+    @RefreshTokenPayload() refreshTokenPayload: RefreshToken,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ accessToken: string }> {
+    const refreshResult = await this.commandBus.execute(
+      new RefreshSessionCommand(
+        userId,
+        refreshTokenPayload.deviceId,
+        refreshTokenPayload.iat,
+      ),
+    );
+    this.sendExceptionOrResponse(refreshResult);
+
+    res.cookie('refreshToken', refreshResult.payload.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    return { accessToken: refreshResult.payload.accessToken };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAccessAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async me(@CurrentUserId() userId: number): Promise<ViewUserModel> {
+    const userResult = await this.usersQueryRepository.findUser(userId);
+
+    return this.sendExceptionOrResponse(userResult);
   }
 }

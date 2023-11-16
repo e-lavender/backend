@@ -23,6 +23,17 @@ import { ConfirmPasswordRecoveryUseCase } from './features/users/application/use
 import { IsValidAndNotConfirmedRecoveryCodePipe } from './features/infrastructure/pipes/validAndNotRecoveryCode.pipe';
 import { UpdatePasswordUseCase } from './features/users/application/use-cases/update-password.use-case';
 import { ValidConfirmOrRecoveryCodeValidator } from './features/infrastructure/decorators/validators/validConfirmOrRecoveryCode.validator';
+import { JwtModule } from '@nestjs/jwt';
+import { LocalAuthStrategy } from './features/auth/strategies/local-auth.strategy';
+import { ValidateUserUseCase } from './features/auth/application/use-cases/validate-user.use-case';
+import { LoginUseCase } from './features/auth/application/use-cases/login.use-case';
+import { CreateDeviceUseCase } from './features/devices/application/use-cases/create-device.use-case';
+import { DevicesRepository } from './features/devices/infrastructure/devices.repository';
+import { JwtAccessAuthStrategy } from './features/auth/strategies/jwt-access-auth.strategy';
+import { UsersQueryRepository } from './features/users/infrastructure/users-query.repository';
+import { JwtRefreshAuthStrategy } from './features/auth/strategies/jwt-refresh-auth.strategy';
+import { RefreshSessionUseCase } from './features/auth/application/use-cases/refresh-session.use-case';
+import { UpdateSessionUseCase } from './features/devices/application/use-cases/update-session.use-case';
 
 const services = [GlobalConfigService, AppService, PrismaService];
 
@@ -38,12 +49,24 @@ const useCases = [
   PasswordRecoveryUseCase,
   ConfirmPasswordRecoveryUseCase,
   UpdatePasswordUseCase,
+  ValidateUserUseCase,
+  LoginUseCase,
+  CreateDeviceUseCase,
+  RefreshSessionUseCase,
+  UpdateSessionUseCase,
 ];
 
-const repositories = [UsersRepository];
+const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
 
 @Module({
-  imports: [CqrsModule, configModule],
+  imports: [
+    CqrsModule,
+    configModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+    }),
+  ],
   controllers: [AppController, AuthController],
   providers: [
     ...services,
@@ -56,6 +79,9 @@ const repositories = [UsersRepository];
     IsValidAndNotConfirmedCodePipe,
     IsValidAndNotConfirmedRecoveryCodePipe,
     ValidConfirmOrRecoveryCodeValidator,
+    LocalAuthStrategy,
+    JwtAccessAuthStrategy,
+    JwtRefreshAuthStrategy,
   ],
 })
 export class AppModule {}
