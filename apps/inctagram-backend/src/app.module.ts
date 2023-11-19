@@ -1,7 +1,5 @@
 import { configModule } from './config/config.module';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GlobalConfigService } from './config/config.service';
 import { UniqueLoginAndEmailValidator } from './features/infrastructure/decorators/validators/uniqueLoginAndEmail.validator';
@@ -37,7 +35,7 @@ import { UpdateSessionUseCase } from './features/devices/application/use-cases/u
 import { LogoutUseCase } from './features/auth/application/use-cases/logout.use-case';
 import { DeleteDeviceUseCase } from './features/devices/application/use-cases/delete-device.use-case';
 
-const services = [GlobalConfigService, AppService, PrismaService];
+const services = [GlobalConfigService, PrismaService];
 
 const validators = [UniqueLoginAndEmailValidator];
 
@@ -71,7 +69,7 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
       secret: process.env.JWT_SECRET,
     }),
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AuthController],
   providers: [
     ...services,
     ...validators,

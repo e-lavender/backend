@@ -40,7 +40,19 @@ import { RefreshTokenPayload } from '../../infrastructure/decorators/params/refr
 import { RefreshToken } from '../../../../../../libs/types';
 import { RefreshSessionCommand } from '../application/use-cases/refresh-session.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController extends ExceptionAndResponseHelper {
   constructor(
@@ -51,6 +63,19 @@ export class AuthController extends ExceptionAndResponseHelper {
     super(ApproachType.http);
   }
 
+  @ApiOperation({
+    summary:
+      'Registration in the system. Email with confirmation code will be send to passed email address',
+  })
+  @ApiNoContentResponse({
+    description:
+      'Input data is accepted. Email with confirmation code will be send to passed email address',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the inputModel has incorrect values (in particular if the user with the given email or login already exists)',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() inputModel: RegistrationUserModel): Promise<void> {
@@ -65,18 +90,23 @@ export class AuthController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(registrationResult);
   }
 
-  @Post('resend-code')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async resendCode(
-    @Query('code', IsValidConfirmCodePipe) code: string,
-  ): Promise<void> {
-    const sendingResult = await this.commandBus.execute(
-      new ResendEmailConfirmationCommand(code),
-    );
-
-    return this.sendExceptionOrResponse(sendingResult);
-  }
-
+  @ApiOperation({
+    summary: 'Confirm Registration',
+    description:
+      'This endpoint is used to confirm email ownership and automatically redirect the user to the login page.',
+  })
+  @ApiQuery({
+    name: 'code',
+    description: 'Code that be sent via Email inside link',
+  })
+  @ApiNoContentResponse({
+    description: 'Email was verified. Account was activated',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the confirmation code is incorrect, expired or already been applied',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Get('registration-confirmation')
   async confirmRegistration(
     @Query('code', IsValidAndNotConfirmedCodePipe) code: string,
@@ -103,6 +133,47 @@ export class AuthController extends ExceptionAndResponseHelper {
     return res.redirect(redirectUrl.toString());
   }
 
+  @ApiOperation({
+    summary: 'Resend confirmation registration Email if user exists',
+  })
+  @ApiQuery({
+    name: 'code',
+    description: 'Code that will be emailed inside the link',
+  })
+  @ApiNoContentResponse({
+    description:
+      'Input data is accepted.Email with confirmation code will be send to passed email address',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the confirmation code is incorrect, expired or already been applied',
+    schema: BAD_REQUEST_SCHEMA,
+  })
+  @Post('resend-code')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resendCode(
+    @Query('code', IsValidConfirmCodePipe) code: string,
+  ): Promise<void> {
+    const sendingResult = await this.commandBus.execute(
+      new ResendEmailConfirmationCommand(code),
+    );
+
+    return this.sendExceptionOrResponse(sendingResult);
+  }
+
+  @ApiOperation({
+    summary:
+      'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
+  })
+  @ApiNoContentResponse({
+    description:
+      "Even if current email is not registered (for prevent user's email detection)",
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the inputModel has invalid email (for example 222^gmail.com)',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(
@@ -115,6 +186,23 @@ export class AuthController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(passwordRecoveryResult);
   }
 
+  @ApiOperation({
+    summary: 'Confirm recovery password',
+    description:
+      'This endpoint is used to confirm email ownership and automatically redirect the user to input new password page.',
+  })
+  @ApiQuery({
+    name: 'code',
+    description: 'Recovery code that be sent via Email inside link',
+  })
+  @ApiNoContentResponse({
+    description: 'Email was verified.',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the recovery code is incorrect, expired or already been used',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Get('confirm-password-recovery')
   async confirmPasswordRecovery(
     @Query('code', IsValidAndNotConfirmedRecoveryCodePipe) code: string,
@@ -144,6 +232,18 @@ export class AuthController extends ExceptionAndResponseHelper {
     return res.redirect(redirectUrl.toString());
   }
 
+  @ApiOperation({
+    summary: 'New password',
+    description: 'This endpoint is used to set a new password',
+  })
+  @ApiNoContentResponse({
+    description: 'If code is valid and new password is accepted',
+  })
+  @ApiBadRequestResponse({
+    description:
+      'If the inputModel has incorrect values(recovery code is incorrect, expired or not confirmed or password incorrect)',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmRecoveryPassword(
@@ -159,6 +259,22 @@ export class AuthController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(updatePasswordResult);
   }
 
+  @ApiOperation({ summary: 'Try login user to the system' })
+  @ApiOkResponse({
+    description:
+      'Returns JWT accessToken (expired after 30 minutes) in body and JWT refreshToken in cookie (http-only, secure) (expired after 200 minutes).',
+    schema: {
+      type: 'string',
+      example: {
+        accessToken: 'string',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'If the inputModel has incorrect values',
+    schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiUnauthorizedResponse({ description: 'If the password or login is wrong' })
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -181,6 +297,24 @@ export class AuthController extends ExceptionAndResponseHelper {
     return { accessToken: loginResult.payload.accessToken };
   }
 
+  @ApiOperation({
+    summary:
+      'Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing)',
+  })
+  @ApiOkResponse({
+    description:
+      'Returns new pair: JWT accessToken (expired after 30 minutes) in body and JWT refreshToken in cookie (http-only, secure) (expired after 200 minutes).',
+    schema: {
+      type: 'string',
+      example: {
+        accessToken: 'string',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'If the refreshToken has incorrect or expired',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Post('refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -206,6 +340,10 @@ export class AuthController extends ExceptionAndResponseHelper {
     return { accessToken: refreshResult.payload.accessToken };
   }
 
+  @ApiOperation({ summary: 'Get information about current user' })
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ViewUserModel })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('me')
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -215,6 +353,16 @@ export class AuthController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(userResult);
   }
 
+  @ApiOperation({
+    summary:
+      'In cookie client must send correct refreshToken that will be revoked',
+  })
+  @ApiNoContentResponse({ description: 'No Content' })
+  @ApiBadRequestResponse({
+    description:
+      'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+    schema: BAD_REQUEST_SCHEMA,
+  })
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtRefreshAuthGuard)
