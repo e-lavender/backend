@@ -39,6 +39,7 @@ import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { RefreshTokenPayload } from '../../infrastructure/decorators/params/refresh-token.decorator';
 import { RefreshToken } from '../../../../../../libs/types';
 import { RefreshSessionCommand } from '../application/use-cases/refresh-session.use-case';
+import { LogoutCommand } from '../application/use-cases/logout.use-case';
 
 @Controller('auth')
 export class AuthController extends ExceptionAndResponseHelper {
@@ -172,13 +173,10 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    res.cookie(
-      'refreshToken',
-      loginResult.payload.refreshToken /*, {
+    res.cookie('refreshToken', loginResult.payload.refreshToken, {
       httpOnly: true,
       secure: true,
-    }*/,
-    );
+    });
 
     return { accessToken: loginResult.payload.accessToken };
   }
@@ -215,5 +213,23 @@ export class AuthController extends ExceptionAndResponseHelper {
     const userResult = await this.usersQueryRepository.findUser(userId);
 
     return this.sendExceptionOrResponse(userResult);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtRefreshAuthGuard)
+  async logout(
+    @CurrentUserId() userId: number,
+    @RefreshTokenPayload() refreshTokenPayload: RefreshToken,
+  ): Promise<void> {
+    const logoutResult = await this.commandBus.execute(
+      new LogoutCommand(
+        userId,
+        refreshTokenPayload.deviceId,
+        refreshTokenPayload.iat,
+      ),
+    );
+
+    return this.sendExceptionOrResponse(logoutResult);
   }
 }

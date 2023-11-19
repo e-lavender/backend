@@ -34,6 +34,8 @@ import { UsersQueryRepository } from './features/users/infrastructure/users-quer
 import { JwtRefreshAuthStrategy } from './features/auth/strategies/jwt-refresh-auth.strategy';
 import { RefreshSessionUseCase } from './features/auth/application/use-cases/refresh-session.use-case';
 import { UpdateSessionUseCase } from './features/devices/application/use-cases/update-session.use-case';
+import { LogoutUseCase } from './features/auth/application/use-cases/logout.use-case';
+import { DeleteDeviceUseCase } from './features/devices/application/use-cases/delete-device.use-case';
 
 const services = [GlobalConfigService, AppService, PrismaService];
 
@@ -54,6 +56,8 @@ const useCases = [
   CreateDeviceUseCase,
   RefreshSessionUseCase,
   UpdateSessionUseCase,
+  LogoutUseCase,
+  DeleteDeviceUseCase,
 ];
 
 const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];

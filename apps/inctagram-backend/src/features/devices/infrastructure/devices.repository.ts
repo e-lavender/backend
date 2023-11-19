@@ -28,6 +28,13 @@ export class DevicesRepository {
     return new ResultDTO(InternalCode.Success);
   }
 
+  async delete(deviceId: string): Promise<ResultDTO<null>> {
+    const res = await this.prisma.device.delete({ where: { id: deviceId } });
+    if (!res) return new ResultDTO(InternalCode.NotFound);
+
+    return new ResultDTO(InternalCode.Success);
+  }
+
   async create(
     userId: number,
     ip: string,
