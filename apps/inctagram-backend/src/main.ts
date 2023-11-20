@@ -8,6 +8,7 @@ import {
   HttpExceptionFilter,
 } from '../../../libs/filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +33,14 @@ async function bootstrap() {
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.setGlobalPrefix('api/v1');
+
+  const config = new DocumentBuilder()
+    .setTitle('Inctagram(Flying Merch)')
+    .setVersion('1.0')
+    .addTag('Auth')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
 
   const port = configService.getPort('users');
   await app.listen(port);

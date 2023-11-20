@@ -7,5 +7,11 @@ export const configModule = ConfigModule.forRoot({
   load: [getConfiguration],
   validationSchema: Joi.object({
     USERS_SERVICES_PORT: Joi.number().required(),
+    SALT_GENERATE_ROUND: Joi.number().required(),
+    GMAIL: Joi.string().required(),
+    GMAIL_PASS: Joi.string().required(),
+    DOMAIN: Joi.string().required(),
+    FRONT_DOMAIN: Joi.string().required(),
+    JWT_SECRET: Joi.string().required(),
   }),
 });

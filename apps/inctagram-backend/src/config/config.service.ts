@@ -8,7 +8,7 @@ export class GlobalConfigService {
     private defaultConfigServices: DefaultConfigServices<ConfigType>,
   ) {}
 
-  getPort(service: string) {
+  getPort(service: string): number {
     const port = Number(
       this.defaultConfigServices.get('services', {
         infer: true,
@@ -18,5 +18,27 @@ export class GlobalConfigService {
       return 3000;
     }
     return port;
+  }
+
+  getSalt(): number {
+    return +this.defaultConfigServices.get('services', { infer: true })['users']
+      .salt;
+  }
+
+  getJwtSecret(): string {
+    return this.defaultConfigServices.get('global', { infer: true }).jwtSecret;
+  }
+
+  getEmailCredentials(): { gmail: string; password: string } {
+    return this.defaultConfigServices.get('services', { infer: true }).email;
+  }
+
+  getDomain(): string {
+    return this.defaultConfigServices.get('global', { infer: true }).domain;
+  }
+
+  getFrontDomain(): string {
+    return this.defaultConfigServices.get('global', { infer: true })
+      .frontDomain;
   }
 }
