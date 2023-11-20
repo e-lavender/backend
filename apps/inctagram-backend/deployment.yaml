@@ -32,6 +32,36 @@ spec:
                  secretKeyRef:
                    name: fm-incta-back-production-config-secret
                    key: USERS_SERVICES_PORT
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: JWT_SECRET
+             - name: DOMAIN
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: DOMAIN
+             - name: FRONT_DOMAIN
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: FRONT_DOMAIN
+             - name: SALT_GENERATE_ROUND
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: SALT_GENERATE_ROUND
+             - name: GMAIL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: GMAIL
+             - name: GMAIL_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: GMAIL_PASS
              - name: POSTGRES_DIRECT_URL
                valueFrom:
                  secretKeyRef:
