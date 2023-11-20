@@ -35,6 +35,13 @@ pipeline {
                 }
             }
         }
+        stage('migrate') {
+            steps {
+                script {
+                    sh "yarn migrate"
+                }
+            }
+        }
         stage('Build docker image') {
             steps {
                 echo "Build image started..."
