@@ -13,5 +13,7 @@ export const configModule = ConfigModule.forRoot({
     DOMAIN: Joi.string().required(),
     FRONT_DOMAIN: Joi.string().required(),
     JWT_SECRET: Joi.string().required(),
+    POSTGRES_DIRECT_URL: Joi.string().required(),
+    POSTGRES_URL: Joi.string().required(),
   }),
 });
