@@ -40,7 +40,9 @@ async function bootstrap() {
     .addTag('Auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/swagger', app, document);
+  SwaggerModule.setup('/swagger', app, document, {
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+  });
 
   const port = configService.getPort('users');
   await app.listen(port);
