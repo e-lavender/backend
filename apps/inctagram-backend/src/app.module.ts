@@ -34,6 +34,8 @@ import { RefreshSessionUseCase } from './features/auth/application/use-cases/ref
 import { UpdateSessionUseCase } from './features/devices/application/use-cases/update-session.use-case';
 import { LogoutUseCase } from './features/auth/application/use-cases/logout.use-case';
 import { DeleteDeviceUseCase } from './features/devices/application/use-cases/delete-device.use-case';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -67,6 +69,10 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
     }),
   ],
   controllers: [AuthController],
