@@ -60,6 +60,12 @@ const useCases = [
   DeleteDeviceUseCase,
 ];
 
+const pipes = [
+  IsValidConfirmCodePipe,
+  IsValidAndNotConfirmedCodePipe,
+  IsValidAndNotConfirmedRecoveryCodePipe,
+];
+
 const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
 
 @Module({
@@ -84,9 +90,7 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
     ...repositories,
     EmailAdapter,
     EmailManager,
-    IsValidConfirmCodePipe,
-    IsValidAndNotConfirmedCodePipe,
-    IsValidAndNotConfirmedRecoveryCodePipe,
+    ...pipes,
     ValidConfirmOrRecoveryCodeValidator,
     LocalAuthStrategy,
     JwtAccessAuthStrategy,
