@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_NAME
+  namespace: NAMESPACE
+  labels:
+    app: PROJECT
+spec:
+  selector:
+    matchLabels:
+      project: PROJECT
+  template:
+    metadata:
+      namespace: NAMESPACE
+      labels:
+        project: PROJECT
+    spec:
+      containers:
+         - name: PROJECT
+           image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
+           ports:
+             - containerPort: PORT_CONTAINER
+
+           env:
+             - name: POSTGRES_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: POSTGRES_URL
+             - name: USERS_SERVICES_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: USERS_SERVICES_PORT
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: JWT_SECRET
+             - name: DOMAIN
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: DOMAIN
+             - name: FRONT_DOMAIN
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: FRONT_DOMAIN
+             - name: SALT_GENERATE_ROUND
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: SALT_GENERATE_ROUND
+             - name: GMAIL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: GMAIL
+             - name: GMAIL_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: GMAIL_PASS
+             - name: POSTGRES_DIRECT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: POSTGRES_DIRECT_URL
