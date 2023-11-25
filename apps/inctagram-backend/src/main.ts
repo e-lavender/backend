@@ -30,7 +30,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new ErrorExceptionFilter(), new HttpExceptionFilter());
-  app.enableCors();
+  app.enableCors({ origin: ['https://freedomindz.site/', /localhost:\d*/i] });
   app.use(cookieParser());
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
