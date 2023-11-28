@@ -30,7 +30,13 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new ErrorExceptionFilter(), new HttpExceptionFilter());
   app.enableCors({
-    origin: ['/http:\\/\\/localhost:\\d*/i', 'https://freedomindz.site/'],
+    allowedHeaders: ['content-type'],
+    origin: [
+      'http://localhost:3003',
+      'http://localhost:3003',
+      'https://freedomindz.site',
+    ],
+    credentials: true,
   });
   app.use(cookieParser());
 
