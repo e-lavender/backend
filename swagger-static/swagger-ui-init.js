@@ -13,7 +13,7 @@ window.onload = function() {
     "paths": {
       "/api/v1/auth/registration": {
         "post": {
-          "operationId": "AuthController_registration",
+          "operationId": "registration",
           "summary": "Registration in the system. Email with confirmation code will be send to passed email address",
           "parameters": [],
           "requestBody": {
@@ -47,6 +47,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -56,7 +59,7 @@ window.onload = function() {
       },
       "/api/v1/auth/registration-confirmation": {
         "get": {
-          "operationId": "AuthController_confirmRegistration",
+          "operationId": "confirmRegistration",
           "summary": "Confirm Registration",
           "description": "This endpoint is used to confirm email ownership and automatically redirect the user to the login page.",
           "parameters": [
@@ -91,6 +94,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -100,7 +106,7 @@ window.onload = function() {
       },
       "/api/v1/auth/resend-code": {
         "post": {
-          "operationId": "AuthController_resendCode",
+          "operationId": "resendCode",
           "summary": "Resend confirmation registration Email if user exists",
           "parameters": [
             {
@@ -134,6 +140,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -143,7 +152,7 @@ window.onload = function() {
       },
       "/api/v1/auth/password-recovery": {
         "post": {
-          "operationId": "AuthController_passwordRecovery",
+          "operationId": "passwordRecovery",
           "summary": "Password recovery via Email confirmation. Email should be sent with RecoveryCode inside",
           "parameters": [],
           "requestBody": {
@@ -177,6 +186,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -186,7 +198,7 @@ window.onload = function() {
       },
       "/api/v1/auth/confirm-password-recovery": {
         "get": {
-          "operationId": "AuthController_confirmPasswordRecovery",
+          "operationId": "confirmPasswordRecovery",
           "summary": "Confirm recovery password",
           "description": "This endpoint is used to confirm email ownership and automatically redirect the user to input new password page.",
           "parameters": [
@@ -221,6 +233,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -230,7 +245,7 @@ window.onload = function() {
       },
       "/api/v1/auth/new-password": {
         "post": {
-          "operationId": "AuthController_confirmRecoveryPassword",
+          "operationId": "confirmRecoveryPassword",
           "summary": "New password",
           "description": "This endpoint is used to set a new password",
           "parameters": [],
@@ -265,6 +280,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -274,7 +292,7 @@ window.onload = function() {
       },
       "/api/v1/auth/login": {
         "post": {
-          "operationId": "AuthController_login",
+          "operationId": "login",
           "summary": "Try login user to the system",
           "parameters": [
             {
@@ -330,6 +348,9 @@ window.onload = function() {
             },
             "401": {
               "description": "If the password or login is wrong"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -339,7 +360,7 @@ window.onload = function() {
       },
       "/api/v1/auth/refresh-token": {
         "post": {
-          "operationId": "AuthController_refreshSession",
+          "operationId": "refreshSession",
           "summary": "Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing)",
           "parameters": [],
           "responses": {
@@ -373,6 +394,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -382,7 +406,7 @@ window.onload = function() {
       },
       "/api/v1/auth/me": {
         "get": {
-          "operationId": "AuthController_me",
+          "operationId": "me",
           "summary": "Get information about current user",
           "parameters": [],
           "responses": {
@@ -398,6 +422,9 @@ window.onload = function() {
             },
             "401": {
               "description": "Unauthorized"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -412,7 +439,7 @@ window.onload = function() {
       },
       "/api/v1/auth/logout": {
         "post": {
-          "operationId": "AuthController_logout",
+          "operationId": "logout",
           "summary": "In cookie client must send correct refreshToken that will be revoked",
           "parameters": [],
           "responses": {
@@ -436,6 +463,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
@@ -475,7 +505,8 @@ window.onload = function() {
             "password": {
               "type": "string",
               "minimum": 6,
-              "maximum": 20
+              "maximum": 20,
+              "pattern": "/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]).*$/"
             }
           },
           "required": [
@@ -495,7 +526,7 @@ window.onload = function() {
               "type": "string",
               "minimum": 6,
               "maximum": 20,
-              "pattern": "^[a-zA-Z0-9_-]*$"
+              "pattern": "/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]).*$/"
             },
             "recoveryCode": {
               "type": "string"
