@@ -32,7 +32,7 @@ async function bootstrap() {
   app.enableCors({
     allowedHeaders: ['content-type'],
     origin: [
-      'http://localhost:3003',
+      'http://localhost:3000',
       'http://localhost:3003',
       'https://freedomindz.site',
     ],
