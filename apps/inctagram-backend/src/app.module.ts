@@ -36,6 +36,7 @@ import { LogoutUseCase } from './features/auth/application/use-cases/logout.use-
 import { DeleteDeviceUseCase } from './features/devices/application/use-cases/delete-device.use-case';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -81,6 +82,7 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
       serveRoot:
         process.env.NODE_ENV === 'development' ? '/' : '/api/v1/swagger',
     }),
+    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AuthController],
   providers: [
