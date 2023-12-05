@@ -53,6 +53,7 @@ import {
 } from '@nestjs/swagger';
 import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { CookieOptions } from 'express-serve-static-core';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -313,10 +314,14 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    res.cookie('refreshToken', loginResult.payload.refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    const cookieOptions: CookieOptions = {
+      /* httpOnly: true,
+      secure: true,*/
+    };
+
+    if (process.env.NODE_ENV === 'development') cookieOptions.sameSite = 'lax';
+
+    res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
 
     return { accessToken: loginResult.payload.accessToken };
   }
