@@ -302,6 +302,14 @@ window.onload = function() {
               "schema": {
                 "type": "string"
               }
+            },
+            {
+              "name": "origin",
+              "required": true,
+              "in": "header",
+              "schema": {
+                "type": "string"
+              }
             }
           ],
           "requestBody": {

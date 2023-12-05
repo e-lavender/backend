@@ -305,6 +305,7 @@ export class AuthController extends ExceptionAndResponseHelper {
   @HttpCode(HttpStatus.OK)
   async login(
     @Headers('user-agent') deviceName: string,
+    @Headers('origin') origin: string,
     @Body() inputModel: LoginModel,
     @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
@@ -314,12 +315,12 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    const cookieOptions: CookieOptions = {
-      /* httpOnly: true,
-      secure: true,*/
-    };
+    const cookieOptions: CookieOptions = {};
 
-    if (process.env.NODE_ENV === 'development') cookieOptions.sameSite = 'lax';
+    if (!origin.search('localhost')) {
+      cookieOptions.secure = true;
+      cookieOptions.httpOnly = true;
+    }
 
     res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
 
