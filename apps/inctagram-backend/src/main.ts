@@ -30,7 +30,7 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new ErrorExceptionFilter(), new HttpExceptionFilter());
   app.enableCors({
-    allowedHeaders: ['content-type'],
+    allowedHeaders: '*',
     origin: [
       'http://localhost:3000',
       'http://localhost:3003',
