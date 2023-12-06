@@ -370,7 +370,16 @@ window.onload = function() {
         "post": {
           "operationId": "refreshSession",
           "summary": "Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing)",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "origin",
+              "required": true,
+              "in": "header",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
               "description": "Returns new pair: JWT accessToken (expired after 30 minutes) in body and JWT refreshToken in cookie (http-only, secure) (expired after 200 minutes).",
