@@ -315,12 +315,11 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    const cookieOptions: CookieOptions = { sameSite: 'none' };
+    const cookieOptions: CookieOptions = {};
 
     if (!origin.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
-      cookieOptions.sameSite = 'lax';
     }
 
     res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
@@ -355,6 +354,7 @@ export class AuthController extends ExceptionAndResponseHelper {
   async refreshSession(
     @CurrentUserId() userId: number,
     @RefreshTokenPayload() refreshTokenPayload: RefreshToken,
+    @Headers('origin') origin: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ accessToken: string }> {
     const refreshResult = await this.commandBus.execute(
@@ -366,10 +366,18 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(refreshResult);
 
-    res.cookie('refreshToken', refreshResult.payload.refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    const cookieOptions: CookieOptions = {};
+
+    if (!origin.search('localhost')) {
+      cookieOptions.secure = true;
+      cookieOptions.httpOnly = true;
+    }
+
+    res.cookie(
+      'refreshToken',
+      refreshResult.payload.refreshToken,
+      cookieOptions,
+    );
 
     return { accessToken: refreshResult.payload.accessToken };
   }
