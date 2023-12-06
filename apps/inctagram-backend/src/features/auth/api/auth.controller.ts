@@ -315,11 +315,12 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    const cookieOptions: CookieOptions = {};
+    const cookieOptions: CookieOptions = { sameSite: 'none' };
 
     if (!origin.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
+      cookieOptions.sameSite = 'lax';
     }
 
     res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
@@ -368,7 +369,6 @@ export class AuthController extends ExceptionAndResponseHelper {
     res.cookie('refreshToken', refreshResult.payload.refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
     });
 
     return { accessToken: refreshResult.payload.accessToken };
