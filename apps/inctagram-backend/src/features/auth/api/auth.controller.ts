@@ -316,10 +316,10 @@ export class AuthController extends ExceptionAndResponseHelper {
     this.sendExceptionOrResponse(loginResult);
 
     const cookieOptions: CookieOptions = {};
-
-    if (!origin.search('localhost')) {
+    if (!origin?.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
+      cookieOptions.domain = origin;
     }
 
     res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
@@ -368,9 +368,10 @@ export class AuthController extends ExceptionAndResponseHelper {
 
     const cookieOptions: CookieOptions = {};
 
-    if (!origin.search('localhost')) {
+    if (!origin?.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
+      cookieOptions.domain = origin;
     }
 
     res.cookie(
