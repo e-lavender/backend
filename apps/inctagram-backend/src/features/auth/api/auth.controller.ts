@@ -368,6 +368,7 @@ export class AuthController extends ExceptionAndResponseHelper {
     res.cookie('refreshToken', refreshResult.payload.refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'lax',
     });
 
     return { accessToken: refreshResult.payload.accessToken };
