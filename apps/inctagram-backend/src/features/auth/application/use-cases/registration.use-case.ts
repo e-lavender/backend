@@ -24,6 +24,7 @@ export class RegistrationUseCase
     const userResult = await this.commandBus.execute(
       new CreateUserCommand(command.login, command.email, command.password),
     );
+    // todo - добавить создание сущности profile
 
     if (userResult.hasError())
       return new ResultDTO(InternalCode.Internal_Server);
