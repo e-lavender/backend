@@ -319,6 +319,7 @@ export class AuthController extends ExceptionAndResponseHelper {
     if (!origin?.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
+    } else {
       cookieOptions.domain = origin;
     }
 
@@ -371,6 +372,7 @@ export class AuthController extends ExceptionAndResponseHelper {
     if (!origin?.search('localhost')) {
       cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
+    } else {
       cookieOptions.domain = origin;
     }
 
