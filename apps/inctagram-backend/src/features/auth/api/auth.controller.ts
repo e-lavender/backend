@@ -315,12 +315,11 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    const cookieOptions: CookieOptions = {};
+    const cookieOptions: CookieOptions = { secure: true };
     if (!origin?.search('localhost')) {
-      cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
     } else {
-      cookieOptions.domain = origin;
+      cookieOptions.sameSite = 'none';
     }
 
     res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
@@ -367,13 +366,11 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(refreshResult);
 
-    const cookieOptions: CookieOptions = {};
-
+    const cookieOptions: CookieOptions = { secure: true };
     if (!origin?.search('localhost')) {
-      cookieOptions.secure = true;
       cookieOptions.httpOnly = true;
     } else {
-      cookieOptions.domain = origin;
+      cookieOptions.sameSite = 'none';
     }
 
     res.cookie(
