@@ -82,7 +82,7 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
       serveRoot:
         process.env.NODE_ENV === 'development' ? '/' : '/api/v1/swagger',
     }),
-    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
   ],
   controllers: [AuthController],
   providers: [
