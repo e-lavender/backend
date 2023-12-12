@@ -3,27 +3,27 @@ import { PrismaService } from '../../../../../../prisma/prisma.service';
 import { UpdateProfileModel } from '../api/models/update.profile.model';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
+import { ViewProfileModel } from '../api/models/view.profile.model';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProfileRepository {
   constructor(private prisma: PrismaService) {}
 
-  // async createProfile() {
-  //   const profile = await this.prisma.profile.create({
-  //     data: {},
-  //     select: {},
-  //   });
-  //   return new ResultDTO(InternalCode.Success, {
-  //     login: profile.login,
-  //     firstName: profile.firstName,
-  //     lastName: profile.lastName,
-  //     dateOfBirth: profile.dateOfBirth,
-  //     city: profile.city,
-  //     aboutMe: profile.aboutMe,
-  //   });
-  // }
+  async createProfile(
+    data: Prisma.ProfileUncheckedCreateInput,
+  ): Promise<ResultDTO<null>> {
+    await this.prisma.profile.create({
+      data: { ...data },
+      // select: {},
+    });
+    return new ResultDTO(InternalCode.Success);
+  }
 
-  async updateProfile(userId: number, inputModel: UpdateProfileModel) {
+  async updateProfile(
+    userId: number,
+    inputModel: UpdateProfileModel,
+  ): Promise<ResultDTO<ViewProfileModel>> {
     const profile = await this.prisma.profile.update({
       where: { userId },
       data: {
@@ -39,7 +39,7 @@ export class ProfileRepository {
       login: profile.login,
       firstName: profile.firstName,
       lastName: profile.lastName,
-      dateOfBirth: profile.dateOfBirth,
+      dateOfBirth: profile.dateOfBirth.toISOString(),
       city: profile.city,
       aboutMe: profile.aboutMe,
     });

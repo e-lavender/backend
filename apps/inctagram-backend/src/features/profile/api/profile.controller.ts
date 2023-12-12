@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -30,6 +30,15 @@ export class ProfileController extends ExceptionAndResponseHelper {
     super(ApproachType.http);
   }
 
+  @ApiOperation({
+    summary: 'Confirm Registration',
+    description:
+      'This endpoint is used to confirm email ownership and automatically redirect the user to the login page.',
+  })
+  @ApiQuery({
+    name: 'code',
+    description: 'Code that be sent via Email inside link',
+  })
   @Get()
   @HttpCode(HttpStatus.OK)
   async getMyProfile(
@@ -52,7 +61,4 @@ export class ProfileController extends ExceptionAndResponseHelper {
 
     return this.sendExceptionOrResponse(updatingResult);
   }
-
-  // todo - непонятно, в какой момент создается сущность Profile
-  // при подтверждении пользователя?
 }

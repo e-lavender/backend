@@ -60,13 +60,13 @@ model Device {
 }
 
 model Profile {
-  firstName   String
-  lastName    String
-  dateOfBirth DateTime @db.Timestamp()
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime? @db.Timestamp()
   city        String?
   aboutMe     String?
-  user        User     @relation(fields: [userId, login], references: [id, login], onDelete: Cascade)
-  userId      Int      @id()
+  user        User      @relation(fields: [userId, login], references: [id, login], onDelete: Cascade)
+  userId      Int       @id()
   login       String
 
   @@unique([userId, login])

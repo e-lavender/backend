@@ -5,6 +5,7 @@ import { User } from '@prisma/client';
 import { EmailEvents, InternalCode } from '../../../../../../../libs/enums';
 import { DoOperationCommand } from '../../../email/application/use-cases/do-operation-use-case';
 import { DeleteUserCommand } from '../../../users/application/use-cases/delete-user.use-case';
+import { CreateProfileCommand } from '../../../profile/application/use.cases/create.profile.use.case';
 
 export class RegistrationCommand {
   constructor(
@@ -24,9 +25,14 @@ export class RegistrationUseCase
     const userResult = await this.commandBus.execute(
       new CreateUserCommand(command.login, command.email, command.password),
     );
-    // todo - добавить создание сущности profile
-
     if (userResult.hasError())
+      return new ResultDTO(InternalCode.Internal_Server);
+
+    // создание сущности profile
+    const profileResult = await this.commandBus.execute(
+      new CreateProfileCommand(userResult.payload.id),
+    );
+    if (profileResult.hasError())
       return new ResultDTO(InternalCode.Internal_Server);
 
     const sendEmailResult = await this.commandBus.execute(
