@@ -489,6 +489,62 @@ window.onload = function() {
             "Auth"
           ]
         }
+      },
+      "/api/v1/profile": {
+        "get": {
+          "operationId": "getMyProfile",
+          "summary": "Get my profile",
+          "description": "This endpoint is used to getting my profile.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ViewProfileModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Profile"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "put": {
+          "operationId": "updateProfile",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProfileModel"
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "Profile"
+          ]
+        }
       }
     },
     "info": {
@@ -586,6 +642,79 @@ window.onload = function() {
             "login",
             "email",
             "userId"
+          ]
+        },
+        "ViewProfileModel": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "dateOfBirth": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "aboutMe": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "login",
+            "firstName",
+            "lastName",
+            "dateOfBirth",
+            "city",
+            "aboutMe"
+          ]
+        },
+        "UpdateProfileModel": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string",
+              "minimum": 6,
+              "maximum": 30,
+              "pattern": "^[a-zA-Z0-9_-]*$"
+            },
+            "firstName": {
+              "type": "string",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "lastName": {
+              "type": "string",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "dateOfBirth": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "aboutMe": {
+              "type": "string",
+              "minimum": 0,
+              "maximum": 200
+            }
+          },
+          "required": [
+            "login",
+            "firstName",
+            "lastName",
+            "dateOfBirth",
+            "city",
+            "aboutMe"
           ]
         }
       }

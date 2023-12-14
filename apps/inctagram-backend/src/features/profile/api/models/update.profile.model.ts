@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateProfileModel {
@@ -8,6 +8,7 @@ export class UpdateProfileModel {
     maximum: 30,
     pattern: '^[a-zA-Z0-9_-]*$',
   })
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(6, 20)
@@ -16,6 +17,7 @@ export class UpdateProfileModel {
     minimum: 1,
     maximum: 50,
   })
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)
@@ -24,6 +26,7 @@ export class UpdateProfileModel {
     minimum: 1,
     maximum: 50,
   })
+  @IsNotEmpty()
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)

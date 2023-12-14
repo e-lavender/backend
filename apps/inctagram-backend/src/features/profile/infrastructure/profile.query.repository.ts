@@ -23,7 +23,9 @@ export class ProfileQueryRepository {
       login: profile.login,
       firstName: profile.firstName,
       lastName: profile.lastName,
-      dateOfBirth: profile.dateOfBirth.toISOString(),
+      dateOfBirth: profile.dateOfBirth
+        ? profile.dateOfBirth.toISOString()
+        : null,
       city: profile.city,
       aboutMe: profile.aboutMe,
     };

@@ -30,7 +30,7 @@ export class RegistrationUseCase
 
     // создание сущности profile
     const profileResult = await this.commandBus.execute(
-      new CreateProfileCommand(userResult.payload.id),
+      new CreateProfileCommand(userResult.payload.userId),
     );
     if (profileResult.hasError())
       return new ResultDTO(InternalCode.Internal_Server);

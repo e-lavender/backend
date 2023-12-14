@@ -12,10 +12,10 @@ export class ProfileRepository {
 
   async createProfile(
     data: Prisma.ProfileUncheckedCreateInput,
+    // data: Prisma.ProfileCreateInput,
   ): Promise<ResultDTO<null>> {
     await this.prisma.profile.create({
       data: { ...data },
-      // select: {},
     });
     return new ResultDTO(InternalCode.Success);
   }
@@ -39,7 +39,9 @@ export class ProfileRepository {
       login: profile.login,
       firstName: profile.firstName,
       lastName: profile.lastName,
-      dateOfBirth: profile.dateOfBirth.toISOString(),
+      dateOfBirth: profile.dateOfBirth
+        ? profile.dateOfBirth.toISOString()
+        : null,
       city: profile.city,
       aboutMe: profile.aboutMe,
     });

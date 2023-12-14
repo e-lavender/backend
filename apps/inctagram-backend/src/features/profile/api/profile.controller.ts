@@ -1,4 +1,11 @@
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -31,13 +38,14 @@ export class ProfileController extends ExceptionAndResponseHelper {
   }
 
   @ApiOperation({
-    summary: 'Confirm Registration',
-    description:
-      'This endpoint is used to confirm email ownership and automatically redirect the user to the login page.',
+    summary: 'Get my profile',
+    description: 'This endpoint is used to getting my profile.',
   })
-  @ApiQuery({
-    name: 'code',
-    description: 'Code that be sent via Email inside link',
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ViewProfileModel })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Get()
   @HttpCode(HttpStatus.OK)

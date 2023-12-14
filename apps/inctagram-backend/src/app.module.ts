@@ -37,12 +37,19 @@ import { DeleteDeviceUseCase } from './features/devices/application/use-cases/de
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CreateProfileUseCase } from './features/profile/application/use.cases/create.profile.use.case';
+import { ProfileRepository } from './features/profile/infrastructure/profile.repository';
+import { ProfileQueryRepository } from './features/profile/infrastructure/profile.query.repository';
+import { ProfileController } from './features/profile/api/profile.controller';
+import { UpdateProfileUseCase } from './features/profile/application/use.cases/update.profile.use.case';
 
 const services = [GlobalConfigService, PrismaService];
 
 const validators = [UniqueLoginAndEmailValidator];
 
 const useCases = [
+  CreateProfileUseCase,
+  UpdateProfileUseCase,
   RegistrationUseCase,
   CreateUserUseCase,
   DeleteUserUseCase,
@@ -67,7 +74,13 @@ const pipes = [
   IsValidAndNotConfirmedRecoveryCodePipe,
 ];
 
-const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
+const repositories = [
+  UsersRepository,
+  DevicesRepository,
+  UsersQueryRepository,
+  ProfileRepository,
+  ProfileQueryRepository,
+];
 
 @Module({
   imports: [
@@ -84,7 +97,7 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
     }),
     ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ProfileController],
   providers: [
     ...services,
     ...validators,
