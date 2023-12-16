@@ -2,6 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
+import { CleanDbService } from './utils/clean.db.service';
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
@@ -15,6 +16,7 @@ describe('ProfileController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     server = app.getHttpServer();
+    // await CleanDbService.cleanDb();
   });
 
   it('1 - POST:auth/registration - 204 - register new user', async () => {

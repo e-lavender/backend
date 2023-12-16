@@ -1,5 +1,6 @@
 import {
   ApiBearerAuth,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -57,6 +58,18 @@ export class ProfileController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(profileResult);
   }
 
+  @ApiOperation({
+    summary: 'Update my profile',
+    description: 'This endpoint is used to updating my profile.',
+  })
+  @ApiBearerAuth()
+  @ApiNoContentResponse({
+    description: 'Input data is accepted. Profile have updated',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Put()
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateProfile(
