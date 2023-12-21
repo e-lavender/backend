@@ -525,6 +525,8 @@ window.onload = function() {
         },
         "put": {
           "operationId": "updateProfile",
+          "summary": "Update my profile",
+          "description": "This endpoint is used to updating my profile.",
           "parameters": [],
           "requestBody": {
             "required": true,
@@ -538,11 +540,22 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": ""
+              "description": "Input data is accepted. Profile have updated"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
             }
           },
           "tags": [
             "Profile"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       }

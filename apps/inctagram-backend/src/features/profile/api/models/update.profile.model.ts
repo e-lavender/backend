@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateProfileModel {
@@ -21,6 +28,7 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)
+  @Matches('^[A-Za-zА-Яа-я]+$')
   firstName: string;
   @ApiProperty({
     minimum: 1,
@@ -30,10 +38,12 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)
+  @Matches('^[A-Za-zА-Яа-я]+$')
   lastName: string;
   @ApiProperty()
   @IsOptional()
   @IsString()
+  @IsDate()
   @Transform(({ value }) => value.trim())
   dateOfBirth: string;
   @ApiProperty({
@@ -44,6 +54,7 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)
+  @Matches('^[A-Za-zА-Яа-я]+$')
   city: string;
   @ApiProperty({
     minimum: 0,

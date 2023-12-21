@@ -35,6 +35,7 @@ export class ProfileRepository {
         aboutMe: inputModel.aboutMe,
       },
     });
+
     return new ResultDTO(InternalCode.Success, {
       login: profile.login,
       firstName: profile.firstName,
