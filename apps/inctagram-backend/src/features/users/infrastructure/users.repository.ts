@@ -31,7 +31,7 @@ export class UsersRepository {
         confirmationInfo: { select: { confirmationCode: true } },
       },
     });
-    console.log(user);
+
     return new ResultDTO(InternalCode.Success, {
       userId: user.id,
       code: user.confirmationInfo.confirmationCode,

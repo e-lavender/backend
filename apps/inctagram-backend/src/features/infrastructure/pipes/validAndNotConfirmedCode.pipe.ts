@@ -5,7 +5,6 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { UsersRepository } from '../../users/infrastructure/users.repository';
-import { isAfter } from 'date-fns';
 
 @Injectable()
 export class IsValidAndNotConfirmedCodePipe implements PipeTransform {

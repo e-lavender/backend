@@ -15,7 +15,6 @@ export class IsValidConfirmCodePipe implements PipeTransform {
       const confirmDataResult = await this.usersRepository.findConfirmData(
         value,
       );
-      console.log(confirmDataResult);
       if (
         confirmDataResult.hasError() ||
         confirmDataResult.payload?.isConfirmed

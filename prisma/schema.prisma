@@ -22,7 +22,9 @@ model User {
   confirmationInfo     UserEmailConfirmation?
   passwordRecoveryInfo UserPasswordRecovery?
   Device               Device[]
+  profile              Profile?
 
+  @@unique([id, login])
   @@map("users")
 }
 
@@ -55,4 +57,18 @@ model Device {
   user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("devices")
+}
+
+model Profile {
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime? @db.Timestamp()
+  city        String?
+  aboutMe     String?
+  user        User      @relation(fields: [userId, login], references: [id, login], onDelete: Cascade)
+  userId      Int       @id()
+  login       String
+
+  @@unique([userId, login])
+  @@map("profile")
 }
