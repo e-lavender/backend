@@ -75,11 +75,12 @@ describe('ProfileController (e2e)', () => {
 
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.OK);
     expect(registerFirstUserResponse.body).toEqual({
-      login: firstUser.login,
+      userName: firstUser.login,
       firstName: null,
       lastName: null,
       dateOfBirth: null,
       city: null,
+      country: null,
       aboutMe: null,
     });
   });
@@ -90,7 +91,7 @@ describe('ProfileController (e2e)', () => {
       .put('/profile')
       .auth(accessToken, { type: 'bearer' })
       .send({
-        login: firstUser.login,
+        userName: firstUser.login,
         lastName: 'correct_last_name',
         // firstName: '123',
       });
@@ -107,7 +108,7 @@ describe('ProfileController (e2e)', () => {
       .put('/profile')
       .auth(accessToken, { type: 'bearer' })
       .send({
-        login: firstUser.login,
+        userName: firstUser.login,
         // lastName: '123',
         firstName: 'correct_fist_name',
       });
@@ -156,12 +157,13 @@ describe('ProfileController (e2e)', () => {
       .put('/profile')
       .auth(accessToken, { type: 'bearer' })
       .send({
-        login: firstUser.login,
+        userName: firstUser.login,
         lastName: 'correct_last_name_1',
         // lastName: null,
         firstName: 'correct_fist_name_1',
         dateOfBirth: null,
         city: null,
+        country: null,
         aboutMe: null,
       });
 

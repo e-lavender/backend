@@ -20,13 +20,14 @@ export class ProfileQueryRepository {
 
   _mapDbToView(profile: Profile): ViewProfileModel {
     return {
-      login: profile.login,
+      userName: profile.userName,
       firstName: profile.firstName,
       lastName: profile.lastName,
       dateOfBirth: profile.dateOfBirth
         ? profile.dateOfBirth.toISOString()
         : null,
       city: profile.city,
+      country: profile.country,
       aboutMe: profile.aboutMe,
     };
   }
