@@ -27,7 +27,7 @@ export class ProfileRepository {
     const profile = await this.prisma.profile.update({
       where: { userId },
       data: {
-        login: inputModel.login,
+        userName: inputModel.userName,
         firstName: inputModel.firstName,
         lastName: inputModel.lastName,
         dateOfBirth: inputModel.dateOfBirth,
@@ -37,13 +37,14 @@ export class ProfileRepository {
     });
 
     return new ResultDTO(InternalCode.Success, {
-      login: profile.login,
+      userName: profile.userName,
       firstName: profile.firstName,
       lastName: profile.lastName,
       dateOfBirth: profile.dateOfBirth
         ? profile.dateOfBirth.toISOString()
         : null,
       city: profile.city,
+      country: profile.country,
       aboutMe: profile.aboutMe,
     });
   }

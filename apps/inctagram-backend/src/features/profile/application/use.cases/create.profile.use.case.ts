@@ -22,7 +22,7 @@ export class CreateProfileUseCase
     const user = await this.usersQueryRepository.findUser(command.userId);
     const data: Prisma.ProfileUncheckedCreateInput = {
       userId: user.payload.userId,
-      login: user.payload.login,
+      userName: user.payload.login,
     };
     //todo - какой тип нужен для создания профиля ProfileUncheckedCreateInput или ProfileCreateInput?
     const profileResult = await this.profileRepository.createProfile(data);
