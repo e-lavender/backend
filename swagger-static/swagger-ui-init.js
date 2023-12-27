@@ -660,7 +660,7 @@ window.onload = function() {
         "ViewProfileModel": {
           "type": "object",
           "properties": {
-            "login": {
+            "userName": {
               "type": "string"
             },
             "firstName": {
@@ -675,23 +675,27 @@ window.onload = function() {
             "city": {
               "type": "string"
             },
+            "country": {
+              "type": "string"
+            },
             "aboutMe": {
               "type": "string"
             }
           },
           "required": [
-            "login",
+            "userName",
             "firstName",
             "lastName",
             "dateOfBirth",
             "city",
+            "country",
             "aboutMe"
           ]
         },
         "UpdateProfileModel": {
           "type": "object",
           "properties": {
-            "login": {
+            "userName": {
               "type": "string",
               "minimum": 6,
               "maximum": 30,
@@ -715,6 +719,11 @@ window.onload = function() {
               "minimum": 1,
               "maximum": 50
             },
+            "country": {
+              "type": "string",
+              "minimum": 1,
+              "maximum": 50
+            },
             "aboutMe": {
               "type": "string",
               "minimum": 0,
@@ -722,11 +731,12 @@ window.onload = function() {
             }
           },
           "required": [
-            "login",
+            "userName",
             "firstName",
             "lastName",
             "dateOfBirth",
             "city",
+            "country",
             "aboutMe"
           ]
         }

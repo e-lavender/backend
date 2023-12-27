@@ -64,11 +64,12 @@ model Profile {
   lastName    String?
   dateOfBirth DateTime? @db.Timestamp()
   city        String?
+  country     String?
   aboutMe     String?
-  user        User      @relation(fields: [userId, login], references: [id, login], onDelete: Cascade)
+  user        User      @relation(fields: [userId, userName], references: [id, login], onDelete: Cascade)
   userId      Int       @id()
-  login       String
+  userName    String
 
-  @@unique([userId, login])
+  @@unique([userId, userName])
   @@map("profile")
 }

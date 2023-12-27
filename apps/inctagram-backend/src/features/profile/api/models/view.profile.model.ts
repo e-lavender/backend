@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ViewProfileModel {
   @ApiProperty()
-  login: string;
+  userName: string;
   @ApiProperty()
   firstName: string;
   @ApiProperty()
@@ -11,6 +11,8 @@ export class ViewProfileModel {
   dateOfBirth: string;
   @ApiProperty()
   city: string;
+  @ApiProperty()
+  country: string;
   @ApiProperty()
   aboutMe: string;
 }

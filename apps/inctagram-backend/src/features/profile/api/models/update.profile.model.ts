@@ -19,7 +19,7 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(6, 20)
-  login: string;
+  userName: string;
   @ApiProperty({
     minimum: 1,
     maximum: 50,
@@ -42,7 +42,6 @@ export class UpdateProfileModel {
   lastName: string;
   @ApiProperty()
   @IsOptional()
-  @IsString()
   @IsDate()
   @Transform(({ value }) => value.trim())
   dateOfBirth: string;
@@ -54,8 +53,16 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(1, 50)
-  @Matches('^[A-Za-zА-Яа-я]+$')
   city: string;
+  @ApiProperty({
+    minimum: 1,
+    maximum: 50,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value.trim())
+  @Length(1, 50)
+  country: string;
   @ApiProperty({
     minimum: 0,
     maximum: 200,
