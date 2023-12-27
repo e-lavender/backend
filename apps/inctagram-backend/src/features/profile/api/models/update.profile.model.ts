@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -42,7 +41,7 @@ export class UpdateProfileModel {
   lastName: string;
   @ApiProperty()
   @IsOptional()
-  @IsDate()
+  @IsString()
   @Transform(({ value }) => value.trim())
   dateOfBirth: string;
   @ApiProperty({
