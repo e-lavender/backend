@@ -66,7 +66,7 @@ model Profile {
   city        String?
   country     String?
   aboutMe     String?
-  user        User      @relation(fields: [userId, userName], references: [id, login], onDelete: Cascade)
+  user        User      @relation(fields: [userId, userName], references: [id, login], onDelete: Cascade, onUpdate: Cascade)
   userId      Int       @id()
   userName    String
 
