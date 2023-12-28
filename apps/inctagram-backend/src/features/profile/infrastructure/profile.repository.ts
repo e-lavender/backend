@@ -32,6 +32,7 @@ export class ProfileRepository {
         lastName: inputModel.lastName,
         dateOfBirth: inputModel.dateOfBirth,
         city: inputModel.city,
+        country: inputModel.country,
         aboutMe: inputModel.aboutMe,
       },
     });

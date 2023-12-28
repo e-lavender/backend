@@ -18,6 +18,8 @@ export class UpdateProfileModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(6, 20)
+  // todo - добавить декоратор валидации уникальности userName?
+  // @IsUniqueLoginWithEmail()
   userName: string;
   @ApiProperty({
     minimum: 1,
