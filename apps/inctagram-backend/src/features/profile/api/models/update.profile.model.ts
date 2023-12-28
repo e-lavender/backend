@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -43,8 +44,14 @@ export class UpdateProfileModel {
   lastName: string;
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value.trim())
+  // @Transform(({ value }) => {
+  //   console.log({ v: value });
+  //   console.log({ v_t: value.trim() });
+  //   console.log({ v_r: value.trim() !== '' ? value : null });
+  //   return value.trim() !== '' ? value : null;
+  // })
+  @Transform(({ value }) => value && new Date(value))
+  @IsDate()
   dateOfBirth: string;
   @ApiProperty({
     minimum: 1,
@@ -53,7 +60,7 @@ export class UpdateProfileModel {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  @Length(1, 50)
+  @Length(0, 50)
   city: string;
   @ApiProperty({
     minimum: 1,
@@ -62,7 +69,7 @@ export class UpdateProfileModel {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  @Length(1, 50)
+  @Length(0, 50)
   country: string;
   @ApiProperty({
     minimum: 0,
