@@ -41,6 +41,7 @@ describe('ProfileController (e2e)', () => {
     //     password: firstUser.password,
     //   });
 
+
     // expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
 
     expect.setState({ firstUser });
