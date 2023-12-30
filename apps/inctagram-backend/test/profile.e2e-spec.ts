@@ -20,15 +20,20 @@ describe('ProfileController (e2e)', () => {
     // await CleanDbService.cleanDb();
   });
 
-  it('1 - POST:auth/registration - 204 - register new user', async () => {
+  it('1 - POST:auth/registration - 204 - register 1st user', async () => {
     const firstUser = {
       login: `userName3`,
       email: `email3@gmail.com`,
       password: 'Qwertyuiop1!3',
     };
+    const secondUser = {
+      login: `userName2`,
+      email: `email2@gmail.com`,
+      password: 'Qwerty2',
+    };
 
     // const firstUser = {
-    //   login: `login-${randomUUID().slice(0, 6)}`,
+    //   login: `login${randomUUID().slice(0, 6)}`,
     //   email: `${randomUUID().slice(0, 6)}@gmail.com`,
     //   password: 'q',
     // };
@@ -41,10 +46,9 @@ describe('ProfileController (e2e)', () => {
     //     password: firstUser.password,
     //   });
 
-
     // expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
 
-    expect.setState({ firstUser });
+    expect.setState({ firstUser, secondUser });
   });
   // it('2 - POST:auth/registration-confirmation - 204 - confirm email', async () => {
   //   const registerFirstUserResponse = await request(server)
@@ -54,10 +58,10 @@ describe('ProfileController (e2e)', () => {
   //
   //   expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
   // });
-  it('3 - POST:auth/login - 200 - login user', async () => {
-    const { firstUser } = expect.getState();
+  it('3 - POST:auth/login - 200 - login 1st & 2nd users', async () => {
+    const { firstUser, secondUser } = expect.getState();
 
-    const registerFirstUserResponse = await request(server)
+    const loginFirstUserResponse = await request(server)
       .post('/api/v1/auth/login')
       .set('user-agent', 'device-1')
       .send({
@@ -65,13 +69,27 @@ describe('ProfileController (e2e)', () => {
         password: firstUser.password,
       });
 
-    expect(registerFirstUserResponse.status).toEqual(HttpStatus.OK);
-    expect(registerFirstUserResponse.body).toEqual({
+    expect(loginFirstUserResponse.status).toEqual(HttpStatus.OK);
+    expect(loginFirstUserResponse.body).toEqual({
       accessToken: expect.any(String),
     });
-    const accessToken = registerFirstUserResponse.body.accessToken;
+    const accessToken = loginFirstUserResponse.body.accessToken;
 
-    expect.setState({ accessToken });
+    const loginSecondUserResponse = await request(server)
+      .post('/api/v1/auth/login')
+      .set('user-agent', 'device-2')
+      .send({
+        email: secondUser.email,
+        password: secondUser.password,
+      });
+
+    expect(loginSecondUserResponse.status).toEqual(HttpStatus.OK);
+    expect(loginSecondUserResponse.body).toEqual({
+      accessToken: expect.any(String),
+    });
+    const accessToken2 = loginSecondUserResponse.body.accessToken;
+
+    expect.setState({ accessToken, accessToken2 });
   });
 
   // it('4 - GET:profile - 200 - getting raw profile', async () => {
@@ -108,11 +126,11 @@ describe('ProfileController (e2e)', () => {
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.BAD_REQUEST);
   });
   it('6 - PUT:profile - 400 - try to update profile without lastName', async () => {
-    const { firstUser, accessToken } = expect.getState();
+    const { firstUser, accessToken1 } = expect.getState();
 
     const registerFirstUserResponse = await request(server)
       .put('/api/v1/profile')
-      .auth(accessToken, { type: 'bearer' })
+      .auth(accessToken1, { type: 'bearer' })
       .send({
         userName: firstUser.login,
         // lastName: '123',
@@ -123,18 +141,20 @@ describe('ProfileController (e2e)', () => {
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.BAD_REQUEST);
   });
   it('7 - PUT:profile - 400 - try to update profile with incorrect format of dateOfBirth', async () => {
-    const { firstUser, accessToken } = expect.getState();
+    const { firstUser, accessToken1 } = expect.getState();
 
     const registerFirstUserResponse = await request(server)
       .put('/api/v1/profile')
-      .auth(accessToken, { type: 'bearer' })
+      .auth(accessToken1, { type: 'bearer' })
       .send({
+        // userName: firstUser.login,
         userName: firstUser.login,
         lastName: 'correctLastName',
         firstName: 'correctFistName',
         dateOfBirth: 'invalid_type_of_data',
       });
 
+    console.log({ t_7: registerFirstUserResponse.body.errorsMessages });
     expect(registerFirstUserResponse).toBeDefined();
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.BAD_REQUEST);
     expect(registerFirstUserResponse.body.errorsMessages[0].field).toEqual(
@@ -142,11 +162,11 @@ describe('ProfileController (e2e)', () => {
     );
   });
   it('8 - PUT:profile - 204 - update profile with correct data', async () => {
-    const { firstUser, accessToken } = expect.getState();
+    const { firstUser, accessToken1 } = expect.getState();
 
     const registerFirstUserResponse = await request(server)
       .put('/api/v1/profile')
-      .auth(accessToken, { type: 'bearer' })
+      .auth(accessToken1, { type: 'bearer' })
       .send({
         userName: firstUser.login,
         lastName: 'correctLastName',
@@ -156,16 +176,16 @@ describe('ProfileController (e2e)', () => {
         aboutMe: 'correct_about_me',
       });
 
+    console.log({ t_8: registerFirstUserResponse.body.errorsMessages });
     expect(registerFirstUserResponse).toBeDefined();
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
   });
   it('9 - PUT:profile - 204 - update profile with empty fields', async () => {
-    const { firstUser, accessToken } = expect.getState();
-    console.log('9----9');
+    const { firstUser, accessToken1 } = expect.getState();
 
     const registerFirstUserResponse = await request(server)
       .put('/api/v1/profile')
-      .auth(accessToken, { type: 'bearer' })
+      .auth(accessToken1, { type: 'bearer' })
       .send({
         userName: firstUser.login,
         firstName: 'correctFistName',
@@ -180,4 +200,39 @@ describe('ProfileController (e2e)', () => {
     expect(registerFirstUserResponse).toBeDefined();
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
   });
+  it('10 - PUT:profile - 204 - update userName', async () => {
+    const { accessToken1 } = expect.getState();
+
+    const updateFirstUserProfile = await request(server)
+      .put('/api/v1/profile')
+      .auth(accessToken1, { type: 'bearer' })
+      .send({
+        userName: 'otherUserName',
+        firstName: 'correctFistName',
+        lastName: 'correctLastName',
+        // dateOfBirth: '',
+        city: '',
+        country: '',
+        aboutMe: '',
+      });
+
+    console.log({ t_10: updateFirstUserProfile.body.errorsMessages });
+    expect(updateFirstUserProfile).toBeDefined();
+    expect(updateFirstUserProfile.status).toEqual(HttpStatus.NO_CONTENT);
+
+    const getFirstUserProfile = await request(server)
+      .get('/api/v1/profile')
+      .auth(accessToken1, { type: 'bearer' });
+    expect(getFirstUserProfile.status).toEqual(HttpStatus.OK);
+    expect(getFirstUserProfile.body).toEqual({
+      userName: 'otherUserName',
+      firstName: 'correctFistName',
+      lastName: 'correctLastName',
+      dateOfBirth: expect.any(String),
+      city: '',
+      country: '',
+      aboutMe: '',
+    });
+  });
+  // todo - попробовать обновить занятый кем-то userName
 });
