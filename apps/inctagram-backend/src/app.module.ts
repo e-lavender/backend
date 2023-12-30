@@ -42,6 +42,7 @@ import { ProfileRepository } from './features/profile/infrastructure/profile.rep
 import { ProfileQueryRepository } from './features/profile/infrastructure/profile.query.repository';
 import { ProfileController } from './features/profile/api/profile.controller';
 import { UpdateProfileUseCase } from './features/profile/application/use.cases/update.profile.use.case';
+//import { AvatarController } from './features/avatars/api/avatar.controller';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -97,7 +98,7 @@ const repositories = [
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
   ],
-  controllers: [AuthController, ProfileController],
+  controllers: [AuthController, ProfileController /*AvatarController*/],
   providers: [
     ...services,
     ...validators,

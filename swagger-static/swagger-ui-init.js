@@ -716,12 +716,12 @@ window.onload = function() {
             },
             "city": {
               "type": "string",
-              "minimum": 1,
+              "minimum": 0,
               "maximum": 50
             },
             "country": {
               "type": "string",
-              "minimum": 1,
+              "minimum": 0,
               "maximum": 50
             },
             "aboutMe": {

@@ -1,20 +1,19 @@
 import {
   BadRequestException,
+  DynamicModule,
   INestApplication,
   ValidationPipe,
 } from '@nestjs/common';
 import {
   ErrorExceptionFilter,
   HttpExceptionFilter,
-} from '../../../../libs/filters/exception.filter';
+} from '../filters/exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
-import { AppModule } from '../app.module';
-import { setupSwagger } from '../../../../swagger-static';
-import { generateSwagger } from '../../../../swagger-static/generate';
+import { setupSwagger } from '../../swagger-static';
 
-export const appSettings = (app: INestApplication) => {
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+export const appSettings = <T>(app: INestApplication, module: T) => {
+  useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });
   app.useGlobalPipes(
     new ValidationPipe({
       forbidUnknownValues: false,
@@ -43,5 +42,4 @@ export const appSettings = (app: INestApplication) => {
   app.setGlobalPrefix('api/v1');
 
   setupSwagger(app);
-  generateSwagger();
 };
