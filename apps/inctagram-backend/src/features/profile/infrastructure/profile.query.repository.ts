@@ -22,10 +22,15 @@ export class ProfileQueryRepository {
     userId: number,
     userName: string,
   ): Promise<ResultDTO<ViewProfileModel>> {
-    const profile = await this.prisma.profile.findMany({
+    const [profile] = await this.prisma.profile.findMany({
       where: { userName: userName, NOT: { userId: userId } },
     });
-    if (profile) return new ResultDTO(InternalCode.Internal_Server);
+
+    if (profile)
+      return new ResultDTO(
+        InternalCode.Internal_Server,
+        this._mapDbToView(profile),
+      );
 
     return new ResultDTO(InternalCode.Success);
   }
