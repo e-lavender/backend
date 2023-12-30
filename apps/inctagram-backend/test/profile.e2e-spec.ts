@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
-import { appSettings } from '../src/config/app.settings';
+import { appSettings } from '../../../libs/core/app.settings';
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;

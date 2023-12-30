@@ -1,7 +1,7 @@
-import { configModule } from './config/config.module';
+import { configModule } from '../../config/config.module';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { GlobalConfigService } from './config/config.service';
+import { GlobalConfigService } from '../../config/config.service';
 import { UniqueLoginAndEmailValidator } from './features/infrastructure/decorators/validators/uniqueLoginAndEmail.validator';
 import { RegistrationUseCase } from './features/auth/application/use-cases/registration.use-case';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -42,6 +42,9 @@ import { ProfileRepository } from './features/profile/infrastructure/profile.rep
 import { ProfileQueryRepository } from './features/profile/infrastructure/profile.query.repository';
 import { ProfileController } from './features/profile/api/profile.controller';
 import { UpdateProfileUseCase } from './features/profile/application/use.cases/update.profile.use.case';
+import { AvatarController } from './features/avatars/api/avatar.controller';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { Services } from '../../../libs/enums';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -97,8 +100,22 @@ const repositories = [
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
   ],
-  controllers: [AuthController, ProfileController],
+  controllers: [AuthController, ProfileController, AvatarController],
   providers: [
+    {
+      provide: Services.FileService,
+      inject: [GlobalConfigService],
+      useFactory: (configService: GlobalConfigService) => {
+        const connection = configService.getConnectionData('file');
+        return ClientProxyFactory.create({
+          transport: Transport.TCP,
+          options: {
+            host: connection.host,
+            port: connection.port,
+          },
+        });
+      },
+    },
     ...services,
     ...validators,
     ...useCases,

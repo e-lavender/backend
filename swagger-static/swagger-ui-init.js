@@ -558,6 +558,17 @@ window.onload = function() {
             }
           ]
         }
+      },
+      "/api/v1/avatar/upload": {
+        "post": {
+          "operationId": "uploadAvatar",
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {
@@ -716,12 +727,12 @@ window.onload = function() {
             },
             "city": {
               "type": "string",
-              "minimum": 1,
+              "minimum": 0,
               "maximum": 50
             },
             "country": {
               "type": "string",
-              "minimum": 1,
+              "minimum": 0,
               "maximum": 50
             },
             "aboutMe": {
