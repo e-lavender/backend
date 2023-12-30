@@ -53,9 +53,11 @@ export class ProfileController extends ExceptionAndResponseHelper {
   async getMyProfile(
     @CurrentUserId() userId: number,
   ): Promise<ViewProfileModel> {
-    const profileResult = await this.profileQueryRepository.getProfile(userId);
+    const getProfileResult = await this.profileQueryRepository.getProfile(
+      userId,
+    );
 
-    return this.sendExceptionOrResponse(profileResult);
+    return this.sendExceptionOrResponse(getProfileResult);
   }
 
   @ApiOperation({
@@ -76,10 +78,10 @@ export class ProfileController extends ExceptionAndResponseHelper {
     @CurrentUserId() userId: number,
     @Body() inputModel: UpdateProfileModel,
   ) {
-    const updatingResult = await this.commandBus.execute(
+    const updateProfileResult = await this.commandBus.execute(
       new UpdateProfileCommand(userId, inputModel),
     );
 
-    return this.sendExceptionOrResponse(updatingResult);
+    return this.sendExceptionOrResponse(updateProfileResult);
   }
 }
