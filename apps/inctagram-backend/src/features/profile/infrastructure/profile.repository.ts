@@ -27,7 +27,6 @@ export class ProfileRepository {
     const profile = await this.prisma.profile.update({
       where: { userId },
       data: {
-        userName: inputModel.userName,
         firstName: inputModel.firstName,
         lastName: inputModel.lastName,
         dateOfBirth: inputModel.dateOfBirth,

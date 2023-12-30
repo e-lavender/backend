@@ -18,6 +18,18 @@ export class ProfileQueryRepository {
     return new ResultDTO(InternalCode.Success, this._mapDbToView(profile));
   }
 
+  async getProfileByUserName(
+    userId: number,
+    userName: string,
+  ): Promise<ResultDTO<ViewProfileModel>> {
+    const profile = await this.prisma.profile.findMany({
+      where: { userName: userName, NOT: { userId: userId } },
+    });
+    if (profile) return new ResultDTO(InternalCode.Internal_Server);
+
+    return new ResultDTO(InternalCode.Success);
+  }
+
   _mapDbToView(profile: Profile): ViewProfileModel {
     return {
       userName: profile.userName,

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -17,9 +18,8 @@ export class UpdateProfileModel {
   @IsNotEmpty()
   @IsString()
   @Transform(({ value }) => value.trim())
-  @Length(6, 20)
-  // todo - добавить декоратор валидации уникальности userName?
-  // @IsUniqueLoginWithEmail()
+  @Length(6, 30)
+  // @IsUserNameAvailable() // декоратор валидации уникальности userName - как передать сюда id пользователя?
   userName: string;
   @ApiProperty({
     minimum: 1,
@@ -53,7 +53,7 @@ export class UpdateProfileModel {
   @IsDate()
   dateOfBirth: string;
   @ApiProperty({
-    minimum: 1,
+    minimum: 0,
     maximum: 50,
   })
   @IsOptional()
@@ -62,7 +62,7 @@ export class UpdateProfileModel {
   @Length(0, 50)
   city: string;
   @ApiProperty({
-    minimum: 1,
+    minimum: 0,
     maximum: 50,
   })
   @IsOptional()
