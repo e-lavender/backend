@@ -23,30 +23,31 @@ export class UpdateProfileUseCase
 
   async execute(command: UpdateProfileCommand): Promise<ResultDTO<null>> {
     const { userId, inputModel } = command;
-    const profile = await this.profileQueryRepository.getProfile(userId);
+    const getProfileResult = await this.profileQueryRepository.getProfile(
+      userId,
+    );
     const isUserNameAvailable =
       await this.profileQueryRepository.getProfileByUserName(
         userId,
-        profile.payload.userName,
+        inputModel.userName,
       );
 
     // если полученный userName занят, отправляем ошибку
-    if (!isUserNameAvailable) {
-      // todo - как вписать сюда текст ошибки и поле - создать кастомный месседж
+    if (isUserNameAvailable.hasError()) {
+      // todo - создать кастомный месседж, надо модернизировать exception filter
       throw new BadRequestException('userName already exist=>userName');
-      // return new ResultDTO(InternalCode.Internal_Server);
     }
 
     // если полученный userName НЕ совпадает с текущим, обновляем его
-    if (inputModel.userName !== profile.payload.userName) {
+    if (inputModel.userName !== getProfileResult.payload.userName) {
       await this.usersRepository.updateUserName(userId, inputModel.userName);
     }
 
-    const profileResult = await this.profileRepository.updateProfile(
+    const updateProfileResult = await this.profileRepository.updateProfile(
       userId,
       inputModel,
     );
-    if (profileResult.hasError()) {
+    if (updateProfileResult.hasError()) {
       return new ResultDTO(InternalCode.Internal_Server);
     } else {
       return new ResultDTO(InternalCode.Success);
