@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EmailAdapter } from '../adapter/email.adapter';
-import { GlobalConfigService } from '../../../config/config.service';
+import { GlobalConfigService } from '../../../../../config/config.service';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
 

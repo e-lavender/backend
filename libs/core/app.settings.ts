@@ -11,6 +11,7 @@ import {
 import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
 import { setupSwagger } from '../../swagger-static';
+import { generateSwagger } from '../../swagger-static/generate';
 
 export const appSettings = <T>(app: INestApplication, module: T) => {
   useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });

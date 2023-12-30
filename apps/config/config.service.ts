@@ -8,16 +8,21 @@ export class GlobalConfigService {
     private defaultConfigServices: DefaultConfigServices<ConfigType>,
   ) {}
 
-  getPort(service: string): number {
-    const port = Number(
+  getConnectionData(service: string): { host: string; port: number } {
+    let port = Number(
       this.defaultConfigServices.get('services', {
         infer: true,
       })[service].port,
     );
     if (isNaN(port)) {
-      return 3000;
+      port = 3000;
     }
-    return port;
+
+    const host = this.defaultConfigServices.get('services', {
+      infer: true,
+    })[service]?.host;
+
+    return { host, port };
   }
 
   getSalt(): number {

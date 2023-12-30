@@ -558,6 +558,17 @@ window.onload = function() {
             }
           ]
         }
+      },
+      "/api/v1/avatar/upload": {
+        "post": {
+          "operationId": "uploadAvatar",
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {

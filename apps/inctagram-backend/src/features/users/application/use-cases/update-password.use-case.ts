@@ -3,7 +3,7 @@ import { UsersRepository } from '../../infrastructure/users.repository';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../../libs/enums';
 import { genSalt, hash } from 'bcrypt';
-import { GlobalConfigService } from '../../../../config/config.service';
+import { GlobalConfigService } from '../../../../../../config/config.service';
 import { sub } from 'date-fns';
 
 export class UpdatePasswordCommand {
