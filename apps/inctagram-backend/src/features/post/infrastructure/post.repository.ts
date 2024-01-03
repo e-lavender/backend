@@ -17,11 +17,13 @@ export class PostRepository {
     const post = await this.prisma.post.create({
       data: { ...data },
       select: {
+        id: true,
         description: true,
         createdAt: true,
       },
     });
     return new ResultDTO(InternalCode.Success, {
+      id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
     });

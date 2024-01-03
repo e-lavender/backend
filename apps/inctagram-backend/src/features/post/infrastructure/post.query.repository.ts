@@ -18,6 +18,7 @@ export class PostQueryRepository {
     return new ResultDTO(InternalCode.Success, post);
   }
 
+  // todo - нужно ли здесь делать пагинацию?
   async getPosts(userId: number): Promise<ResultDTO<ViewPostModel[]>> {
     const posts = await this.prisma.post.findMany({
       where: { userId },
@@ -30,6 +31,7 @@ export class PostQueryRepository {
 
   _mapDbToView(post: Post): ViewPostModel {
     return {
+      id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
     };

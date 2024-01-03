@@ -958,6 +958,9 @@ window.onload = function() {
         "ViewPostModel": {
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string"
+            },
             "description": {
               "type": "string"
             },
@@ -966,6 +969,7 @@ window.onload = function() {
             }
           },
           "required": [
+            "id",
             "description",
             "createdAt"
           ]
