@@ -14,7 +14,7 @@ describe('ProfileController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    appSettings(app);
+    appSettings(app, AppModule);
     await app.init();
     server = app.getHttpServer();
     // await CleanDbService.cleanDb();
@@ -90,7 +90,6 @@ describe('ProfileController (e2e)', () => {
 
     expect.setState({ accessToken1, accessToken2 });
   });
-
   // it('4 - GET:profile - 200 - getting raw profile', async () => {
   //   const { firstUser, accessToken } = expect.getState();
   //
@@ -109,6 +108,8 @@ describe('ProfileController (e2e)', () => {
   //     aboutMe: null,
   //   });
   // });
+
+  // негативные тесты на валидацию данных
   it('5 - PUT:profile - 400 - try to update profile without firstName', async () => {
     const { firstUser, accessToken1 } = expect.getState();
 
@@ -160,6 +161,7 @@ describe('ProfileController (e2e)', () => {
     );
   });
 
+  // позитивные тесты на текстовые поля
   it('8 - PUT:profile - 204 - update profile with correct data', async () => {
     const { firstUser, accessToken1 } = expect.getState();
 
@@ -244,9 +246,11 @@ describe('ProfileController (e2e)', () => {
       city: '',
       country: '',
       aboutMe: '',
+      avatarUrl: null,
     });
   });
-  // попробовать обновить занятый кем-то userName
+
+  // негативный тест на попытку обновить занятый кем-то userName
   it('11 - PUT:profile - 400 - 1st try update userName busy with 2nd user', async () => {
     const { accessToken1, secondUser, correctUpdateFirstProfile } =
       expect.getState();
@@ -280,6 +284,36 @@ describe('ProfileController (e2e)', () => {
       city: '',
       country: '',
       aboutMe: '',
+      avatarUrl: null,
     });
+  });
+
+  // тесты на работу с аватаром
+  it('12 - GET:avatar - 200 - no avatar yet', async () => {
+    const { accessToken1 } = expect.getState();
+
+    const getAvatar = await request(server)
+      .get('/api/v1/avatar')
+      .auth(accessToken1, { type: 'bearer' });
+
+    console.log({ t_12: getAvatar.body.errorsMessages });
+    expect(getAvatar).toBeDefined();
+    expect(getAvatar.status).toEqual(HttpStatus.OK);
+    expect(getAvatar.body).toEqual({});
+  });
+  it('13 - PUT:avatar - 204 - create avatar', async () => {
+    const { accessToken1 } = expect.getState();
+
+    const createAvatar = await request(server)
+      .put('/api/v1/avatar')
+      .auth(accessToken1, { type: 'bearer' })
+      .send({
+        file: {},
+      });
+
+    console.log({ t_13: createAvatar.body.errorsMessages });
+    expect(createAvatar).toBeDefined();
+    expect(createAvatar.status).toEqual(HttpStatus.OK);
+    expect(createAvatar.body).toEqual({});
   });
 });
