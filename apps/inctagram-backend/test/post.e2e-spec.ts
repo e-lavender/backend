@@ -103,7 +103,7 @@ describe('PostController (e2e)', () => {
     expect(getPostsResponse.status).toEqual(HttpStatus.OK);
     expect(getPostsResponse.body).toEqual([]);
   });
-  it('5 - GET:post - 200 - 1st user create 2 posts', async () => {
+  it('5 - POST:post - 200 - 1st user create 2 posts', async () => {
     const { accessToken1 } = expect.getState();
     const firstPostInput = {
       description: 'first_correct_description',
@@ -147,6 +147,42 @@ describe('PostController (e2e)', () => {
       secondPost: createSecondPostsResponse.body,
     });
   });
+  // it('6 - PUT:post - 200 - 1st user update 2 posts', async () => {
+  //   const { accessToken1, firstPost, secondPost } = expect.getState();
+  //   const firstPostInput = {
+  //     description: 'updated_first_correct_description',
+  //   };
+  //   const secondPostInput = {
+  //     description: 'updated_second_correct_description',
+  //   };
+  //
+  //   const createFirstPostsResponse = await request(server)
+  //     .put(`/api/v1/post/${firstPost.id}`)
+  //     .auth(accessToken1, { type: 'bearer' })
+  //     .send({
+  //       description: firstPostInput.description,
+  //     });
+  //
+  //   expect(createFirstPostsResponse).toBeDefined();
+  //   expect(createFirstPostsResponse.status).toEqual(HttpStatus.NO_CONTENT);
+  //   expect(createFirstPostsResponse.body).toEqual({});
+  //
+  //   const createSecondPostsResponse = await request(server)
+  //     .put(`/api/v1/post/${secondPost.id}`)
+  //     .auth(accessToken1, { type: 'bearer' })
+  //     .send({
+  //       description: secondPostInput.description,
+  //     });
+  //
+  //   expect(createSecondPostsResponse).toBeDefined();
+  //   expect(createSecondPostsResponse.status).toEqual(HttpStatus.NO_CONTENT);
+  //   expect(createSecondPostsResponse.body).toEqual({});
+  //
+  //   expect.setState({
+  //     firstPost: createFirstPostsResponse.body,
+  //     secondPost: createSecondPostsResponse.body,
+  //   });
+  // });
 
   it('? - DELETE:post - 200 - 1st user delete 2 posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
