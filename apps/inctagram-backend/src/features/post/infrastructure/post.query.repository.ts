@@ -4,6 +4,8 @@ import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
 import { ViewPostModel } from '../api/models/view.post.model';
 import { Post } from '@prisma/client';
+import { DefaultPaginationInput } from '../api/pagination/pagination.input.model';
+import { PaginationViewModel } from '../api/pagination/pagination.view.model';
 
 @Injectable()
 export class PostQueryRepository {
@@ -18,15 +20,40 @@ export class PostQueryRepository {
     return new ResultDTO(InternalCode.Success, post);
   }
 
-  // todo - нужно ли здесь делать пагинацию?
-  async getPosts(userId: number): Promise<ResultDTO<ViewPostModel[]>> {
+  async getPosts(
+    userId: number,
+    query: DefaultPaginationInput,
+  ): Promise<ResultDTO<PaginationViewModel<ViewPostModel[]>>> {
     const posts = await this.prisma.post.findMany({
+      skip: 0,
+      // skip: query.skip(),
+      take: query.pageSize,
       where: { userId },
+      orderBy: {
+        [query.sortBy]: query.sortDirection,
+      },
     });
     if (!posts) return new ResultDTO(InternalCode.NotFound);
 
+    const postsCount = await this.prisma.post.aggregate({
+      _count: {
+        userId: true,
+      },
+      where: { userId: userId },
+    });
+    console.log({ repo_itemsCount: postsCount });
+
     const viewPosts = posts.map((p: Post) => this._mapDbToView(p));
-    return new ResultDTO(InternalCode.Success, viewPosts);
+
+    const paginationPosts: PaginationViewModel<ViewPostModel[]> = {
+      pagesCount: query.pagesCount(postsCount),
+      currentPage: query.currentPage,
+      pageSize: query.pageSize,
+      itemsCount: query.itemsCount(postsCount),
+      items: viewPosts,
+    };
+
+    return new ResultDTO(InternalCode.Success, paginationPosts);
   }
 
   _mapDbToView(post: Post): ViewPostModel {

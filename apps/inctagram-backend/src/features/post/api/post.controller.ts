@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUserId } from '../../infrastructure/decorators/params/current-user-id.decorator';
@@ -37,6 +38,8 @@ import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { UpdatePostCommand } from '../application/update.post.use.case';
 import { DeletePostCommand } from '../application/delete.post.use.case';
 import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
+import { DefaultPaginationInput } from './pagination/pagination.input.model';
+import { PaginationViewModel } from './pagination/pagination.view.model';
 
 @ApiTags('Post')
 @Controller('post')
@@ -61,8 +64,15 @@ export class PostController extends ExceptionAndResponseHelper {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMyPosts(@CurrentUserId() userId: number) {
-    const getPostsResult = await this.postQueryRepository.getPosts(userId);
+  async getMyPosts(
+    @CurrentUserId() userId: number,
+    @Query() query: DefaultPaginationInput,
+  ): Promise<PaginationViewModel<ViewPostModel[]>> {
+    const getPostsResult = await this.postQueryRepository.getPosts(
+      userId,
+      query,
+    );
+
     return this.sendExceptionOrResponse(getPostsResult);
   }
 
@@ -85,10 +95,11 @@ export class PostController extends ExceptionAndResponseHelper {
   async createPost(
     @CurrentUserId() userId: number,
     @Body() inputModel: CreatePostModel,
-  ) {
+  ): Promise<ViewPostModel> {
     const createPostResult = await this.commandBus.execute(
       new CreatePostCommand(userId, inputModel),
     );
+
     return this.sendExceptionOrResponse(createPostResult);
   }
 
@@ -116,10 +127,11 @@ export class PostController extends ExceptionAndResponseHelper {
     @CurrentUserId() userId: number,
     @Param('id') postId: string,
     @Body() inputModel: UpdatePostModel,
-  ) {
+  ): Promise<void> {
     const updatePostResult = await this.commandBus.execute(
       new UpdatePostCommand(userId, postId, inputModel),
     );
+
     return this.sendExceptionOrResponse(updatePostResult);
   }
 
@@ -142,10 +154,11 @@ export class PostController extends ExceptionAndResponseHelper {
   async deletePost(
     @CurrentUserId() userId: number,
     @Param('id') postId: string,
-  ) {
+  ): Promise<void> {
     const deletePostResult = await this.commandBus.execute(
       new DeletePostCommand(userId, postId),
     );
+
     return this.sendExceptionOrResponse(deletePostResult);
   }
 }
