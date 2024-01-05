@@ -9,7 +9,6 @@
     "build": "nest build",
     "build:inctagram-backend": "nest build inctagram-backend",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "nest start inctagram-backend",
     "start:inctagram-backend": "nest start inctagram-backend",
     "start:dev": "nest start --watch",
     "start:dev:inctagram-backend": "nest start inctagram-backend  --watch",
