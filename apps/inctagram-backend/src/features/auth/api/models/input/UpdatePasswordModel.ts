@@ -4,11 +4,18 @@ import { IsValidCode } from '../../../../infrastructure/decorators/validators/va
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdatePasswordModel {
-  @ApiProperty({ minimum: 6, maximum: 20, pattern: '^[a-zA-Z0-9_-]*$' })
+  @ApiProperty({
+    minimum: 6,
+    maximum: 20,
+    pattern:
+      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[!"#$%&\'()*+,\\-.:;<=>?@[\\\\\\]^_`{|}~]).*$',
+  })
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(6, 20)
-  @Matches('^[a-zA-Z0-9_-]*$')
+  @Matches(
+    '^(?=.*[a-z])(?=.*[A-Z])(?=.*[!"#$%&\'()*+,\\-.:;<=>?@[\\\\\\]^_`{|}~]).*$',
+  )
   newPassword: string;
   @ApiProperty()
   @IsString()

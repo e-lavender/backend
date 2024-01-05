@@ -13,6 +13,10 @@ export const getConfiguration = () => ({
       gmail: process.env.GMAIL,
       password: process.env.GMAIL_PASS,
     },
+    file: {
+      port: process.env.FILE_SERVICE_PORT,
+      host: process.env.FILE_SERVICE_HOST,
+    },
   },
 });
 

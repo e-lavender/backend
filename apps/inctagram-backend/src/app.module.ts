@@ -1,7 +1,7 @@
-import { configModule } from './config/config.module';
+import { configModule } from '../config/config.module';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { GlobalConfigService } from './config/config.service';
+import { GlobalConfigService } from '../config/config.service';
 import { UniqueLoginAndEmailValidator } from './features/infrastructure/decorators/validators/uniqueLoginAndEmail.validator';
 import { RegistrationUseCase } from './features/auth/application/use-cases/registration.use-case';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -36,12 +36,27 @@ import { LogoutUseCase } from './features/auth/application/use-cases/logout.use-
 import { DeleteDeviceUseCase } from './features/devices/application/use-cases/delete-device.use-case';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CreateProfileUseCase } from './features/profile/application/use.cases/create.profile.use.case';
+import { ProfileRepository } from './features/profile/infrastructure/profile.repository';
+import { ProfileQueryRepository } from './features/profile/infrastructure/profile.query.repository';
+import { ProfileController } from './features/profile/api/profile.controller';
+import { UpdateProfileUseCase } from './features/profile/application/use.cases/update.profile.use.case';
+import { AvatarController } from './features/avatars/api/avatar.controller';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { Services } from '../../../libs/enums';
+import { SaveAvatarUseCase } from './features/avatars/application/use-cases/save-avatar.use-case';
+import { AvatarRepository } from './features/avatars/infrastructure/avatar.repository';
+import { AvatarQueryRepository } from './features/avatars/infrastructure/avatar-query.repository';
+import { DeleteAvatarUseCase } from './features/avatars/application/use-cases/delete-avatar.use-case';
 
 const services = [GlobalConfigService, PrismaService];
 
 const validators = [UniqueLoginAndEmailValidator];
 
 const useCases = [
+  CreateProfileUseCase,
+  UpdateProfileUseCase,
   RegistrationUseCase,
   CreateUserUseCase,
   DeleteUserUseCase,
@@ -58,9 +73,25 @@ const useCases = [
   UpdateSessionUseCase,
   LogoutUseCase,
   DeleteDeviceUseCase,
+  SaveAvatarUseCase,
+  DeleteAvatarUseCase,
 ];
 
-const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
+const pipes = [
+  IsValidConfirmCodePipe,
+  IsValidAndNotConfirmedCodePipe,
+  IsValidAndNotConfirmedRecoveryCodePipe,
+];
+
+const repositories = [
+  UsersRepository,
+  DevicesRepository,
+  UsersQueryRepository,
+  ProfileRepository,
+  ProfileQueryRepository,
+  AvatarRepository,
+  AvatarQueryRepository,
+];
 
 @Module({
   imports: [
@@ -75,18 +106,31 @@ const repositories = [UsersRepository, DevicesRepository, UsersQueryRepository];
       serveRoot:
         process.env.NODE_ENV === 'development' ? '/' : '/api/v1/swagger',
     }),
+    ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ProfileController, AvatarController],
   providers: [
+    {
+      provide: Services.FileService,
+      inject: [GlobalConfigService],
+      useFactory: (configService: GlobalConfigService) => {
+        const connection = configService.getConnectionData('file');
+        return ClientProxyFactory.create({
+          transport: Transport.TCP,
+          options: {
+            host: connection.host,
+            port: connection.port,
+          },
+        });
+      },
+    },
     ...services,
     ...validators,
     ...useCases,
     ...repositories,
     EmailAdapter,
     EmailManager,
-    IsValidConfirmCodePipe,
-    IsValidAndNotConfirmedCodePipe,
-    IsValidAndNotConfirmedRecoveryCodePipe,
+    ...pipes,
     ValidConfirmOrRecoveryCodeValidator,
     LocalAuthStrategy,
     JwtAccessAuthStrategy,

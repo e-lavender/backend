@@ -31,7 +31,7 @@ export class UsersRepository {
         confirmationInfo: { select: { confirmationCode: true } },
       },
     });
-    console.log(user);
+
     return new ResultDTO(InternalCode.Success, {
       userId: user.id,
       code: user.confirmationInfo.confirmationCode,
@@ -179,5 +179,27 @@ export class UsersRepository {
     if (!user) return new ResultDTO(InternalCode.NotFound);
 
     return new ResultDTO(InternalCode.Success, user);
+  }
+
+  async updateUserName(id: number, userName: string) {
+    await this.prisma.user.update({
+      where: { id },
+      data: { login: userName },
+    });
+
+    return new ResultDTO(InternalCode.Success);
+  }
+
+  async findByUserName(id: number, userName: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        login: userName,
+        NOT: { id: id },
+      },
+    });
+
+    if (user) return new ResultDTO(InternalCode.Internal_Server);
+
+    return new ResultDTO(InternalCode.Success);
   }
 }

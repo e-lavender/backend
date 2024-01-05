@@ -15,5 +15,7 @@ export const configModule = ConfigModule.forRoot({
     JWT_SECRET: Joi.string().required(),
     POSTGRES_DIRECT_URL: Joi.string().required(),
     POSTGRES_URL: Joi.string().required(),
+    FILE_SERVICE_HOST: Joi.string().required(),
+    FILE_SERVICE_PORT: Joi.number().required(),
   }),
 });

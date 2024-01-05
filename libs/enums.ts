@@ -16,3 +16,7 @@ export enum ApproachType {
   http = 'selectHttpException',
   qraphql = 'selectGraphQLExceptions',
 }
+
+export enum Services {
+  FileService = 'FILE_SERVICE',
+}

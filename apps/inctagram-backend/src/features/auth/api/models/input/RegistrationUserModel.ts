@@ -20,10 +20,17 @@ export class RegistrationUserModel {
   @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
   @IsUniqueLoginWithEmail()
   email: string;
-  @ApiProperty({ minimum: 6, maximum: 20 })
+  @ApiProperty({
+    minimum: 6,
+    maximum: 20,
+    pattern:
+      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[!"#$%&\'()*+,\\-.:;<=>?@[\\\\\\]^_`{|}~]).*$',
+  })
   @IsString()
   @Transform(({ value }) => value.trim())
-  @Matches('^[a-zA-Z0-9_-]*$')
+  @Matches(
+    '^(?=.*[a-z])(?=.*[A-Z])(?=.*[!"#$%&\'()*+,\\-.:;<=>?@[\\\\\\]^_`{|}~]).*$',
+  )
   @Length(6, 20)
   password: string;
 }

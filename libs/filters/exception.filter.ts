@@ -15,7 +15,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     response
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .send('Something went wrong');
+      .send(`Something went wrong: ${exception.toString()}`);
   }
 }
 

@@ -18,7 +18,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { RegistrationCommand } from '../application/use-cases/registration.use-case';
 import { ConfirmEmailCommand } from '../../users/application/use-cases/confirm-email.use-case';
 import { Response } from 'express';
-import { GlobalConfigService } from '../../../config/config.service';
+import { GlobalConfigService } from '../../../../config/config.service';
 import { ResendEmailConfirmationCommand } from '../application/use-cases/resend-email-confirmation.use-case';
 import { IsValidConfirmCodePipe } from '../../infrastructure/pipes/validConfirmCode.pipe';
 import { IsValidAndNotConfirmedCodePipe } from '../../infrastructure/pipes/validAndNotConfirmedCode.pipe';
@@ -48,12 +48,16 @@ import {
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { CookieOptions } from 'express-serve-static-core';
 
 @ApiTags('Auth')
 @Controller('auth')
+@UseGuards(ThrottlerGuard)
 export class AuthController extends ExceptionAndResponseHelper {
   constructor(
     private commandBus: CommandBus,
@@ -75,6 +79,9 @@ export class AuthController extends ExceptionAndResponseHelper {
     description:
       'If the inputModel has incorrect values (in particular if the user with the given email or login already exists)',
     schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -106,6 +113,9 @@ export class AuthController extends ExceptionAndResponseHelper {
     description:
       'If the confirmation code is incorrect, expired or already been applied',
     schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Get('registration-confirmation')
   async confirmRegistration(
@@ -149,6 +159,9 @@ export class AuthController extends ExceptionAndResponseHelper {
       'If the confirmation code is incorrect, expired or already been applied',
     schema: BAD_REQUEST_SCHEMA,
   })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Post('resend-code')
   @HttpCode(HttpStatus.NO_CONTENT)
   async resendCode(
@@ -173,6 +186,9 @@ export class AuthController extends ExceptionAndResponseHelper {
     description:
       'If the inputModel has invalid email (for example 222^gmail.com)',
     schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -202,6 +218,9 @@ export class AuthController extends ExceptionAndResponseHelper {
     description:
       'If the recovery code is incorrect, expired or already been used',
     schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Get('confirm-password-recovery')
   async confirmPasswordRecovery(
@@ -244,6 +263,9 @@ export class AuthController extends ExceptionAndResponseHelper {
       'If the inputModel has incorrect values(recovery code is incorrect, expired or not confirmed or password incorrect)',
     schema: BAD_REQUEST_SCHEMA,
   })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmRecoveryPassword(
@@ -275,11 +297,15 @@ export class AuthController extends ExceptionAndResponseHelper {
     schema: BAD_REQUEST_SCHEMA,
   })
   @ApiUnauthorizedResponse({ description: 'If the password or login is wrong' })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   async login(
     @Headers('user-agent') deviceName: string,
+    @Headers('origin') origin: string,
     @Body() inputModel: LoginModel,
     @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
@@ -289,10 +315,14 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(loginResult);
 
-    res.cookie('refreshToken', loginResult.payload.refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    const cookieOptions: CookieOptions = { secure: true };
+    if (!origin?.search('localhost')) {
+      cookieOptions.httpOnly = true;
+    } else {
+      cookieOptions.sameSite = 'none';
+    }
+
+    res.cookie('refreshToken', loginResult.payload.refreshToken, cookieOptions);
 
     return { accessToken: loginResult.payload.accessToken };
   }
@@ -315,12 +345,16 @@ export class AuthController extends ExceptionAndResponseHelper {
     description: 'If the refreshToken has incorrect or expired',
     schema: BAD_REQUEST_SCHEMA,
   })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Post('refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
   async refreshSession(
     @CurrentUserId() userId: number,
     @RefreshTokenPayload() refreshTokenPayload: RefreshToken,
+    @Headers('origin') origin: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ accessToken: string }> {
     const refreshResult = await this.commandBus.execute(
@@ -332,10 +366,18 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
     this.sendExceptionOrResponse(refreshResult);
 
-    res.cookie('refreshToken', refreshResult.payload.refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    const cookieOptions: CookieOptions = { secure: true };
+    if (!origin?.search('localhost')) {
+      cookieOptions.httpOnly = true;
+    } else {
+      cookieOptions.sameSite = 'none';
+    }
+
+    res.cookie(
+      'refreshToken',
+      refreshResult.payload.refreshToken,
+      cookieOptions,
+    );
 
     return { accessToken: refreshResult.payload.accessToken };
   }
@@ -344,6 +386,9 @@ export class AuthController extends ExceptionAndResponseHelper {
   @ApiBearerAuth()
   @ApiOkResponse({ type: ViewUserModel })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
+  })
   @Get('me')
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -362,6 +407,9 @@ export class AuthController extends ExceptionAndResponseHelper {
     description:
       'If the JWT refreshToken inside cookie is missing, expired or incorrect',
     schema: BAD_REQUEST_SCHEMA,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)

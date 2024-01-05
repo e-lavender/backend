@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { Prisma } from '@prisma/client';
-import { GlobalConfigService } from '../../../../config/config.service';
+import { GlobalConfigService } from '../../../../../config/config.service';
 import { genSalt, hash } from 'bcrypt';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { InternalCode } from '../../../../../../../libs/enums';
