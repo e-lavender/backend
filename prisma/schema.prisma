@@ -23,6 +23,7 @@ model User {
   passwordRecoveryInfo UserPasswordRecovery?
   Device               Device[]
   profile              Profile?
+  Avatar               Avatar[]
 
   @@unique([id, login])
   @@map("users")
@@ -38,6 +39,16 @@ model UserEmailConfirmation {
   @@map("users_email_confirmation")
 }
 
+model Avatar {
+  userId Int @id()
+  fileId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key    String
+
+  @@unique([userId,fileId,key])
+  @@map("avatars")
+}
+
 model UserPasswordRecovery {
   recoveryCode   String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
   expirationDate DateTime @db.Timestamp()
@@ -49,12 +60,12 @@ model UserPasswordRecovery {
 }
 
 model Device {
-  id         String @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
+  id         String   @id() @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
   ip         String
   deviceName String
   issuedAt   DateTime @db.Timestamp()
   userId     Int
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("devices")
 }

@@ -19,13 +19,15 @@ import {
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ExceptionAndResponseHelper } from '../../../../../../libs/core/exceptionAndResponse';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApproachType } from '../../../../../../libs/enums';
+import { ApproachType, InternalCode } from '../../../../../../libs/enums';
 import { JwtAccessAuthGuard } from '../../auth/guards/jwt-access-auth.guard';
 import { ProfileQueryRepository } from '../infrastructure/profile.query.repository';
 import { CurrentUserId } from '../../infrastructure/decorators/params/current-user-id.decorator';
 import { UpdateProfileModel } from './models/update.profile.model';
 import { UpdateProfileCommand } from '../application/use.cases/update.profile.use.case';
 import { ViewProfileModel } from './models/view.profile.model';
+import { AvatarQueryRepository } from '../../avatars/infrastructure/avatar-query.repository';
+import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -34,6 +36,7 @@ export class ProfileController extends ExceptionAndResponseHelper {
   constructor(
     private commandBus: CommandBus,
     private profileQueryRepository: ProfileQueryRepository,
+    private avatarQueryRepository: AvatarQueryRepository,
   ) {
     super(ApproachType.http);
   }
@@ -56,8 +59,15 @@ export class ProfileController extends ExceptionAndResponseHelper {
     const getProfileResult = await this.profileQueryRepository.getProfile(
       userId,
     );
+    const profile = this.sendExceptionOrResponse(getProfileResult);
 
-    return this.sendExceptionOrResponse(getProfileResult);
+    const avatarResult = await this.avatarQueryRepository.findAvatar(userId);
+
+    profile.avatarUrl = avatarResult.payload;
+
+    return this.sendExceptionOrResponse(
+      new ResultDTO(InternalCode.Success, profile),
+    );
   }
 
   @ApiOperation({

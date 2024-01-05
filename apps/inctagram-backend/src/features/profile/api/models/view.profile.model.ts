@@ -15,4 +15,6 @@ export class ViewProfileModel {
   country: string;
   @ApiProperty()
   aboutMe: string;
+  @ApiProperty()
+  avatarUrl?: string;
 }
