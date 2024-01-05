@@ -575,14 +575,28 @@ window.onload = function() {
           "operationId": "getMyPosts",
           "summary": "Get my posts",
           "description": "This endpoint is used to getting my posts.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
               "description": "",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/ViewPostModel"
+                    "$ref": "#/components/schemas/PaginationViewModel"
                   }
                 }
               }
@@ -955,6 +969,49 @@ window.onload = function() {
             "aboutMe"
           ]
         },
+        "PaginationViewModel": {
+          "type": "object",
+          "properties": {
+            "pagesCount": {
+              "type": "number"
+            },
+            "currentPage": {
+              "type": "number"
+            },
+            "pageSize": {
+              "type": "number"
+            },
+            "itemsCount": {
+              "type": "number"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "pagesCount",
+            "currentPage",
+            "pageSize",
+            "itemsCount",
+            "items"
+          ]
+        },
+        "CreatePostModel": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "minimum": 0,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "description"
+          ]
+        },
         "ViewPostModel": {
           "type": "object",
           "properties": {
@@ -972,19 +1029,6 @@ window.onload = function() {
             "id",
             "description",
             "createdAt"
-          ]
-        },
-        "CreatePostModel": {
-          "type": "object",
-          "properties": {
-            "description": {
-              "type": "string",
-              "minimum": 0,
-              "maximum": 500
-            }
-          },
-          "required": [
-            "description"
           ]
         },
         "UpdatePostModel": {

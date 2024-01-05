@@ -10,5 +10,5 @@ export class PaginationViewModel<T> {
   @ApiProperty()
   itemsCount: number;
   @ApiProperty()
-  items: T;
+  items: T[];
 }

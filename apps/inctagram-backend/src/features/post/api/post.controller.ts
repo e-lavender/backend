@@ -57,7 +57,7 @@ export class PostController extends ExceptionAndResponseHelper {
     description: 'This endpoint is used to getting my posts.',
   })
   @ApiBearerAuth()
-  @ApiOkResponse({ type: ViewPostModel })
+  @ApiOkResponse({ type: PaginationViewModel<ViewPostModel[]> })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiTooManyRequestsResponse({
     description: 'More than 5 attempts from one IP-address during 10 seconds',
@@ -67,7 +67,7 @@ export class PostController extends ExceptionAndResponseHelper {
   async getMyPosts(
     @CurrentUserId() userId: number,
     @Query() query: DefaultPaginationInput,
-  ): Promise<PaginationViewModel<ViewPostModel[]>> {
+  ): Promise<PaginationViewModel<ViewPostModel>> {
     const getPostsResult = await this.postQueryRepository.getPosts(
       userId,
       query,

@@ -2,24 +2,29 @@ import { SortDirection } from '../../../../../../../libs/enums';
 import { Transform } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 import { isNil } from '@nestjs/common/utils/shared.utils';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class DefaultPaginationInput {
+  @ApiPropertyOptional({ default: 'createdAt' })
   @IsString()
   @IsOptional()
   @Transform(({ value }) => {
     return !isNil(value) ? value : 'createdAt';
   })
   sortBy = 'createdAt';
+  @ApiPropertyOptional({ default: 'desc', enum: SortDirection })
   @IsOptional()
   @Transform(({ value }): SortDirection => {
     return value === SortDirection.asc ? SortDirection.asc : SortDirection.desc;
   })
   sortDirection: 'asc' | 'desc' = SortDirection.desc;
+  @ApiPropertyOptional({ default: 1 })
   @IsOptional()
   @Transform(({ value }): number => {
     return value < 1 || value % 1 !== 0 ? 1 : Number(value);
   })
   currentPage = 1;
+  @ApiPropertyOptional({ default: 8 })
   @IsOptional()
   @Transform(({ value }): number => {
     return value < 1 || value % 1 !== 0 ? 8 : Number(value);

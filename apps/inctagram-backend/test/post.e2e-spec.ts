@@ -98,11 +98,10 @@ describe('PostController (e2e)', () => {
       .get('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' });
 
-    console.log(getPostsResponse.body);
     expect(getPostsResponse).toBeDefined();
     expect(getPostsResponse.status).toEqual(HttpStatus.OK);
     expect(getPostsResponse.body).toEqual({
-      pagesCount: 1,
+      pagesCount: 0,
       currentPage: 1,
       pageSize: 8,
       itemsCount: 0,
@@ -191,7 +190,25 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  it('7 - PUT:post - 400 - 1st user try update description more 500 symbols', async () => {
+  it('7 - GET:post - 200 - 1st user get himself posts', async () => {
+    const { accessToken1, firstPost, secondPost } = expect.getState();
+
+    const getPostsResponse = await request(server)
+      .get('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' });
+
+    expect(getPostsResponse).toBeDefined();
+    expect(getPostsResponse.status).toEqual(HttpStatus.OK);
+    expect(getPostsResponse.body).toEqual({
+      pagesCount: 1,
+      currentPage: 1,
+      pageSize: 8,
+      itemsCount: 2,
+      items: [secondPost, firstPost],
+    });
+  });
+
+  it('8 - PUT:post - 400 - 1st user try update description more 500 symbols', async () => {
     const { accessToken1, firstPost, incorrectPostInput } = expect.getState();
 
     const updateFirstPostsResponse = await request(server)
@@ -213,12 +230,12 @@ describe('PostController (e2e)', () => {
       ],
     });
   });
-  it('8 - PUT:post - 200 - 1st user update 2 posts', async () => {
+  it('9 - PUT:post - 200 - 1st user update 2 posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
-    const firstPostInput = {
+    const updatedFirstPostInput = {
       description: 'updated_first_correct_description',
     };
-    const secondPostInput = {
+    const updatedSecondPostInput = {
       description: 'updated_second_correct_description',
     };
 
@@ -226,7 +243,7 @@ describe('PostController (e2e)', () => {
       .put(`/api/v1/post/${firstPost.id}`)
       .auth(accessToken1, { type: 'bearer' })
       .send({
-        description: firstPostInput.description,
+        description: updatedFirstPostInput.description,
       });
 
     expect(updateFirstPostsResponse).toBeDefined();
@@ -237,15 +254,47 @@ describe('PostController (e2e)', () => {
       .put(`/api/v1/post/${secondPost.id}`)
       .auth(accessToken1, { type: 'bearer' })
       .send({
-        description: secondPostInput.description,
+        description: updatedSecondPostInput.description,
       });
 
     expect(updateSecondPostsResponse).toBeDefined();
     expect(updateSecondPostsResponse.status).toEqual(HttpStatus.NO_CONTENT);
     expect(updateSecondPostsResponse.body).toEqual({});
+
+    expect.setState({
+      updatedFirstPostInput,
+      updatedSecondPostInput,
+    });
   });
 
-  it('9 - DELETE:post - 200 - 1st user delete 2 posts', async () => {
+  it('10 - GET:post - 200 - 1st user get himself posts', async () => {
+    const {
+      accessToken1,
+      firstPost,
+      secondPost,
+      updatedFirstPostInput,
+      updatedSecondPostInput,
+    } = expect.getState();
+
+    const getPostsResponse = await request(server)
+      .get('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' });
+
+    expect(getPostsResponse).toBeDefined();
+    expect(getPostsResponse.status).toEqual(HttpStatus.OK);
+    expect(getPostsResponse.body).toEqual({
+      pagesCount: 1,
+      currentPage: 1,
+      pageSize: 8,
+      itemsCount: 2,
+      items: [
+        { ...secondPost, description: updatedSecondPostInput.description },
+        { ...firstPost, description: updatedFirstPostInput.description },
+      ],
+    });
+  });
+
+  it('11 - DELETE:post - 200 - 1st user delete 2 posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
 
     const deleteFirstPostResponse = await request(server)

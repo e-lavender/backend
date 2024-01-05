@@ -23,10 +23,11 @@ export class PostQueryRepository {
   async getPosts(
     userId: number,
     query: DefaultPaginationInput,
-  ): Promise<ResultDTO<PaginationViewModel<ViewPostModel[]>>> {
+  ): Promise<ResultDTO<PaginationViewModel<ViewPostModel>>> {
+    query = new DefaultPaginationInput();
+
     const posts = await this.prisma.post.findMany({
-      skip: 0,
-      // skip: query.skip(),
+      skip: query.skip(),
       take: query.pageSize,
       where: { userId },
       orderBy: {
@@ -41,11 +42,9 @@ export class PostQueryRepository {
       },
       where: { userId: userId },
     });
-    console.log({ repo_itemsCount: postsCount });
-
     const viewPosts = posts.map((p: Post) => this._mapDbToView(p));
 
-    const paginationPosts: PaginationViewModel<ViewPostModel[]> = {
+    const paginationPosts: PaginationViewModel<ViewPostModel> = {
       pagesCount: query.pagesCount(postsCount),
       currentPage: query.currentPage,
       pageSize: query.pageSize,
