@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_NAME
+  namespace: NAMESPACE
+  labels:
+    app: PROJECT
+spec:
+  selector:
+    matchLabels:
+      project: PROJECT
+  template:
+    metadata:
+      namespace: NAMESPACE
+      labels:
+        project: PROJECT
+    spec:
+      containers:
+         - name: PROJECT
+           image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
+           ports:
+             - containerPort: PORT_CONTAINER
+
+           env:
+             - name: FILE_SERVICE_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-files-service-production-config-secret
+                   key: FILE_SERVICE_PORT
+             - name: S3_ACCESS_KEY_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-files-service-production-config-secret
+                   key: S3_ACCESS_KEY_ID
+             - name: S3_SECRET_ACCESS_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-files-service-production-config-secret
+                   key: S3_SECRET_ACCESS_KEY
+             - name: MONGODB_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-files-service-production-config-secret
+                   key: MONGODB_URL
+             - name: FILE_SERVICE_HOST
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-files-service-production-config-secret
+                   key: FILE_SERVICE_HOST
