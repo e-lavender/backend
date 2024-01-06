@@ -23,6 +23,7 @@ model User {
   passwordRecoveryInfo UserPasswordRecovery?
   Device               Device[]
   profile              Profile?
+  post                 Post[]
 
   @@unique([id, login])
   @@map("users")
@@ -49,12 +50,12 @@ model UserPasswordRecovery {
 }
 
 model Device {
-  id         String @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
+  id         String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
   ip         String
   deviceName String
   issuedAt   DateTime @db.Timestamp()
   userId     Int
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("devices")
 }
@@ -72,4 +73,14 @@ model Profile {
 
   @@unique([userId, userName])
   @@map("profile")
+}
+
+model Post {
+  id          String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamp()
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+
+  @@map("post")
 }

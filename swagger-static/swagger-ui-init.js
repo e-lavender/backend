@@ -569,6 +569,224 @@ window.onload = function() {
             }
           }
         }
+      },
+      "/api/v1/post": {
+        "get": {
+          "operationId": "getMyPosts",
+          "summary": "Get my posts",
+          "description": "This endpoint is used to getting my posts.",
+          "parameters": [
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PaginationViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Post"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "post": {
+          "operationId": "createPost",
+          "summary": "Create post",
+          "description": "This endpoint is used to create new post.",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePostModel"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ViewPostModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "example": {
+                      "errorsMessages": [
+                        {
+                          "message": "string",
+                          "field": "string"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Post"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
+      "/api/v1/post/{id}": {
+        "put": {
+          "operationId": "updatePost",
+          "summary": "Update post",
+          "description": "This endpoint is used to update exists post.",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePostModel"
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": "Input data is accepted. Post have updated"
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "example": {
+                      "errorsMessages": [
+                        {
+                          "message": "string",
+                          "field": "string"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "It is not your post"
+            },
+            "404": {
+              "description": "Post not found"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Post"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "delete": {
+          "operationId": "deletePost",
+          "summary": "Delete post",
+          "description": "This endpoint is used to delete exists post.",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Post have deleted"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "It is not your post"
+            },
+            "404": {
+              "description": "Post not found"
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Post"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
       }
     },
     "info": {
@@ -749,6 +967,81 @@ window.onload = function() {
             "city",
             "country",
             "aboutMe"
+          ]
+        },
+        "PaginationViewModel": {
+          "type": "object",
+          "properties": {
+            "pagesCount": {
+              "type": "number"
+            },
+            "currentPage": {
+              "type": "number"
+            },
+            "pageSize": {
+              "type": "number"
+            },
+            "itemsCount": {
+              "type": "number"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "pagesCount",
+            "currentPage",
+            "pageSize",
+            "itemsCount",
+            "items"
+          ]
+        },
+        "CreatePostModel": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "minimum": 0,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "description"
+          ]
+        },
+        "ViewPostModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "description",
+            "createdAt"
+          ]
+        },
+        "UpdatePostModel": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "minimum": 0,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "description"
           ]
         }
       }

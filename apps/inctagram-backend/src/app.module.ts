@@ -45,12 +45,22 @@ import { UpdateProfileUseCase } from './features/profile/application/use.cases/u
 import { AvatarController } from './features/avatars/api/avatar.controller';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { Services } from '../../../libs/enums';
+import { PostRepository } from './features/post/infrastructure/post.repository';
+import { PostQueryRepository } from './features/post/infrastructure/post.query.repository';
+import { CreatePostUseCase } from './features/post/application/create.post.use.case';
+import { UpdatePostUseCase } from './features/post/application/update.post.use.case';
+import { DeletePostUseCase } from './features/post/application/delete.post.use.case';
+import { PostController } from './features/post/api/post.controller';
 
 const services = [GlobalConfigService, PrismaService];
 
 const validators = [UniqueLoginAndEmailValidator];
 
 const useCases = [
+  CreatePostUseCase,
+  UpdatePostUseCase,
+  DeletePostUseCase,
+
   CreateProfileUseCase,
   UpdateProfileUseCase,
   RegistrationUseCase,
@@ -83,6 +93,8 @@ const repositories = [
   UsersQueryRepository,
   ProfileRepository,
   ProfileQueryRepository,
+  PostRepository,
+  PostQueryRepository,
 ];
 
 @Module({
@@ -100,7 +112,12 @@ const repositories = [
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
   ],
-  controllers: [AuthController, ProfileController, AvatarController],
+  controllers: [
+    AuthController,
+    ProfileController,
+    AvatarController,
+    PostController,
+  ],
   providers: [
     {
       provide: Services.FileService,
