@@ -1,7 +1,5 @@
-import { configModule } from '../config/config.module';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { GlobalConfigService } from '../config/config.service';
 import { UniqueLoginAndEmailValidator } from './features/infrastructure/decorators/validators/uniqueLoginAndEmail.validator';
 import { RegistrationUseCase } from './features/auth/application/use-cases/registration.use-case';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -45,10 +43,8 @@ import { UpdateProfileUseCase } from './features/profile/application/use.cases/u
 import { AvatarController } from './features/avatars/api/avatar.controller';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { Services } from '../../../libs/enums';
-import { SaveAvatarUseCase } from './features/avatars/application/use-cases/save-avatar.use-case';
-import { AvatarRepository } from './features/avatars/infrastructure/avatar.repository';
-import { AvatarQueryRepository } from './features/avatars/infrastructure/avatar-query.repository';
-import { DeleteAvatarUseCase } from './features/avatars/application/use-cases/delete-avatar.use-case';
+import { configModule } from '../config/config.module';
+import { GlobalConfigService } from '../config/config.service';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -73,8 +69,6 @@ const useCases = [
   UpdateSessionUseCase,
   LogoutUseCase,
   DeleteDeviceUseCase,
-  SaveAvatarUseCase,
-  DeleteAvatarUseCase,
 ];
 
 const pipes = [
@@ -89,8 +83,6 @@ const repositories = [
   UsersQueryRepository,
   ProfileRepository,
   ProfileQueryRepository,
-  AvatarRepository,
-  AvatarQueryRepository,
 ];
 
 @Module({

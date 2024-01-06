@@ -24,6 +24,7 @@ model User {
   Device               Device[]
   profile              Profile?
   Avatar               Avatar[]
+  post                 Post[]
 
   @@unique([id, login])
   @@map("users")
@@ -83,4 +84,14 @@ model Profile {
 
   @@unique([userId, userName])
   @@map("profile")
+}
+
+model Post {
+  id          String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamp()
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+
+  @@map("post")
 }
