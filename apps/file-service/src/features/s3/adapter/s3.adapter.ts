@@ -1,4 +1,9 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -18,22 +23,42 @@ export class S3Adapter {
     });
   }
 
-  async saveAvatar(userId: number, originalName: string, buffer: Buffer) {
+  async saveAvatar(
+    userId: number,
+    buffer: Buffer,
+    mimetype: string,
+  ): Promise<{ key: string; data: PutObjectCommandOutput }> {
     const key = `content/users/${userId}/avatars/${userId}_avatar.png`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
       Key: key,
       Body: buffer,
-      ContentType: 'image/png',
+      ContentType: mimetype,
     };
 
     const command = new PutObjectCommand(bucketParams);
 
     try {
       const uploadResult = await this.s3Client.send(command);
-      console.log('Result Upload: ', uploadResult);
-      return true;
+      return { key, data: uploadResult };
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async deleteAvatar(userId: number): Promise<any> {
+    const key = `content/users/${userId}/avatars/${userId}_avatar.png`;
+
+    const bucketParams = {
+      Bucket: 'inctagram1',
+      Key: key,
+    };
+
+    const command = new DeleteObjectCommand(bucketParams);
+
+    try {
+      return await this.s3Client.send(command);
     } catch (e) {
       console.error(e);
     }

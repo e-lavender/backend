@@ -62,6 +62,16 @@ spec:
                  secretKeyRef:
                    name: fm-incta-back-production-config-secret
                    key: GMAIL_PASS
+             - name: FILE_SERVICE_HOST
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: FILE_SERVICE_HOST
+             - name: FILE_SERVICE_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: fm-incta-back-production-config-secret
+                   key: FILE_SERVICE_PORT
              - name: POSTGRES_DIRECT_URL
                valueFrom:
                  secretKeyRef:
