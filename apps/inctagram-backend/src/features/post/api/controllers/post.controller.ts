@@ -1,5 +1,5 @@
-import { ExceptionAndResponseHelper } from '../../../../../../libs/core/exceptionAndResponse';
-import { ApproachType } from '../../../../../../libs/enums';
+import { ExceptionAndResponseHelper } from '../../../../../../../libs/core/exceptionAndResponse';
+import { ApproachType } from '../../../../../../../libs/enums';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   Body,
@@ -14,7 +14,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUserId } from '../../infrastructure/decorators/params/current-user-id.decorator';
+import { CurrentUserId } from '../../../infrastructure/decorators/params/current-user-id.decorator';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -29,17 +29,17 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { JwtAccessAuthGuard } from '../../auth/guards/jwt-access-auth.guard';
-import { CreatePostCommand } from '../application/create.post.use.case';
-import { CreatePostModel } from './models/create.post.model';
-import { ViewPostModel } from './models/view.post.model';
-import { UpdatePostModel } from './models/update.post.model';
-import { PostQueryRepository } from '../infrastructure/post.query.repository';
-import { UpdatePostCommand } from '../application/update.post.use.case';
-import { DeletePostCommand } from '../application/delete.post.use.case';
-import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
-import { DefaultPaginationInput } from './pagination/pagination.input.model';
-import { PaginationViewModel } from './pagination/pagination.view.model';
+import { JwtAccessAuthGuard } from '../../../auth/guards/jwt-access-auth.guard';
+import { CreatePostCommand } from '../../application/create.post.use.case';
+import { CreatePostModel } from '../models/create.post.model';
+import { ViewPostModel } from '../models/view.post.model';
+import { UpdatePostModel } from '../models/update.post.model';
+import { PostQueryRepository } from '../../infrastructure/post.query.repository';
+import { UpdatePostCommand } from '../../application/update.post.use.case';
+import { DeletePostCommand } from '../../application/delete.post.use.case';
+import { BAD_REQUEST_SCHEMA } from '../../../../../../../libs/swagger/schemas/bad-request.schema';
+import { DefaultPaginationInput } from '../pagination/pagination.input.model';
+import { PaginationViewModel } from '../pagination/pagination.view.model';
 
 @ApiTags('Post')
 @Controller('post')

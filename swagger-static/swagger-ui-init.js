@@ -559,6 +559,57 @@ window.onload = function() {
           ]
         }
       },
+      "/api/v1/public/profile/{userName}": {
+        "get": {
+          "operationId": "getPublicProfile",
+          "summary": "Get public profile",
+          "description": "This endpoint is used to getting public profile by link",
+          "parameters": [
+            {
+              "name": "userName",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublicViewProfileModel"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": ""
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Public"
+          ]
+        }
+      },
       "/api/v1/avatar": {
         "get": {
           "operationId": "getAvatar",
@@ -1065,6 +1116,37 @@ window.onload = function() {
             "pageSize",
             "itemsCount",
             "items"
+          ]
+        },
+        "PublicViewProfileModel": {
+          "type": "object",
+          "properties": {
+            "userName": {
+              "type": "string"
+            },
+            "following": {
+              "type": "number"
+            },
+            "followers": {
+              "type": "number"
+            },
+            "postsCount": {
+              "type": "number"
+            },
+            "aboutMe": {
+              "type": "string"
+            },
+            "posts": {
+              "$ref": "#/components/schemas/PaginationViewModel"
+            }
+          },
+          "required": [
+            "userName",
+            "following",
+            "followers",
+            "postsCount",
+            "aboutMe",
+            "posts"
           ]
         },
         "CreatePostModel": {

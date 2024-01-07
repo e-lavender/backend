@@ -289,16 +289,15 @@ describe('ProfileController (e2e)', () => {
   });
 
   // тесты на работу с аватаром
-  it('12 - GET:avatar - 200 - no avatar yet', async () => {
+  it('12 - GET:avatar - 404 - no avatar yet', async () => {
     const { accessToken1 } = expect.getState();
 
     const getAvatar = await request(server)
       .get('/api/v1/avatar')
       .auth(accessToken1, { type: 'bearer' });
 
-    console.log({ t_12: getAvatar.body.errorsMessages });
     expect(getAvatar).toBeDefined();
-    expect(getAvatar.status).toEqual(HttpStatus.OK);
+    expect(getAvatar.status).toEqual(HttpStatus.NOT_FOUND);
     expect(getAvatar.body).toEqual({});
   });
   it('13 - PUT:avatar - 204 - create avatar', async () => {
