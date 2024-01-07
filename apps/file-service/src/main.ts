@@ -5,12 +5,11 @@ import {
   TcpOptions,
   Transport,
 } from '@nestjs/microservices';
-import { getConfiguration } from '../../config/configuration';
+import { getConfiguration } from '../config/configuration';
 
 async function bootstrap() {
   const config = getConfiguration();
   //TODO Добавить сюда специальный для микросервиса эксепшен
-  //TODO Решить вопрос с сваггером здесь
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     FileServiceModule,
     {

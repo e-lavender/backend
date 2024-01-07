@@ -1,4 +1,4 @@
-import { GlobalConfigService } from '../../config/config.service';
+import { GlobalConfigService } from '../config/config.service';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { appSettings } from '../../../libs/core/app.settings';
