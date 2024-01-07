@@ -21,11 +21,13 @@ export class AvatarRepository {
   }
 
   async deleteAvatar(userId: number): Promise<ResultDTO<Avatar>> {
-    const deletedAvatar = await this.prisma.avatar.delete({
-      where: { userId },
-    });
-    if (!deletedAvatar) return new ResultDTO(InternalCode.NotFound);
-
-    return new ResultDTO(InternalCode.Success, deletedAvatar);
+    try {
+      const deletedAvatar = await this.prisma.avatar.delete({
+        where: { userId },
+      });
+      return new ResultDTO(InternalCode.Success, deletedAvatar);
+    } catch (e) {
+      return new ResultDTO(InternalCode.NotFound);
+    }
   }
 }

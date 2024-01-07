@@ -63,7 +63,7 @@ export class ProfileController extends ExceptionAndResponseHelper {
 
     const avatarResult = await this.avatarQueryRepository.findAvatar(userId);
 
-    profile.avatarUrl = avatarResult.payload.avatarUrl;
+    profile.avatarUrl = avatarResult.payload?.avatarUrl ?? null;
 
     return this.sendExceptionOrResponse(
       new ResultDTO(InternalCode.Success, profile),
