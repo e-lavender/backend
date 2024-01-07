@@ -18,7 +18,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { RegistrationCommand } from '../application/use-cases/registration.use-case';
 import { ConfirmEmailCommand } from '../../users/application/use-cases/confirm-email.use-case';
 import { Response } from 'express';
-import { GlobalConfigService } from '../../../../../config/config.service';
+import { GlobalConfigService } from '../../../../config/config.service';
 import { ResendEmailConfirmationCommand } from '../application/use-cases/resend-email-confirmation.use-case';
 import { IsValidConfirmCodePipe } from '../../infrastructure/pipes/validConfirmCode.pipe';
 import { IsValidAndNotConfirmedCodePipe } from '../../infrastructure/pipes/validAndNotConfirmedCode.pipe';

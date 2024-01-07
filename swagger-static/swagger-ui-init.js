@@ -559,15 +559,79 @@ window.onload = function() {
           ]
         }
       },
-      "/api/v1/avatar/upload": {
-        "post": {
-          "operationId": "uploadAvatar",
+      "/api/v1/avatar": {
+        "get": {
+          "operationId": "getAvatar",
+          "summary": "Get avatar",
           "parameters": [],
           "responses": {
-            "201": {
+            "200": {
               "description": ""
             }
-          }
+          },
+          "tags": [
+            "Avatar"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "delete": {
+          "operationId": "deleteAvatar",
+          "summary": "Delete avatar",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "Avatar"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
+      "/api/v1/avatar/upload": {
+        "put": {
+          "operationId": "uploadAvatar",
+          "summary": "Upload avatar",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "description": "Avatar Img",
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "avatar": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": "Img is accepted."
+            }
+          },
+          "tags": [
+            "Avatar"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
         }
       },
       "/api/v1/post": {
@@ -909,6 +973,9 @@ window.onload = function() {
             },
             "aboutMe": {
               "type": "string"
+            },
+            "avatarUrl": {
+              "type": "string"
             }
           },
           "required": [
@@ -918,7 +985,8 @@ window.onload = function() {
             "dateOfBirth",
             "city",
             "country",
-            "aboutMe"
+            "aboutMe",
+            "avatarUrl"
           ]
         },
         "UpdateProfileModel": {
