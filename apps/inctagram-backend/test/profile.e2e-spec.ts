@@ -41,11 +41,20 @@ describe('ProfileController (e2e)', () => {
     // const registerFirstUserResponse = await request(server)
     //   .post('/api/v1/auth/registration')
     //   .send({
+    //     login: firstUser.login,
+    //     email: firstUser.email,
+    //     password: firstUser.password,
+    //   });
+    // expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
+    //
+    // const registerSecondUserResponse = await request(server)
+    //   .post('/api/v1/auth/registration')
+    //   .send({
     //     login: secondUser.login,
     //     email: secondUser.email,
     //     password: secondUser.password,
     //   });
-    // expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
+    // expect(registerSecondUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
 
     expect.setState({ firstUser, secondUser });
   });
@@ -187,7 +196,6 @@ describe('ProfileController (e2e)', () => {
         aboutMe: correctUpdateFirstProfile.aboutMe,
       });
 
-    // console.log({ t_8: registerFirstUserResponse.body.errorsMessages });
     expect(registerFirstUserResponse).toBeDefined();
     expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
 
@@ -230,13 +238,13 @@ describe('ProfileController (e2e)', () => {
         aboutMe: '',
       });
 
-    // console.log({ t_10: updateFirstUserProfile.body.errorsMessages });
     expect(updateFirstUserProfile).toBeDefined();
     expect(updateFirstUserProfile.status).toEqual(HttpStatus.NO_CONTENT);
 
     const getFirstUserProfile = await request(server)
       .get('/api/v1/profile')
       .auth(accessToken1, { type: 'bearer' });
+
     expect(getFirstUserProfile.status).toEqual(HttpStatus.OK);
     expect(getFirstUserProfile.body).toEqual({
       userName: 'otherUserName',
@@ -315,4 +323,6 @@ describe('ProfileController (e2e)', () => {
     expect(createAvatar.status).toEqual(HttpStatus.OK);
     expect(createAvatar.body).toEqual({});
   });
+
+  // тесты на публияный просмотр профиля
 });

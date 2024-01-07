@@ -16,7 +16,10 @@ export class PublicProfileQueryRepository {
     private postQueryRepository: PostQueryRepository,
   ) {}
 
-  async getPublicProfile(userName: string, query: DefaultPaginationInput) {
+  async getPublicProfile(
+    userName: string,
+    query: DefaultPaginationInput,
+  ): Promise<ResultDTO<PublicViewProfileModel>> {
     const profile = await this.prisma.profile.findFirst({
       where: { userName: userName },
     });
@@ -42,7 +45,7 @@ export class PublicProfileQueryRepository {
       userName: profile.userName,
       following: 0,
       followers: 0,
-      postsCount: 0,
+      postsCount: posts.payload.itemsCount,
       aboutMe: profile.aboutMe,
       posts: posts.payload,
     };

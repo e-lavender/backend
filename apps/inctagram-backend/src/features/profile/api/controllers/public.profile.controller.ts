@@ -49,7 +49,7 @@ export class PublicProfileController extends ExceptionAndResponseHelper {
     );
 
     return this.sendExceptionOrResponse(
-      new ResultDTO(InternalCode.Success, getProfileResult),
+      new ResultDTO(InternalCode.Success, getProfileResult.payload),
     );
   }
 }
