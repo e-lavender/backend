@@ -1219,6 +1219,25 @@ window.onload = function() {
             "aboutMe"
           ]
         },
+        "ViewPostModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "description",
+            "createdAt"
+          ]
+        },
         "PaginationViewModel": {
           "type": "object",
           "properties": {
@@ -1237,7 +1256,7 @@ window.onload = function() {
             "items": {
               "type": "array",
               "items": {
-                "type": "string"
+                "$ref": "#/components/schemas/ViewPostModel"
               }
             }
           },
@@ -1291,25 +1310,6 @@ window.onload = function() {
           },
           "required": [
             "description"
-          ]
-        },
-        "ViewPostModel": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "createdAt": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "description",
-            "createdAt"
           ]
         },
         "UpdatePostModel": {
