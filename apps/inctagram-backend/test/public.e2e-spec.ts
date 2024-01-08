@@ -174,7 +174,6 @@ describe('PublicProfileAndPostController (e2e)', () => {
       `/api/v1/public/profile/${firstUser.login}`,
     );
 
-    console.log({ t_14: getFirstUserPublicProfile.body });
     expect(getFirstUserPublicProfile).toBeDefined();
     expect(getFirstUserPublicProfile.status).toEqual(HttpStatus.OK);
     expect(getFirstUserPublicProfile.body).toEqual({
@@ -190,6 +189,54 @@ describe('PublicProfileAndPostController (e2e)', () => {
         itemsCount: 2,
         items: [secondPost, firstPost],
       },
+    });
+  });
+  it('6 - GET:public/post/:postId - 200 - get public post by link', async () => {
+    const { firstUser, firstPost, secondPost } = expect.getState();
+
+    const getFirstPublicPost = await request(server).get(
+      `/api/v1/public/posts/${firstPost.id}`,
+    );
+
+    expect(getFirstPublicPost).toBeDefined();
+    expect(getFirstPublicPost.status).toEqual(HttpStatus.OK);
+    expect(getFirstPublicPost.body).toEqual({
+      userName: firstUser.login,
+      photoUrl: expect.any(String),
+      description: firstPost.description,
+      comments: [],
+    });
+
+    const getSecondPublicPost = await request(server).get(
+      `/api/v1/public/posts/${secondPost.id}`,
+    );
+
+    expect(getSecondPublicPost).toBeDefined();
+    expect(getSecondPublicPost.status).toEqual(HttpStatus.OK);
+    expect(getSecondPublicPost.body).toEqual({
+      userName: firstUser.login,
+      photoUrl: expect.any(String),
+      description: secondPost.description,
+      comments: [],
+    });
+
+    expect.setState({
+      firstPublicPost: getFirstPublicPost.body,
+      secondPublicPost: getSecondPublicPost.body,
+    });
+  });
+
+  it('7 - GET:public/posts - 200 - get public profile by link', async () => {
+    const { secondPublicPost, firstPublicPost } = expect.getState();
+
+    const getPublicMainPage = await request(server).get('/api/v1/public/posts');
+
+    // console.log({ t_7: getPublicMainPage.body });
+    expect(getPublicMainPage).toBeDefined();
+    expect(getPublicMainPage.status).toEqual(HttpStatus.OK);
+    expect(getPublicMainPage.body).toEqual({
+      usersCount: 2,
+      lastPosts: [secondPublicPost, firstPublicPost],
     });
   });
 });

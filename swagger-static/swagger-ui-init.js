@@ -74,6 +74,9 @@ window.onload = function() {
             }
           ],
           "responses": {
+            "200": {
+              "description": ""
+            },
             "204": {
               "description": "Email was verified. Account was activated"
             },
@@ -213,6 +216,9 @@ window.onload = function() {
             }
           ],
           "responses": {
+            "200": {
+              "description": ""
+            },
             "204": {
               "description": "Email was verified."
             },
@@ -574,6 +580,15 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": false,
               "in": "query",
@@ -584,6 +599,24 @@ window.onload = function() {
                   "desc"
                 ],
                 "type": "string"
+              }
+            },
+            {
+              "name": "currentPage",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 8,
+                "type": "number"
               }
             }
           ],
@@ -617,7 +650,14 @@ window.onload = function() {
           "parameters": [],
           "responses": {
             "200": {
-              "description": ""
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           },
           "tags": [
@@ -671,6 +711,9 @@ window.onload = function() {
             }
           },
           "responses": {
+            "200": {
+              "description": ""
+            },
             "204": {
               "description": "Img is accepted."
             }
@@ -692,6 +735,15 @@ window.onload = function() {
           "description": "This endpoint is used to getting my posts.",
           "parameters": [
             {
+              "name": "sortBy",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": false,
               "in": "query",
@@ -702,6 +754,24 @@ window.onload = function() {
                   "desc"
                 ],
                 "type": "string"
+              }
+            },
+            {
+              "name": "currentPage",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 8,
+                "type": "number"
               }
             }
           ],
@@ -900,6 +970,67 @@ window.onload = function() {
             {
               "bearer": []
             }
+          ]
+        }
+      },
+      "/api/v1/public/posts": {
+        "get": {
+          "operationId": "getPublicPosts",
+          "summary": "Get public posts",
+          "description": "This endpoint is used to viewing public posts on the main page",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublicViewMainPageModel"
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "Public"
+          ]
+        }
+      },
+      "/api/v1/public/posts/{id}": {
+        "get": {
+          "operationId": "getPublicPost",
+          "summary": "Get public post by id",
+          "description": "This endpoint is used to viewing public post by the link",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublicViewPostModel"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": ""
+            },
+            "429": {
+              "description": "More than 5 attempts from one IP-address during 10 seconds"
+            }
+          },
+          "tags": [
+            "Public"
           ]
         }
       }
@@ -1192,6 +1323,50 @@ window.onload = function() {
           },
           "required": [
             "description"
+          ]
+        },
+        "PublicViewPostModel": {
+          "type": "object",
+          "properties": {
+            "userName": {
+              "type": "string"
+            },
+            "photoUrl": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "comments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "userName",
+            "photoUrl",
+            "description",
+            "comments"
+          ]
+        },
+        "PublicViewMainPageModel": {
+          "type": "object",
+          "properties": {
+            "usersCount": {
+              "type": "number"
+            },
+            "lastPosts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PublicViewPostModel"
+              }
+            }
+          },
+          "required": [
+            "usersCount",
+            "lastPosts"
           ]
         }
       }

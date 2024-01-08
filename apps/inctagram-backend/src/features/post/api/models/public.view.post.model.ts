@@ -8,5 +8,5 @@ export class PublicViewPostModel {
   @ApiProperty()
   description: string;
   @ApiProperty()
-  comments: [];
+  comments: any[];
 }

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ViewPostModel } from './view.post.model';
+import { PublicViewPostModel } from './public.view.post.model';
 
 export class PublicViewMainPageModel {
-  @ApiProperty()
+  @ApiProperty({ type: 'number' })
   usersCount: number;
-  @ApiProperty()
-  lastPosts: ViewPostModel;
+  @ApiProperty({ type: [PublicViewPostModel] })
+  lastPosts: PublicViewPostModel[];
 }

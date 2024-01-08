@@ -6,7 +6,10 @@ import { Post } from '@prisma/client';
 import { ViewProfileModel } from '../../profile/api/models/view.profile.model';
 import { PublicViewPostModel } from '../api/models/public.view.post.model';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
+import { PublicViewMainPageModel } from '../api/models/public.view.main.page.model';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PublicPostQueryRepository {
   constructor(
     private prisma: PrismaService,
@@ -28,7 +31,7 @@ export class PublicPostQueryRepository {
     );
   }
 
-  async getLastPublicPosts() {
+  async getLastPublicPosts(): Promise<ResultDTO<PublicViewMainPageModel>> {
     const posts = await this.prisma.post.findMany({
       skip: 0,
       take: 4,
@@ -38,16 +41,30 @@ export class PublicPostQueryRepository {
     });
     if (!posts) return new ResultDTO(InternalCode.NotFound);
 
-    const publicViewPosts = posts.map(async (p) => {
-      return {
-        userName: await this.prisma.profile.findUnique({
+    // const posts = await this.prisma.$queryRaw<PublicViewPostModel>`
+    // select pr."userName", p.description, p.id as "photoUrl"
+    // from post p
+    // left join profile pr
+    // on p."userId" = pr."userId"
+    // order by "createdAt" desc
+    // limit '4'
+    // offset '0'
+    // `;
+
+    const publicViewPosts: PublicViewPostModel[] = await Promise.all(
+      posts.map(async (p) => {
+        const names = await this.prisma.profile.findUnique({
           where: { userId: p.userId },
-        }),
-        photoUrl: 'post.photoUrl',
-        description: p.description,
-        comments: [],
-      };
-    });
+          select: { userName: true },
+        });
+        return {
+          userName: names.userName,
+          photoUrl: 'post.photoUrl',
+          description: p.description,
+          comments: [],
+        };
+      }),
+    );
 
     const usersCount = await this.usersQueryRepository.usersCount();
 

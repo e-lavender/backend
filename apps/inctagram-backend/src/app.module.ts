@@ -57,6 +57,8 @@ import { AvatarQueryRepository } from './features/avatars/infrastructure/avatar-
 import { DeleteAvatarUseCase } from './features/avatars/application/use-cases/delete-avatar.use-case';
 import { PublicProfileController } from './features/profile/api/controllers/public.profile.controller';
 import { PublicProfileQueryRepository } from './features/profile/infrastructure/public.profile.query.repository';
+import { PublicPostController } from './features/post/api/controllers/public.post.controller';
+import { PublicPostQueryRepository } from './features/post/infrastructure/public.post.query.repository';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -105,6 +107,7 @@ const repositories = [
   AvatarRepository,
   AvatarQueryRepository,
   PublicProfileQueryRepository,
+  PublicPostQueryRepository,
 ];
 
 @Module({
@@ -128,6 +131,7 @@ const repositories = [
     PublicProfileController,
     AvatarController,
     PostController,
+    PublicPostController,
   ],
   providers: [
     {

@@ -52,6 +52,7 @@ export class PostController extends ExceptionAndResponseHelper {
     super(ApproachType.http);
   }
 
+  //todo - эндпоинт должен быть универсальным для публичного и приватного доступа
   @ApiOperation({
     summary: 'Get my posts',
     description: 'This endpoint is used to getting my posts.',

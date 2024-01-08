@@ -28,12 +28,12 @@ export class PublicPostController extends ExceptionAndResponseHelper {
   @ApiOkResponse({ type: PublicViewMainPageModel })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPublicPosts(): Promise<PublicViewPostModel> {
+  async getPublicPosts(): Promise<PublicViewMainPageModel> {
     const getPostsResult =
       await this.publicPostQueryRepository.getLastPublicPosts();
 
     return this.sendExceptionOrResponse(
-      new ResultDTO(InternalCode.Success, getPostsResult),
+      new ResultDTO(InternalCode.Success, getPostsResult.payload),
     );
   }
 
@@ -56,7 +56,7 @@ export class PublicPostController extends ExceptionAndResponseHelper {
     );
 
     return this.sendExceptionOrResponse(
-      new ResultDTO(InternalCode.Success, getPostResult),
+      new ResultDTO(InternalCode.Success, getPostResult.payload),
     );
   }
 }
