@@ -7,6 +7,7 @@ import { InternalCode } from '../../../../../../libs/enums';
 @Injectable()
 export class AvatarRepository {
   constructor(private prisma: PrismaService) {}
+
   async createOrUpdateAvatar(
     data: Prisma.AvatarUncheckedCreateInput,
   ): Promise<ResultDTO<null>> {

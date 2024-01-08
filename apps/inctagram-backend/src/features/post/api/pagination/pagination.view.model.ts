@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ViewPostModel } from '../models/view.post.model';
 
 export class PaginationViewModel<T> {
   @ApiProperty()
@@ -9,6 +10,6 @@ export class PaginationViewModel<T> {
   pageSize: number;
   @ApiProperty()
   itemsCount: number;
-  @ApiProperty()
+  @ApiProperty({ type: [ViewPostModel] })
   items: T[];
 }
