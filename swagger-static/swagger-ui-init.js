@@ -632,7 +632,7 @@ window.onload = function() {
               }
             },
             "404": {
-              "description": ""
+              "description": "Profile not found"
             },
             "429": {
               "description": "More than 5 attempts from one IP-address during 10 seconds"
@@ -650,14 +650,7 @@ window.onload = function() {
           "parameters": [],
           "responses": {
             "200": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "string"
-                  }
-                }
-              }
+              "description": ""
             }
           },
           "tags": [
@@ -1023,7 +1016,7 @@ window.onload = function() {
               }
             },
             "404": {
-              "description": ""
+              "description": "Post not found"
             },
             "429": {
               "description": "More than 5 attempts from one IP-address during 10 seconds"

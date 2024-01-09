@@ -32,7 +32,7 @@ export class PublicProfileController extends ExceptionAndResponseHelper {
     description: 'This endpoint is used to getting public profile by link',
   })
   @ApiOkResponse({ type: PublicViewProfileModel })
-  @ApiNotFoundResponse()
+  @ApiNotFoundResponse({ description: 'Profile not found' })
   @ApiTooManyRequestsResponse({
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
