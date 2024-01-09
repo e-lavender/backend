@@ -21,7 +21,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     server = app.getHttpServer();
 
     const cleanDb = new CleanDbService(new PrismaService());
-    cleanDb.deletePosts();
+    await cleanDb.deletePosts();
   });
 
   it('1 - POST:auth/registration - 204 - register 1st & 2nd users', async () => {

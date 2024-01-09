@@ -1,11 +1,22 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import {
+  HttpStatus,
+  INestApplication,
+  INestMicroservice,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
 import { appSettings } from '../../../libs/core/app.settings';
+import { FileServiceModule } from '../../file-service/src/file-service.module';
+import { TcpOptions, Transport } from '@nestjs/microservices';
+import { getConfiguration } from '../../file-service/config/configuration';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { CleanDbService } from './utils/clean.db.service';
+import * as path from 'path';
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
+  let fileApp: INestMicroservice;
   let server: any;
 
   beforeAll(async () => {
@@ -17,7 +28,24 @@ describe('ProfileController (e2e)', () => {
     appSettings(app, AppModule);
     await app.init();
     server = app.getHttpServer();
-    // await CleanDbService.cleanDb();
+
+    const fileModuleFixture: TestingModule = await Test.createTestingModule({
+      imports: [FileServiceModule],
+    }).compile();
+
+    const config = getConfiguration();
+    fileApp = fileModuleFixture.createNestMicroservice({
+      transport: Transport.TCP,
+      options: {
+        host: config.services.file.host,
+        port: +config.services.file.port,
+      },
+    } as TcpOptions);
+    await fileApp.init();
+
+    const cleanDb = new CleanDbService(new PrismaService());
+    await cleanDb.deleteAvatars();
+    // await cleanDb.deleteProfiles();
   });
 
   it('1 - POST:auth/registration - 204 - register 1st & 2nd users', async () => {
@@ -276,7 +304,6 @@ describe('ProfileController (e2e)', () => {
         aboutMe: '',
       });
 
-    // console.log({ t_11: updateFirstUserProfile.body.errorsMessages });
     expect(updateFirstUserProfile).toBeDefined();
     expect(updateFirstUserProfile.status).toEqual(HttpStatus.BAD_REQUEST);
 
@@ -308,21 +335,49 @@ describe('ProfileController (e2e)', () => {
     expect(getAvatar.status).toEqual(HttpStatus.NOT_FOUND);
     expect(getAvatar.body).toEqual({});
   });
-  it('13 - PUT:avatar - 204 - create avatar', async () => {
+  it('13 - PUT:avatar/upload - 204 - create avatar', async () => {
     const { accessToken1 } = expect.getState();
 
+    const filePath = path.resolve(__dirname, 'utils', 'test_img.jpg');
+
     const createAvatar = await request(server)
-      .put('/api/v1/avatar')
+      .put('/api/v1/avatar/upload')
       .auth(accessToken1, { type: 'bearer' })
-      .send({
-        file: {},
+      .attach('avatar', filePath, {
+        contentType: 'multipart/form-data',
       });
 
-    console.log({ t_13: createAvatar.body.errorsMessages });
     expect(createAvatar).toBeDefined();
     expect(createAvatar.status).toEqual(HttpStatus.OK);
     expect(createAvatar.body).toEqual({});
-  });
 
-  // тесты на публияный просмотр профиля
+    const getAvatar = await request(server)
+      .get('/api/v1/avatar')
+      .auth(accessToken1, { type: 'bearer' });
+
+    expect(getAvatar).toBeDefined();
+    expect(getAvatar.status).toEqual(HttpStatus.OK);
+    expect(getAvatar.body).toEqual({
+      avatarUrl: expect.any(String),
+    });
+  });
+  it('14 - DELETE:avatar - 204 - delete avatar', async () => {
+    const { accessToken1 } = expect.getState();
+
+    const deleteAvatar = await request(server)
+      .delete('/api/v1/avatar')
+      .auth(accessToken1, { type: 'bearer' });
+
+    expect(deleteAvatar).toBeDefined();
+    expect(deleteAvatar.status).toEqual(HttpStatus.NO_CONTENT);
+    expect(deleteAvatar.body).toEqual({});
+
+    const getAvatar = await request(server)
+      .get('/api/v1/avatar')
+      .auth(accessToken1, { type: 'bearer' });
+
+    expect(getAvatar).toBeDefined();
+    expect(getAvatar.status).toEqual(HttpStatus.NOT_FOUND);
+    expect(getAvatar.body).toEqual({});
+  });
 });

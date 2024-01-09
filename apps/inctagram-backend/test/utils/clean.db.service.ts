@@ -13,4 +13,7 @@ export class CleanDbService {
   async deletePosts(): Promise<PrismaPromise<Prisma.BatchPayload>> {
     return this.prisma.post.deleteMany();
   }
+  async deleteAvatars(): Promise<PrismaPromise<Prisma.BatchPayload>> {
+    return this.prisma.avatar.deleteMany();
+  }
 }

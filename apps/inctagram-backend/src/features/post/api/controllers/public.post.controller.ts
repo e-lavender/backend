@@ -42,7 +42,7 @@ export class PublicPostController extends ExceptionAndResponseHelper {
     description: 'This endpoint is used to viewing public post by the link',
   })
   @ApiOkResponse({ type: PublicViewPostModel })
-  @ApiNotFoundResponse()
+  @ApiNotFoundResponse({ description: 'Post not found' })
   @ApiTooManyRequestsResponse({
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
