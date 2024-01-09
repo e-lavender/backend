@@ -1,7 +1,6 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { CreateUserCommand } from '../../../users/application/use-cases/create-user.use-case';
-import { User } from '@prisma/client';
 import { EmailEvents, InternalCode } from '../../../../../../../libs/enums';
 import { DoOperationCommand } from '../../../email/application/use-cases/do-operation-use-case';
 import { DeleteUserCommand } from '../../../users/application/use-cases/delete-user.use-case';
@@ -21,7 +20,7 @@ export class RegistrationUseCase
 {
   constructor(private commandBus: CommandBus) {}
 
-  async execute(command: RegistrationCommand): Promise<ResultDTO<User>> {
+  async execute(command: RegistrationCommand): Promise<ResultDTO<null>> {
     const userResult = await this.commandBus.execute(
       new CreateUserCommand(command.login, command.email, command.password),
     );

@@ -14,7 +14,7 @@ export enum EmailEvents {
 
 export enum ApproachType {
   http = 'selectHttpException',
-  qraphql = 'selectGraphQLExceptions',
+  graphql = 'selectGraphQLExceptions',
 }
 
 export enum Services {
@@ -24,4 +24,9 @@ export enum Services {
 export enum SortDirection {
   asc = 'asc',
   desc = 'desc',
+}
+
+export enum urlStatus {
+  success = 'success',
+  failed = 'failed',
 }

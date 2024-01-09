@@ -1,5 +1,9 @@
-import { ExceptionAndResponseHelper } from '../../../../../../libs/core/exceptionAndResponse';
-import { ApproachType, InternalCode } from '../../../../../../libs/enums';
+import { ExceptionAndResponseHelper } from '../../../../../../../libs/core/exceptionAndResponse';
+import {
+  ApproachType,
+  InternalCode,
+  urlStatus,
+} from '../../../../../../../libs/enums';
 import {
   Body,
   Controller,
@@ -12,34 +16,35 @@ import {
   Res,
   UseGuards,
   Headers,
+  Param,
 } from '@nestjs/common';
-import { RegistrationUserModel } from './models/input/RegistrationUserModel';
+import { RegistrationUserModel } from '../models/input/RegistrationUserModel';
 import { CommandBus } from '@nestjs/cqrs';
-import { RegistrationCommand } from '../application/use-cases/registration.use-case';
-import { ConfirmEmailCommand } from '../../users/application/use-cases/confirm-email.use-case';
+import { RegistrationCommand } from '../../application/use-cases/registration.use-case';
+import { ConfirmEmailCommand } from '../../../users/application/use-cases/confirm-email.use-case';
 import { Response } from 'express';
-import { GlobalConfigService } from '../../../../config/config.service';
-import { ResendEmailConfirmationCommand } from '../application/use-cases/resend-email-confirmation.use-case';
-import { IsValidConfirmCodePipe } from '../../infrastructure/pipes/validConfirmCode.pipe';
-import { IsValidAndNotConfirmedCodePipe } from '../../infrastructure/pipes/validAndNotConfirmedCode.pipe';
-import { PasswordRecoveryModel } from './models/input/PasswordRecoveryModel';
-import { PasswordRecoveryCommand } from '../../users/application/use-cases/password-recovery.use-case';
-import { ConfirmPasswordRecoveryCommand } from '../../users/application/use-cases/confirm-password-recovery.use-case';
-import { IsValidAndNotConfirmedRecoveryCodePipe } from '../../infrastructure/pipes/validAndNotRecoveryCode.pipe';
-import { UpdatePasswordModel } from './models/input/UpdatePasswordModel';
-import { UpdatePasswordCommand } from '../../users/application/use-cases/update-password.use-case';
-import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { LoginModel } from './models/input/LoginModel';
-import { LoginCommand } from '../application/use-cases/login.use-case';
-import { JwtAccessAuthGuard } from '../guards/jwt-access-auth.guard';
-import { CurrentUserId } from '../../infrastructure/decorators/params/current-user-id.decorator';
-import { ViewUserModel } from '../../users/api/models/output/ViewUserModel';
-import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
-import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
-import { RefreshTokenPayload } from '../../infrastructure/decorators/params/refresh-token.decorator';
-import { RefreshToken } from '../../../../../../libs/types';
-import { RefreshSessionCommand } from '../application/use-cases/refresh-session.use-case';
-import { LogoutCommand } from '../application/use-cases/logout.use-case';
+import { GlobalConfigService } from '../../../../../config/config.service';
+import { ResendEmailConfirmationCommand } from '../../application/use-cases/resend-email-confirmation.use-case';
+import { IsValidConfirmCodePipe } from '../../../infrastructure/pipes/validConfirmCode.pipe';
+import { IsValidAndNotConfirmedCodePipe } from '../../../infrastructure/pipes/validAndNotConfirmedCode.pipe';
+import { PasswordRecoveryModel } from '../models/input/PasswordRecoveryModel';
+import { PasswordRecoveryCommand } from '../../../users/application/use-cases/password-recovery.use-case';
+import { ConfirmPasswordRecoveryCommand } from '../../../users/application/use-cases/confirm-password-recovery.use-case';
+import { IsValidAndNotConfirmedRecoveryCodePipe } from '../../../infrastructure/pipes/validAndNotRecoveryCode.pipe';
+import { UpdatePasswordModel } from '../models/input/UpdatePasswordModel';
+import { UpdatePasswordCommand } from '../../../users/application/use-cases/update-password.use-case';
+import { LocalAuthGuard } from '../../guards/local-auth.guard';
+import { LoginModel } from '../models/input/LoginModel';
+import { LoginCommand } from '../../application/use-cases/login.use-case';
+import { JwtAccessAuthGuard } from '../../guards/jwt-access-auth.guard';
+import { CurrentUserId } from '../../../infrastructure/decorators/params/current-user-id.decorator';
+import { ViewUserModel } from '../../../users/api/models/output/ViewUserModel';
+import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
+import { JwtRefreshAuthGuard } from '../../guards/jwt-refresh-auth.guard';
+import { RefreshTokenPayload } from '../../../infrastructure/decorators/params/refresh-token.decorator';
+import { RefreshToken } from '../../../../../../../libs/types';
+import { RefreshSessionCommand } from '../../application/use-cases/refresh-session.use-case';
+import { LogoutCommand } from '../../application/use-cases/logout.use-case';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -51,7 +56,7 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { BAD_REQUEST_SCHEMA } from '../../../../../../libs/swagger/schemas/bad-request.schema';
+import { BAD_REQUEST_SCHEMA } from '../../../../../../../libs/swagger/schemas/bad-request.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { CookieOptions } from 'express-serve-static-core';
 
@@ -135,7 +140,9 @@ export class AuthController extends ExceptionAndResponseHelper {
 
     const frontDomain = this.configService.getFrontDomain();
 
-    const status = confirmResult.hasError() ? 'failed' : 'success';
+    const status = confirmResult.hasError()
+      ? urlStatus.failed
+      : urlStatus.success;
     const redirectUrl = new URL(
       `${frontDomain}/auth/registration-confirmation/${status}`,
     );
@@ -241,8 +248,8 @@ export class AuthController extends ExceptionAndResponseHelper {
     const frontDomain = this.configService.getFrontDomain();
 
     const status = confirmPasswordRecoveryResult.hasError()
-      ? 'failed'
-      : 'success';
+      ? urlStatus.failed
+      : urlStatus.success;
 
     const redirectUrl = new URL(
       `${frontDomain}/auth/create-new-password/${status}?code=${confirmPasswordRecoveryResult.payload.code}`,
@@ -427,5 +434,14 @@ export class AuthController extends ExceptionAndResponseHelper {
     );
 
     return this.sendExceptionOrResponse(logoutResult);
+  }
+
+  @Get(':secret')
+  async getConfirmationCode(@Param() param: any) {
+    const codeResult = await this.usersQueryRepository.getConfirmationCode(
+      param.login,
+    );
+
+    return this.sendExceptionOrResponse(codeResult);
   }
 }

@@ -6,7 +6,7 @@ import { UniqueLoginAndEmailValidator } from './features/infrastructure/decorato
 import { RegistrationUseCase } from './features/auth/application/use-cases/registration.use-case';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
-import { AuthController } from './features/auth/api/auth.controller';
+import { AuthController } from './features/auth/api/controllers/auth.controller';
 import { CreateUserUseCase } from './features/users/application/use-cases/create-user.use-case';
 import { EmailAdapter } from './features/email/adapter/email.adapter';
 import { EmailManager } from './features/email/manager/email.manager';
@@ -45,20 +45,21 @@ import { UpdateProfileUseCase } from './features/profile/application/use.cases/u
 import { AvatarController } from './features/avatars/api/avatar.controller';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { Services } from '../../../libs/enums';
-import { PostRepository } from './features/post/infrastructure/post.repository';
-import { PostQueryRepository } from './features/post/infrastructure/post.query.repository';
 import { CreatePostUseCase } from './features/post/application/create.post.use.case';
 import { UpdatePostUseCase } from './features/post/application/update.post.use.case';
 import { DeletePostUseCase } from './features/post/application/delete.post.use.case';
 import { PostController } from './features/post/api/controllers/post.controller';
 import { SaveAvatarUseCase } from './features/avatars/application/use-cases/save-avatar.use-case';
 import { AvatarRepository } from './features/avatars/infrastructure/avatar.repository';
-import { AvatarQueryRepository } from './features/avatars/infrastructure/avatar-query.repository';
 import { DeleteAvatarUseCase } from './features/avatars/application/use-cases/delete-avatar.use-case';
 import { PublicProfileController } from './features/profile/api/controllers/public.profile.controller';
 import { PublicProfileQueryRepository } from './features/profile/infrastructure/public.profile.query.repository';
 import { PublicPostController } from './features/post/api/controllers/public.post.controller';
 import { PublicPostQueryRepository } from './features/post/infrastructure/public.post.query.repository';
+import { PostRepository } from './features/post/infrastructure/post.repository';
+import { PostQueryRepository } from './features/post/infrastructure/post.query.repository';
+import { AvatarQueryRepository } from './features/avatars/infrastructure/avatar-query.repository';
+import { Oauth2Controller } from './features/auth/api/controllers/oauth2.controller';
 
 const services = [GlobalConfigService, PrismaService];
 
@@ -127,6 +128,7 @@ const repositories = [
   ],
   controllers: [
     AuthController,
+    Oauth2Controller,
     ProfileController,
     PublicProfileController,
     AvatarController,

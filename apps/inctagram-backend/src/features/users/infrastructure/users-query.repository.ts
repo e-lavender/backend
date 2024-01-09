@@ -22,6 +22,15 @@ export class UsersQueryRepository {
     return new ResultDTO(InternalCode.Success, usersCount);
   }
 
+  async getConfirmationCode(login: string) {
+    const code = await this.prisma.user.findUnique({
+      where: { login: login },
+      select: { confirmationInfo: true },
+    });
+
+    return new ResultDTO(InternalCode.Success, code.confirmationInfo);
+  }
+
   _mapDbToView(user: User): ViewUserModel {
     return {
       email: user.email,

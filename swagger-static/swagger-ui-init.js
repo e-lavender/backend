@@ -496,6 +496,55 @@ window.onload = function() {
           ]
         }
       },
+      "/api/v1/auth/{secret}": {
+        "get": {
+          "operationId": "getConfirmationCode",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "Auth"
+          ]
+        }
+      },
+      "/api/v1/auth/google": {
+        "get": {
+          "operationId": "registerByGoogle",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "OAuth2"
+          ]
+        }
+      },
+      "/api/v1/auth/github": {
+        "get": {
+          "operationId": "registerByGithub",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "OAuth2"
+          ]
+        }
+      },
       "/api/v1/profile": {
         "get": {
           "operationId": "getMyProfile",
