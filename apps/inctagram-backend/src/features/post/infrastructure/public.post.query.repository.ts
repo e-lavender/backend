@@ -66,7 +66,7 @@ export class PublicPostQueryRepository {
       }),
     );
 
-    const usersCount = await this.usersQueryRepository.usersCount();
+    const usersCount = await this.usersQueryRepository.getUsersCount();
 
     return new ResultDTO(InternalCode.Success, {
       usersCount: usersCount.payload,

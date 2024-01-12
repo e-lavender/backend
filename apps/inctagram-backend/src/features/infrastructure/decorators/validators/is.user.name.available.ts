@@ -6,26 +6,23 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
 export class IsUserNameAvailableValidator
   implements ValidatorConstraintInterface
 {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(private usersQueryRepository: UsersQueryRepository) {}
 
   async validate(userName: string): Promise<boolean> {
     try {
-      // console.log('1--1');
-      // console.log({ userName: userName });
       // todo - как передать сюда id текущего пользователя, чтобы исключить его из поиска по userName?
       const id = 41;
-      const userResult = await this.usersRepository.findByUserName(
+      const userResult = await this.usersQueryRepository.findByUserName(
         id,
         userName,
       );
-      // console.log({ res: userResult });
       return userResult.hasError();
     } catch (e) {
       // console.log(e);

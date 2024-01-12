@@ -21,6 +21,10 @@ export class ConfirmEmailUseCase
     if (confirmDataResult.hasError())
       return new ResultDTO(InternalCode.Internal_Server);
 
+    console.log({
+      code_date_after_db: confirmDataResult.payload.expirationDate,
+      current_date: new Date(),
+    });
     if (isAfter(new Date(), confirmDataResult.payload.expirationDate))
       return new ResultDTO(InternalCode.Expired);
 

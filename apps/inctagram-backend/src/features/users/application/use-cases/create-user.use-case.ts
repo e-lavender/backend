@@ -35,6 +35,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
       passwordHash: passwordHash,
     };
     const expirationDate = add(new Date(), { hours: 3 });
+    console.log({ exp_date_before_db: expirationDate });
 
     const userResult = await this.usersRepository.createUser(
       data,

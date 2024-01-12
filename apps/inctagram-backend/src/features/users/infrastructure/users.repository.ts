@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../../prisma/prisma.service';
 import {
   Prisma,
-  User,
   UserEmailConfirmation,
   UserPasswordRecovery,
 } from '@prisma/client';
@@ -61,6 +60,7 @@ export class UsersRepository {
     const confirmData = await this.prisma.userEmailConfirmation.findFirst({
       where: { confirmationCode: code },
     });
+    console.log({ exp_date_after_db: confirmData.expirationDate });
 
     if (!confirmData) return new ResultDTO(InternalCode.NotFound);
 
@@ -77,20 +77,6 @@ export class UsersRepository {
     if (!recoveryData) return new ResultDTO(InternalCode.NotFound);
 
     return new ResultDTO(InternalCode.Success, recoveryData);
-  }
-
-  async findUserByConfirmCode(code: string): Promise<ResultDTO<User>> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        confirmationInfo: {
-          confirmationCode: code,
-        },
-      },
-    });
-
-    if (!user) return new ResultDTO(InternalCode.NotFound);
-
-    return new ResultDTO(InternalCode.Success, user);
   }
 
   async updateConfirmData(
@@ -140,14 +126,6 @@ export class UsersRepository {
     return new ResultDTO(InternalCode.Success, { code: res.recoveryCode });
   }
 
-  async deleteUser(userId: number): Promise<ResultDTO<null>> {
-    const res = await this.prisma.user.delete({ where: { id: userId } });
-
-    console.log('-----------Delete User: ', res);
-
-    return new ResultDTO(InternalCode.Success);
-  }
-
   async updatePassword(
     userId: number,
     passwordHash: string,
@@ -162,25 +140,6 @@ export class UsersRepository {
     return new ResultDTO(InternalCode.Success);
   }
 
-  async findByCredentials(loginOrEmail: string): Promise<ResultDTO<User>> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            login: loginOrEmail,
-          },
-          {
-            email: loginOrEmail,
-          },
-        ],
-      },
-    });
-
-    if (!user) return new ResultDTO(InternalCode.NotFound);
-
-    return new ResultDTO(InternalCode.Success, user);
-  }
-
   async updateUserName(id: number, userName: string) {
     await this.prisma.user.update({
       where: { id },
@@ -190,15 +149,8 @@ export class UsersRepository {
     return new ResultDTO(InternalCode.Success);
   }
 
-  async findByUserName(id: number, userName: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        login: userName,
-        NOT: { id: id },
-      },
-    });
-
-    if (user) return new ResultDTO(InternalCode.Internal_Server);
+  async deleteUser(userId: number): Promise<ResultDTO<null>> {
+    await this.prisma.user.delete({ where: { id: userId } });
 
     return new ResultDTO(InternalCode.Success);
   }

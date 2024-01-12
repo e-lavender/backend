@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { compare } from 'bcrypt';
 import { InternalCode } from '../../../../../../../libs/enums';
+import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
 
 export class ValidateUserCommand {
   constructor(
@@ -16,13 +16,13 @@ export class ValidateUserCommand {
 export class ValidateUserUseCase
   implements ICommandHandler<ValidateUserCommand>
 {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(private usersQueryRepository: UsersQueryRepository) {}
 
   async execute(command: ValidateUserCommand): Promise<ResultDTO<null>> {
     let passwordHash;
 
     if (!command.originalPasswordHash) {
-      const userResult = await this.usersRepository.findByCredentials(
+      const userResult = await this.usersQueryRepository.findByCredentials(
         command.email,
       );
       if (userResult.hasError()) return userResult as ResultDTO<null>;

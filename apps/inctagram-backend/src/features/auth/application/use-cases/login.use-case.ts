@@ -1,10 +1,10 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../../libs/enums';
 import { ValidateUserCommand } from './validate-user.use-case';
 import { CreateDeviceCommand } from '../../../devices/application/use-cases/create-device.use-case';
 import { JwtService } from '@nestjs/jwt';
+import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
 
 export class LoginCommand {
   constructor(
@@ -19,14 +19,14 @@ export class LoginCommand {
 export class LoginUseCase implements ICommandHandler<LoginCommand> {
   constructor(
     private commandBus: CommandBus,
-    private usersRepository: UsersRepository,
+    private usersQueryRepository: UsersQueryRepository,
     private jwtService: JwtService,
   ) {}
 
   async execute(
     command: LoginCommand,
   ): Promise<ResultDTO<{ accessToken: string; refreshToken: string }>> {
-    const userResult = await this.usersRepository.findByCredentials(
+    const userResult = await this.usersQueryRepository.findByCredentials(
       command.email,
     );
     if (userResult.hasError()) return new ResultDTO(InternalCode.Unauthorized);

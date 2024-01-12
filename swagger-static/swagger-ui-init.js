@@ -498,7 +498,7 @@ window.onload = function() {
       },
       "/api/v1/auth/{secret}": {
         "get": {
-          "operationId": "getConfirmationCode",
+          "operationId": "_getConfirmationCode",
           "parameters": [],
           "responses": {
             "200": {
@@ -519,7 +519,7 @@ window.onload = function() {
       },
       "/api/v1/auth/google": {
         "get": {
-          "operationId": "registerByGoogle",
+          "operationId": "signInByGoogle",
           "parameters": [],
           "responses": {
             "200": {
@@ -533,8 +533,52 @@ window.onload = function() {
       },
       "/api/v1/auth/github": {
         "get": {
-          "operationId": "registerByGithub",
+          "operationId": "signInByGithub",
           "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "OAuth2"
+          ]
+        }
+      },
+      "/api/v1/auth/github/callback": {
+        "post": {
+          "operationId": "redirectGithub",
+          "parameters": [
+            {
+              "name": "code",
+              "required": true,
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "OAuth2"
+          ]
+        },
+        "get": {
+          "operationId": "callback",
+          "parameters": [
+            {
+              "name": "code",
+              "required": true,
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
               "description": ""

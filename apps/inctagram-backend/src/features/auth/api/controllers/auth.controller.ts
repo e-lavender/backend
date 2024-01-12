@@ -137,6 +137,8 @@ export class AuthController extends ExceptionAndResponseHelper {
     ) {
       return this.sendExceptionOrResponse(confirmResult);
     }
+    console.log({ first_step: confirmResult.code !== InternalCode.Expired });
+    console.log({ second_step: confirmResult.code !== InternalCode.Success });
 
     const frontDomain = this.configService.getFrontDomain();
 
@@ -146,6 +148,7 @@ export class AuthController extends ExceptionAndResponseHelper {
     const redirectUrl = new URL(
       `${frontDomain}/auth/registration-confirmation/${status}`,
     );
+    console.log({ contr_status: status });
 
     return res.redirect(redirectUrl.toString());
   }
@@ -437,8 +440,8 @@ export class AuthController extends ExceptionAndResponseHelper {
   }
 
   @Get(':secret')
-  async getConfirmationCode(@Param() param: any) {
-    const codeResult = await this.usersQueryRepository.getConfirmationCode(
+  async _getConfirmationCode(@Param() param: any) {
+    const codeResult = await this.usersQueryRepository._getConfirmationCode(
       param.login,
     );
 

@@ -1,0 +1,101 @@
+```javascript
+const express = require('express');
+const request = require('request');
+const session = require('express-session');
+const app = express();
+
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true
+}));
+
+function authenticated(req) {
+  return req.session.access_token;
+}
+
+function authenticate(req, res) {
+  if (!authenticated(req)) {
+    res.render('index', { client_id: process.env.GITHUB_CLIENT_ID });
+  } else {
+    getGithubData(req, res);
+  }
+}
+
+function getGithubData(req, res) {
+  const scopes = [];
+  const access_token = req.session.access_token;
+
+  try {
+    request.get(
+      {
+        url: 'https://api.github.com/user',
+        qs: { access_token },
+        headers: { 'Accept': 'application/json' }
+      },
+      (error, response, body) => {
+
+        if (error) {
+          throw new Error('Request failed');
+        }
+
+        const auth_result = JSON.parse(body);
+        if (response.headers['x-oauth-scopes']) {
+          scopes.push(...response.headers['x-oauth-scopes'].split(', '));
+        }
+
+        if (scopes.includes('user:email')) {
+          request.get(
+            {
+              url: 'https://api.github.com/user/emails',
+              qs: { access_token },
+              headers: { 'Accept': 'application/json' }
+            },
+            (error, response, body) => {
+              if (error) {
+                throw new Error('Request failed');
+              }
+
+              auth_result.private_emails = JSON.parse(body);
+              res.render('advanced', auth_result);
+            }
+          );
+        } else {
+          res.render('advanced', auth_result);
+        }
+      }
+    );
+
+  } catch (e) {
+    // Handle error
+    console.error(e);
+  }
+}
+
+app.get('/', (req, res) => {
+  authenticate(req, res);
+});
+
+app.get('/callback', (req, res) => {
+  const session_code = req.query.code;
+  request.post(
+    {
+      url: 'https://github.com/login/oauth/access_token',
+      form: {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code: session_code
+      },
+      headers: { 'Accept': 'application/json' }
+    },
+    (error, response, body) => {
+      if (error) {
+        return res.status(500).send('Request failed');
+      }
+
+      const result = JSON.parse(body);
+      req.session.access_token = result.access_token;
+      res.redirect('/');
+    }
+  );
+});

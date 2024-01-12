@@ -5,6 +5,7 @@ import { DoOperationCommand } from '../../../email/application/use-cases/do-oper
 import { EmailEvents, InternalCode } from '../../../../../../../libs/enums';
 import { add } from 'date-fns';
 import { v4 as uuidV4 } from 'uuid';
+import { UsersQueryRepository } from '../../infrastructure/users-query.repository';
 
 export class PasswordRecoveryCommand {
   constructor(public email: string) {}
@@ -17,10 +18,11 @@ export class PasswordRecoveryUseCase
   constructor(
     private commandBus: CommandBus,
     private usersRepository: UsersRepository,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand): Promise<ResultDTO<null>> {
-    const userResult = await this.usersRepository.findByCredentials(
+    const userResult = await this.usersQueryRepository.findByCredentials(
       command.email,
     );
     if (userResult.code === InternalCode.NotFound)

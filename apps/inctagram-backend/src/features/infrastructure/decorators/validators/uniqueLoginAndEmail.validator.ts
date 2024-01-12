@@ -6,18 +6,20 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
 export class UniqueLoginAndEmailValidator
   implements ValidatorConstraintInterface
 {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(private usersQueryRepository: UsersQueryRepository) {}
 
   async validate(cred: string): Promise<boolean> {
     try {
-      const userResult = await this.usersRepository.findByCredentials(cred);
+      const userResult = await this.usersQueryRepository.findByCredentials(
+        cred,
+      );
 
       return userResult.hasError();
     } catch (e) {
