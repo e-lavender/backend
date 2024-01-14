@@ -4,8 +4,8 @@
 
 <p align="center">
     <img src="https://img.shields.io/badge/Nest-10.0.0-red" alt="Nest version" />
-    <img src="https://img.shields.io/badge/Version-v1.0-green" width="40" alt="App version" />
-    <img src="https://img.shields.io/badge/License-NIT-blue" width="40" alt="License" />
+    <img src="https://img.shields.io/badge/Version-v1.0-green" alt="App version" />
+    <img src="https://img.shields.io/badge/License-NIT-blue" alt="License" />
 </p>
 
 ## Description
