@@ -62,7 +62,7 @@ model UserPasswordRecovery {
 }
 
 model Device {
-  id         String   @id() @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
+  id         String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
   ip         String
   deviceName String
   issuedAt   DateTime @db.Timestamp()

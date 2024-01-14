@@ -5,7 +5,7 @@ import { isNil } from '@nestjs/common/utils/shared.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class DefaultPaginationInput {
-  @ApiPropertyOptional({ default: 'createdAt' })
+  @ApiPropertyOptional({ default: 'createdAt', type: 'string' })
   @IsString()
   @IsOptional()
   @Transform(({ value }) => {
@@ -18,13 +18,13 @@ export class DefaultPaginationInput {
     return value === SortDirection.asc ? SortDirection.asc : SortDirection.desc;
   })
   sortDirection: 'asc' | 'desc' = SortDirection.desc;
-  @ApiPropertyOptional({ default: 1 })
+  @ApiPropertyOptional({ default: 1, type: 'number' })
   @IsOptional()
   @Transform(({ value }): number => {
     return value < 1 || value % 1 !== 0 ? 1 : Number(value);
   })
   currentPage = 1;
-  @ApiPropertyOptional({ default: 8 })
+  @ApiPropertyOptional({ default: 8, type: 'number' })
   @IsOptional()
   @Transform(({ value }): number => {
     return value < 1 || value % 1 !== 0 ? 8 : Number(value);
