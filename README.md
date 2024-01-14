@@ -27,4 +27,4 @@ You can find swagger documentation [here](https://api.freedomindz.site/api/v1/sw
 
 ## License
 
-This project is distributed under the [MIT licensed]()
+This project is distributed under the [MIT license]()
