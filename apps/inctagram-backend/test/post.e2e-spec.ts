@@ -1,14 +1,25 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import {
+  HttpStatus,
+  INestApplication,
+  INestMicroservice,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { appSettings } from '../../../libs/core/app.settings';
 import * as request from 'supertest';
+import { FileServiceModule } from '../../file-service/src/file-service.module';
+import { getConfiguration } from '../../file-service/config/configuration';
+import { TcpOptions, Transport } from '@nestjs/microservices';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { CleanDbService } from './utils/clean.db.service';
 
 describe('PostController (e2e)', () => {
   let app: INestApplication;
+  let fileApp: INestMicroservice;
   let server: any;
 
   beforeAll(async () => {
+    // подключение основного приложеиня
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -17,7 +28,25 @@ describe('PostController (e2e)', () => {
     appSettings(app, AppModule);
     await app.init();
     server = app.getHttpServer();
-    // await CleanDbService.cleanDb();
+
+    // подключение файлового микросервиса
+    const fileModuleFixture: TestingModule = await Test.createTestingModule({
+      imports: [FileServiceModule],
+    }).compile();
+
+    const config = getConfiguration();
+    fileApp = fileModuleFixture.createNestMicroservice({
+      transport: Transport.TCP,
+      options: {
+        host: config.services.file.host,
+        port: +config.services.file.port,
+      },
+    } as TcpOptions);
+    await fileApp.init();
+
+    // очистка БД
+    const cleanDb = new CleanDbService(new PrismaService());
+    await cleanDb.deletePosts();
   });
 
   it('1 - POST:auth/registration - 204 - register 1st & 2nd users', async () => {
@@ -109,7 +138,34 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  it('5 - POST:post - 400 - 1st user try create description more 500 symbols', async () => {
+  it('5 - POST:post - 400 - 1st user try create post without photo', async () => {
+    const { accessToken1 } = expect.getState();
+    const correctPostInput = {
+      description: `correct_description`,
+      photoUrl: `correct_mock`,
+    };
+
+    const createFirstPostsResponse = await request(server)
+      .post('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' })
+      .send({
+        description: correctPostInput.description,
+      });
+
+    expect(createFirstPostsResponse).toBeDefined();
+    expect(createFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(createFirstPostsResponse.body).toEqual({
+      errorsMessages: [
+        {
+          field: 'photoUrl',
+          message: 'photoUrl should not be empty',
+        },
+      ],
+    });
+
+    expect.setState({ correctPostInput });
+  });
+  it('6 - POST:post - 400 - 1st user try create description more 500 symbols', async () => {
     const { accessToken1 } = expect.getState();
     const incorrectPostInput = {
       description: `description 501 symbol =-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -129,6 +185,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: incorrectPostInput.description,
+        photoUrl: 'correct_mock',
       });
 
     expect(createFirstPostsResponse).toBeDefined();
@@ -145,13 +202,16 @@ describe('PostController (e2e)', () => {
 
     expect.setState({ incorrectPostInput });
   });
-  it('6 - POST:post - 200 - 1st user create 2 posts', async () => {
+
+  it('7 - POST:post - 200 - 1st user create 2 posts', async () => {
     const { accessToken1 } = expect.getState();
     const firstPostInput = {
       description: 'first_correct_description',
+      photoUrl: 'mock',
     };
     const secondPostInput = {
       description: 'second_correct_description',
+      photoUrl: 'mock',
     };
 
     const createFirstPostsResponse = await request(server)
@@ -159,6 +219,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: firstPostInput.description,
+        photoUrl: firstPostInput.photoUrl,
       });
 
     expect(createFirstPostsResponse).toBeDefined();
@@ -167,6 +228,7 @@ describe('PostController (e2e)', () => {
       id: expect.any(String),
       description: firstPostInput.description,
       createdAt: expect.any(String),
+      photoUrl: firstPostInput.photoUrl,
     });
 
     const createSecondPostsResponse = await request(server)
@@ -174,6 +236,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: secondPostInput.description,
+        photoUrl: secondPostInput.photoUrl,
       });
 
     expect(createSecondPostsResponse).toBeDefined();
@@ -182,6 +245,7 @@ describe('PostController (e2e)', () => {
       id: expect.any(String),
       description: secondPostInput.description,
       createdAt: expect.any(String),
+      photoUrl: secondPostInput.photoUrl,
     });
 
     expect.setState({
@@ -189,8 +253,7 @@ describe('PostController (e2e)', () => {
       secondPost: createSecondPostsResponse.body,
     });
   });
-
-  it('7 - GET:post - 200 - 1st user get himself posts', async () => {
+  it('8 - GET:post - 200 - 1st user get himself posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
 
     const getPostsResponse = await request(server)
@@ -208,7 +271,28 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  it('8 - PUT:post - 400 - 1st user try update description more 500 symbols', async () => {
+  it('8 - PUT:post - 400 - 1st user try update post without photo', async () => {
+    const { accessToken1, firstPost, correctPostInput } = expect.getState();
+
+    const updateFirstPostsResponse = await request(server)
+      .put(`/api/v1/post/${firstPost.id}`)
+      .auth(accessToken1, { type: 'bearer' })
+      .send({
+        description: correctPostInput.description,
+      });
+
+    expect(updateFirstPostsResponse).toBeDefined();
+    expect(updateFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(updateFirstPostsResponse.body).toEqual({
+      errorsMessages: [
+        {
+          field: 'photoUrl',
+          message: 'photoUrl should not be empty',
+        },
+      ],
+    });
+  });
+  it('9 - PUT:post - 400 - 1st user try update description more 500 symbols', async () => {
     const { accessToken1, firstPost, incorrectPostInput } = expect.getState();
 
     const updateFirstPostsResponse = await request(server)
@@ -216,6 +300,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: incorrectPostInput.description,
+        photoUrl: `correct_mock`,
       });
 
     expect(updateFirstPostsResponse).toBeDefined();
@@ -230,13 +315,16 @@ describe('PostController (e2e)', () => {
       ],
     });
   });
-  it('9 - PUT:post - 200 - 1st user update 2 posts', async () => {
+
+  it('10 - PUT:post - 200 - 1st user update 2 posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
     const updatedFirstPostInput = {
       description: 'updated_first_correct_description',
+      photoUrl: 'correct_mock',
     };
     const updatedSecondPostInput = {
       description: 'updated_second_correct_description',
+      photoUrl: 'correct_mock',
     };
 
     const updateFirstPostsResponse = await request(server)
@@ -244,6 +332,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: updatedFirstPostInput.description,
+        photoUrl: updatedFirstPostInput.photoUrl,
       });
 
     expect(updateFirstPostsResponse).toBeDefined();
@@ -255,6 +344,7 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: updatedSecondPostInput.description,
+        photoUrl: updatedSecondPostInput.photoUrl,
       });
 
     expect(updateSecondPostsResponse).toBeDefined();
@@ -266,8 +356,7 @@ describe('PostController (e2e)', () => {
       updatedSecondPostInput,
     });
   });
-
-  it('10 - GET:post - 200 - 1st user get himself posts', async () => {
+  it('11 - GET:post - 200 - 1st user get himself posts', async () => {
     const {
       accessToken1,
       firstPost,
@@ -294,7 +383,7 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  it('11 - DELETE:post - 200 - 1st user delete 2 posts', async () => {
+  it('12 - DELETE:post - 200 - 1st user delete 2 posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
 
     const deleteFirstPostResponse = await request(server)

@@ -91,6 +91,7 @@ model Post {
   id          String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
   description String?
   createdAt   DateTime @default(now()) @db.Timestamp()
+  photoUrl    String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 

@@ -60,6 +60,7 @@ export class PostQueryRepository {
       id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
+      photoUrl: post.photoUrl,
     };
   }
 }
