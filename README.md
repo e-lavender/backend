@@ -27,4 +27,4 @@ You can find swagger documentation [here](https://api.freedomindz.site/api/v1/sw
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is distributed under the [MIT licensed]()
