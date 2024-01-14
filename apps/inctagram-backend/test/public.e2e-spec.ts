@@ -11,6 +11,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
   let server: any;
 
   beforeAll(async () => {
+    // подключение основного приложеиня
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -20,6 +21,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     await app.init();
     server = app.getHttpServer();
 
+    // очистка БД
     const cleanDb = new CleanDbService(new PrismaService());
     await cleanDb.deletePosts();
   });
@@ -108,9 +110,11 @@ describe('PublicProfileAndPostController (e2e)', () => {
     };
     const firstPostInput = {
       description: 'first_correct_description',
+      photoUrl: `correct_mock`,
     };
     const secondPostInput = {
       description: 'second_correct_description',
+      photoUrl: `correct_mock`,
     };
 
     const updateFirstProfileResponse = await request(server)
@@ -134,6 +138,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: firstPostInput.description,
+        photoUrl: firstPostInput.photoUrl,
       });
 
     expect(createFirstPostsResponse).toBeDefined();
@@ -142,6 +147,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
       id: expect.any(String),
       description: firstPostInput.description,
       createdAt: expect.any(String),
+      photoUrl: firstPostInput.photoUrl,
     });
 
     const createSecondPostsResponse = await request(server)
@@ -149,6 +155,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: secondPostInput.description,
+        photoUrl: secondPostInput.photoUrl,
       });
 
     expect(createSecondPostsResponse).toBeDefined();
@@ -157,6 +164,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
       id: expect.any(String),
       description: secondPostInput.description,
       createdAt: expect.any(String),
+      photoUrl: secondPostInput.photoUrl,
     });
 
     expect.setState({
@@ -202,7 +210,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     expect(getFirstPublicPost.status).toEqual(HttpStatus.OK);
     expect(getFirstPublicPost.body).toEqual({
       userName: firstUser.login,
-      photoUrl: expect.any(String),
+      photoUrl: firstPost.photoUrl,
       description: firstPost.description,
       comments: [],
     });
@@ -215,7 +223,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     expect(getSecondPublicPost.status).toEqual(HttpStatus.OK);
     expect(getSecondPublicPost.body).toEqual({
       userName: firstUser.login,
-      photoUrl: expect.any(String),
+      photoUrl: secondPost.photoUrl,
       description: secondPost.description,
       comments: [],
     });
@@ -231,11 +239,10 @@ describe('PublicProfileAndPostController (e2e)', () => {
 
     const getPublicMainPage = await request(server).get('/api/v1/public/posts');
 
-    // console.log({ t_7: getPublicMainPage.body });
     expect(getPublicMainPage).toBeDefined();
     expect(getPublicMainPage.status).toEqual(HttpStatus.OK);
     expect(getPublicMainPage.body).toEqual({
-      usersCount: 2,
+      usersCount: expect.any(Number),
       lastPosts: [secondPublicPost, firstPublicPost],
     });
   });

@@ -41,16 +41,6 @@ export class PublicPostQueryRepository {
     });
     if (!posts) return new ResultDTO(InternalCode.NotFound);
 
-    // const posts = await this.prisma.$queryRaw<PublicViewPostModel>`
-    // select pr."userName", p.description, p.id as "photoUrl"
-    // from post p
-    // left join profile pr
-    // on p."userId" = pr."userId"
-    // order by "createdAt" desc
-    // limit '4'
-    // offset '0'
-    // `;
-
     const publicViewPosts: PublicViewPostModel[] = await Promise.all(
       posts.map(async (p) => {
         const names = await this.prisma.profile.findUnique({
@@ -59,14 +49,14 @@ export class PublicPostQueryRepository {
         });
         return {
           userName: names.userName,
-          photoUrl: 'post.photoUrl',
+          photoUrl: p.photoUrl,
           description: p.description,
           comments: [],
         };
       }),
     );
 
-    const usersCount = await this.usersQueryRepository.usersCount();
+    const usersCount = await this.usersQueryRepository.getUsersCount();
 
     return new ResultDTO(InternalCode.Success, {
       usersCount: usersCount.payload,
@@ -80,7 +70,7 @@ export class PublicPostQueryRepository {
   ): PublicViewPostModel {
     return {
       userName: profile.payload.userName,
-      photoUrl: 'post.photoUrl',
+      photoUrl: post.photoUrl,
       description: post.description,
       comments: [],
     };
