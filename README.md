@@ -16,6 +16,10 @@ Add short description about project
 
 Try to [use app](freedomindz.site/auth/sign-in)
 
+## Documentation
+
+You can find swagger documentation [here](https://api.freedomindz.site/api/v1/swagger)
+
 ## Developers
 
  - [Artyom Golubev](https://github.com/Artyom099)
