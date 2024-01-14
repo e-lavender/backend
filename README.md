@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="Nest version" />
-    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="App version" />
-    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="License" />
+    <img src="https://img.shields.io/badge/Nest" width="40" alt="Nest version" />
+    <img src="https://img.shields.io/badge/Nest" width="40" alt="App version" />
+    <img src="https://img.shields.io/badge/Nest" width="40" alt="License" />
 </p>
 
 ## Description
