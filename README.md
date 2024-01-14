@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-    <img src="https://nestjs.com/img/logo-small.svg" alt="Nest version" />
-    <img src="https://nestjs.com/img/logo-small.svg" alt="App version" />
-    <img src="https://nestjs.com/img/logo-small.svg" alt="License" />
+    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="Nest version" />
+    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="App version" />
+    <img src="https://nestjs.com/img/logo-small.svg" width="40" alt="License" />
 </p>
 
 ## Description
