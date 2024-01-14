@@ -1223,12 +1223,16 @@ window.onload = function() {
             },
             "createdAt": {
               "type": "string"
+            },
+            "photoUrl": {
+              "type": "string"
             }
           },
           "required": [
             "id",
             "description",
-            "createdAt"
+            "createdAt",
+            "photoUrl"
           ]
         },
         "PaginationViewModel": {
@@ -1299,10 +1303,14 @@ window.onload = function() {
               "type": "string",
               "minimum": 0,
               "maximum": 500
+            },
+            "photoUrl": {
+              "type": "string"
             }
           },
           "required": [
-            "description"
+            "description",
+            "photoUrl"
           ]
         },
         "UpdatePostModel": {
@@ -1312,10 +1320,14 @@ window.onload = function() {
               "type": "string",
               "minimum": 0,
               "maximum": 500
+            },
+            "photoUrl": {
+              "type": "string"
             }
           },
           "required": [
-            "description"
+            "description",
+            "photoUrl"
           ]
         },
         "PublicViewPostModel": {

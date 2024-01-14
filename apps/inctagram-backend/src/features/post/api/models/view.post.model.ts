@@ -7,4 +7,6 @@ export class ViewPostModel {
   description: string;
   @ApiProperty()
   createdAt: string;
+  @ApiProperty()
+  photoUrl: string;
 }

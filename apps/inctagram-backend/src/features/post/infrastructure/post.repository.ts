@@ -20,12 +20,14 @@ export class PostRepository {
         id: true,
         description: true,
         createdAt: true,
+        photoUrl: true,
       },
     });
     return new ResultDTO(InternalCode.Success, {
       id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
+      photoUrl: post.photoUrl,
     });
   }
 

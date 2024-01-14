@@ -18,6 +18,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     const data = {
       userId,
       description: inputModel.description,
+      photoUrl: inputModel.photoUrl,
     };
 
     const createPostResult = await this.postRepository.createPost(data);
