@@ -12,12 +12,16 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CurrentUserId } from '../../../infrastructure/decorators/params/current-user-id.decorator';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -31,7 +35,7 @@ import {
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { JwtAccessAuthGuard } from '../../../auth/guards/jwt-access-auth.guard';
 import { CreatePostCommand } from '../../application/create.post.use.case';
-import { CreatePostModel } from '../models/create.post.model';
+import { CreateDescriptionModel } from '../models/create.description.model';
 import { ViewPostModel } from '../models/view.post.model';
 import { UpdatePostModel } from '../models/update.post.model';
 import { PostQueryRepository } from '../../infrastructure/post.query.repository';
@@ -40,6 +44,8 @@ import { DeletePostCommand } from '../../application/delete.post.use.case';
 import { BAD_REQUEST_SCHEMA } from '../../../../../../../libs/swagger/schemas/bad-request.schema';
 import { DefaultPaginationInput } from '../pagination/pagination.input.model';
 import { PaginationViewModel } from '../pagination/pagination.view.model';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { UploadPhotosModel } from '../models/upload.photos.model';
 
 @ApiTags('Post')
 @Controller('post')
@@ -92,13 +98,17 @@ export class PostController extends ExceptionAndResponseHelper {
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post()
+  @UseInterceptors(FilesInterceptor('files', 10, { limits: { fieldSize: 20 } }))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UploadPhotosModel })
   @HttpCode(HttpStatus.CREATED)
   async createPost(
     @CurrentUserId() userId: number,
-    @Body() inputModel: CreatePostModel,
+    @Body() inputModel: CreateDescriptionModel,
+    @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<ViewPostModel> {
     const createPostResult = await this.commandBus.execute(
-      new CreatePostCommand(userId, inputModel),
+      new CreatePostCommand(userId, inputModel, files),
     );
 
     return this.sendExceptionOrResponse(createPostResult);

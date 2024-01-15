@@ -228,7 +228,7 @@ describe('PostController (e2e)', () => {
       id: expect.any(String),
       description: firstPostInput.description,
       createdAt: expect.any(String),
-      photoUrl: firstPostInput.photoUrl,
+      photoUrl: expect.any(String),
     });
 
     const createSecondPostsResponse = await request(server)
@@ -245,7 +245,7 @@ describe('PostController (e2e)', () => {
       id: expect.any(String),
       description: secondPostInput.description,
       createdAt: expect.any(String),
-      photoUrl: secondPostInput.photoUrl,
+      photoUrl: expect.any(String),
     });
 
     expect.setState({

@@ -803,9 +803,9 @@ window.onload = function() {
           "requestBody": {
             "required": true,
             "content": {
-              "application/json": {
+              "multipart/form-data": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreatePostModel"
+                  "$ref": "#/components/schemas/UploadPhotosModel"
                 }
               }
             }
@@ -1296,21 +1296,26 @@ window.onload = function() {
             "posts"
           ]
         },
-        "CreatePostModel": {
+        "UploadPhotosModel": {
           "type": "object",
           "properties": {
             "description": {
               "type": "string",
               "minimum": 0,
-              "maximum": 500
+              "maximum": 500,
+              "description": "Post's description"
             },
-            "photoUrl": {
-              "type": "string"
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "binary"
+              },
+              "description": "Array of uploaded images (PNG or JPEG format, maximum 10 images allowed, maximum size: 20MB each)"
             }
           },
           "required": [
-            "description",
-            "photoUrl"
+            "images"
           ]
         },
         "UpdatePostModel": {
