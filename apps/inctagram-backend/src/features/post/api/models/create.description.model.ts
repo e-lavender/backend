@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreatePostModel {
+export class CreateDescriptionModel {
   @ApiProperty({
     minimum: 0,
     maximum: 500,
@@ -12,9 +12,9 @@ export class CreatePostModel {
   @Transform(({ value }) => value.trim())
   @Length(0, 500)
   description: string;
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }) => value.trim())
-  photoUrl: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // @Transform(({ value }) => value.trim())
+  // photoUrl: string;
 }
