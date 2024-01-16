@@ -14,6 +14,7 @@ export enum EmailEvents {
 
 export enum ApproachType {
   http = 'selectHttpException',
+  tcp = 'selectTcpExceptions',
   qraphql = 'selectGraphQLExceptions',
 }
 
