@@ -5,6 +5,9 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
+import { InternalCode } from '../../../../../../libs/enums';
 
 @Injectable()
 export class S3Adapter {
@@ -27,8 +30,8 @@ export class S3Adapter {
     userId: number,
     buffer: Buffer,
     mimetype: string,
-  ): Promise<{ key: string; data: PutObjectCommandOutput }> {
-    const key = `content/users/${userId}/avatars/${userId}_avatar.png`;
+  ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
+    const key = `content/users/${userId}/avatars/${uuidv4()}_avatar.png`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
@@ -41,15 +44,13 @@ export class S3Adapter {
 
     try {
       const uploadResult = await this.s3Client.send(command);
-      return { key, data: uploadResult };
+      return new ResultDTO(InternalCode.Success, { key, data: uploadResult });
     } catch (e) {
-      console.error(e);
+      return new ResultDTO(InternalCode.Internal_Server);
     }
   }
 
-  async deleteAvatar(userId: number): Promise<any> {
-    const key = `content/users/${userId}/avatars/${userId}_avatar.png`;
-
+  async deleteAvatar(key: string): Promise<any> {
     const bucketParams = {
       Bucket: 'inctagram1',
       Key: key,
@@ -58,9 +59,10 @@ export class S3Adapter {
     const command = new DeleteObjectCommand(bucketParams);
 
     try {
-      return await this.s3Client.send(command);
+      await this.s3Client.send(command);
+      return new ResultDTO(InternalCode.Success);
     } catch (e) {
-      console.error(e);
+      return new ResultDTO(InternalCode.Internal_Server);
     }
   }
 }
