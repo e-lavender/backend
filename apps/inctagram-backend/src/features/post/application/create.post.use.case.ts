@@ -9,7 +9,7 @@ export class CreatePostCommand {
   constructor(
     public userId: number,
     public inputModel: CreateDescriptionModel,
-    public files: Array<Express.Multer.File>,
+    public files: Array<Express.Multer.File> | any,
   ) {}
 }
 

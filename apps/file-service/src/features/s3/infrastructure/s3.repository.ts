@@ -12,7 +12,7 @@ export class S3Repository {
     avatarInstance: FileDocument,
   ): Promise<{ fileId: string; key: string }> {
     const savedFile = await avatarInstance.save();
-    console.log(savedFile);
+    console.log({ savedFile: savedFile });
     return { fileId: savedFile.id.toString(), key: savedFile.key };
   }
   async findByUserId(userId: number): Promise<ResultDTO<FileDocument>> {

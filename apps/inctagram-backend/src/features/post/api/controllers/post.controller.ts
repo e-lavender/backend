@@ -71,7 +71,7 @@ export class PostController extends ExceptionAndResponseHelper {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMyPosts(
+  async getPosts(
     @CurrentUserId() userId: number,
     @Query() query: DefaultPaginationInput,
   ): Promise<PaginationViewModel<ViewPostModel>> {
@@ -100,18 +100,30 @@ export class PostController extends ExceptionAndResponseHelper {
   @Post()
   @UseInterceptors(FilesInterceptor('files', 10, { limits: { fieldSize: 20 } }))
   @ApiConsumes('multipart/form-data')
+  // @Header('Content-Type', 'multipart/form-data')
   @ApiBody({ type: UploadPhotosModel })
   @HttpCode(HttpStatus.CREATED)
   async createPost(
     @CurrentUserId() userId: number,
-    @Body() inputModel: CreateDescriptionModel,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() body?: CreateDescriptionModel,
+    @UploadedFiles() files?: Express.Multer.File[],
   ): Promise<ViewPostModel> {
+    // todo - почему в files приходит undefined ? - начать с этого!!ы
+    console.log({ files: files });
+    console.log({ body: body });
     const createPostResult = await this.commandBus.execute(
-      new CreatePostCommand(userId, inputModel, files),
+      new CreatePostCommand(userId, body, files),
     );
+    console.log({ createPostResult: createPostResult });
 
     return this.sendExceptionOrResponse(createPostResult);
+    // new ParseFilePipe({
+    //   validators: [
+    //     new MaxFileSizeValidator({ maxSize: 20_000_000 }),
+    //     new FileTypeValidator({ fileType: 'image/jpeg' }),
+    //   ],
+    // }),
+    //   : Array<Express.Multer.File>
   }
 
   @ApiOperation({

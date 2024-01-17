@@ -723,7 +723,7 @@ window.onload = function() {
       },
       "/api/v1/post": {
         "get": {
-          "operationId": "getMyPosts",
+          "operationId": "getPosts",
           "summary": "Get my posts",
           "description": "This endpoint is used to getting my posts.",
           "parameters": [

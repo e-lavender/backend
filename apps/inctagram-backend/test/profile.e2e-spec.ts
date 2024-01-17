@@ -20,6 +20,7 @@ describe('ProfileController (e2e)', () => {
   let server: any;
 
   beforeAll(async () => {
+    // подключение основного приложеиня
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -29,6 +30,7 @@ describe('ProfileController (e2e)', () => {
     await app.init();
     server = app.getHttpServer();
 
+    // подключение файлового микросервиса
     const fileModuleFixture: TestingModule = await Test.createTestingModule({
       imports: [FileServiceModule],
     }).compile();
@@ -43,6 +45,7 @@ describe('ProfileController (e2e)', () => {
     } as TcpOptions);
     await fileApp.init();
 
+    // очистка БД
     const cleanDb = new CleanDbService(new PrismaService());
     await cleanDb.deleteAvatars();
     // await cleanDb.deleteProfiles();
@@ -379,5 +382,9 @@ describe('ProfileController (e2e)', () => {
     expect(getAvatar).toBeDefined();
     expect(getAvatar.status).toEqual(HttpStatus.NOT_FOUND);
     expect(getAvatar.body).toEqual({});
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });
