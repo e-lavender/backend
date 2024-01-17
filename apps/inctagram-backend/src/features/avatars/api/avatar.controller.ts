@@ -59,6 +59,7 @@ export class AvatarController extends ExceptionAndResponseHelper {
     description: 'Img is accepted.',
   })
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Put('upload')
   @UseGuards(JwtAccessAuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
