@@ -10,10 +10,13 @@ export class S3Repository {
   constructor(@InjectModel(File.name) private FileModule: FileModelType) {}
   async save(
     avatarInstance: FileDocument,
-  ): Promise<{ fileId: string; key: string }> {
+  ): Promise<ResultDTO<{ fileId: string; key: string }>> {
     const savedFile = await avatarInstance.save();
-    console.log({ savedFile: savedFile });
-    return { fileId: savedFile.id.toString(), key: savedFile.key };
+
+    return new ResultDTO(InternalCode.Success, {
+      fileId: savedFile.id.toString(),
+      key: savedFile.key,
+    });
   }
   async findByUserId(userId: number): Promise<ResultDTO<FileDocument>> {
     const userInstance = await this.FileModule.findOne({

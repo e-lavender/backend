@@ -1,9 +1,12 @@
 import {
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Put,
   UploadedFile,
   UseGuards,
@@ -74,7 +77,14 @@ export class AvatarController extends ExceptionAndResponseHelper {
   })
   async uploadAvatar(
     @CurrentUserId() userId: number,
-    @UploadedFile()
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10485760 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    )
     file: Express.Multer.File,
   ): Promise<void> {
     const saveResult = await this.commandBus.execute(
