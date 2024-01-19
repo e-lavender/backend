@@ -10,11 +10,13 @@ import { DeleteAvatarUseCase } from './features/s3/application/use-cases/delete-
 import { configModule } from '../config/config.module';
 import { GlobalConfigService } from '../config/config.service';
 import { SavePostImagesUseCase } from './features/s3/application/use-cases/save-post-images.use-case';
+import { DeletePostImagesUseCase } from './features/s3/application/use-cases/delete-post-images.use-case';
 
 const useCases = [
   SaveAvatarUseCase,
   DeleteAvatarUseCase,
   SavePostImagesUseCase,
+  DeletePostImagesUseCase,
 ];
 
 @Module({

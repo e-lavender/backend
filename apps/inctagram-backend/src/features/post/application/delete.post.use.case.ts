@@ -22,6 +22,7 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
   async execute(command: DeletePostCommand): Promise<any> {
     const { userId, postId } = command;
     const post = await this.postQueryRepository.getPost(postId);
+    console.log({ del_post_use_case: post.payload.fileId });
 
     // если этого поста нет - 404
     if (!post) return new ResultDTO(InternalCode.NotFound);
@@ -39,7 +40,7 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
       await lastValueFrom(
         this.client.send(
           { cmd: 'delete_post_images' },
-          { fieldId: post.payload.fileId },
+          { fileId: post.payload.fileId },
         ),
       );
 

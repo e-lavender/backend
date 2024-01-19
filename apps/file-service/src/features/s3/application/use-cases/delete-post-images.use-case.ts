@@ -17,10 +17,12 @@ export class DeletePostImagesUseCase
     private s3Repository: S3Repository,
   ) {}
 
-  async execute(command: DeletePostImagesCommand): Promise<any> {
-    const deletePostImagesResult = Promise.all(
-      command.fileId.map(async (fileId) => {
-        const image = await this.s3Repository.findById(fileId);
+  async execute(command: DeletePostImagesCommand): Promise<ResultDTO<null>> {
+    const { fileId } = command;
+
+    const deletePostImagesResult = await Promise.all(
+      fileId.map(async (fId) => {
+        const image = await this.s3Repository.findById(fId);
         if (image.hasError()) return image as ResultDTO<null>;
 
         try {
@@ -33,6 +35,6 @@ export class DeletePostImagesUseCase
       }),
     );
 
-    return deletePostImagesResult;
+    return new ResultDTO(InternalCode.Success);
   }
 }

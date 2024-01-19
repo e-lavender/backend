@@ -43,9 +43,9 @@ export class S3Controller extends ExceptionAndResponseHelper {
   }
 
   @MessagePattern({ cmd: 'delete_post_images' })
-  async deletePostImages(fieldId: string[]): Promise<void> {
+  async deletePostImages(data: any): Promise<void> {
     const deleteResult = await this.commandBus.execute(
-      new DeletePostImagesCommand(fieldId),
+      new DeletePostImagesCommand(data.fileId),
     );
 
     return this.sendExceptionOrResponse(deleteResult);
