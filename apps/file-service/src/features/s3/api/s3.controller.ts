@@ -7,6 +7,7 @@ import { ExceptionAndResponseHelper } from '../../../../../../libs/core/exceptio
 import { ApproachType } from '../../../../../../libs/enums';
 import { SavePostImagesCommand } from '../application/use-cases/save-post-images.use-case';
 import { fileIdAndKey } from '../../../../../../libs/types';
+import { DeletePostImagesCommand } from '../application/use-cases/delete-post-images.use-case';
 
 @Controller()
 export class S3Controller extends ExceptionAndResponseHelper {
@@ -32,7 +33,6 @@ export class S3Controller extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(deleteResult);
   }
 
-  //create post
   @MessagePattern({ cmd: 'save_post_images' })
   async savePostImages(data: any): Promise<fileIdAndKey[]> {
     const saveResult = await this.commandBus.execute(
@@ -41,6 +41,13 @@ export class S3Controller extends ExceptionAndResponseHelper {
 
     return this.sendExceptionOrResponse(saveResult);
   }
-  //update post
-  //delete post
+
+  @MessagePattern({ cmd: 'delete_post_images' })
+  async deletePostImages(fieldId: string[]): Promise<void> {
+    const deleteResult = await this.commandBus.execute(
+      new DeletePostImagesCommand(fieldId),
+    );
+
+    return this.sendExceptionOrResponse(deleteResult);
+  }
 }

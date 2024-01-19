@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { S3Adapter } from '../../adapter/s3.adapter';
 import { S3Repository } from '../../infrastructure/s3.repository';
 import { InjectModel } from '@nestjs/mongoose';
-import { File, FileModelType } from '../../domain/s3.entity';
+import { File, FileDocument, FileModelType } from '../../domain/s3.entity';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { FileTypeEnum } from '../../../../../enums';
 import { InternalCode } from '../../../../../../../libs/enums';
@@ -41,14 +41,14 @@ export class SavePostImagesUseCase
           file.buffer,
           file.mimetype,
         );
-        // if (saveToS3Result.hasError())
-        // return saveToS3Result as ResultDTO<null>;
+        // todo - добавить обработку ошибки здесь
+        // if (saveToS3Result.hasError()) return saveToS3Result as ResultDTO<null>;
 
         const metadata = file;
         delete metadata.buffer;
 
         // затем в mongo сохраняем подробную информацию о картинке
-        const fileInstance = this.FileModel.makeInstance(
+        const fileInstance: FileDocument = this.FileModel.makeInstance(
           saveToS3Result.payload.data.ETag,
           +userId,
           FileTypeEnum.Img,
@@ -59,6 +59,7 @@ export class SavePostImagesUseCase
         const fileIdIdAndKey = await this.s3Repository.savePostImage(
           fileInstance,
         );
+
         return fileIdIdAndKey.payload;
       }),
     );

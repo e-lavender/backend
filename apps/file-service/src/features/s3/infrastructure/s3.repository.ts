@@ -19,17 +19,6 @@ export class S3Repository {
     });
   }
 
-  async savePostImage(
-    postImageInstance: FileDocument,
-  ): Promise<ResultDTO<fileIdAndKey>> {
-    const savedFile = await postImageInstance.save();
-
-    return new ResultDTO(InternalCode.Success, {
-      fileId: savedFile.id.toString(),
-      key: savedFile.key,
-    });
-  }
-
   async findByUserId(userId: number): Promise<ResultDTO<FileDocument>> {
     const userInstance = await this.FileModule.findOne({
       userId,
@@ -47,5 +36,25 @@ export class S3Repository {
     if (!userInstance) return new ResultDTO(InternalCode.NotFound);
 
     return new ResultDTO(InternalCode.Success, userInstance);
+  }
+
+  async savePostImage(
+    postImageInstance: FileDocument,
+  ): Promise<ResultDTO<fileIdAndKey>> {
+    const savedFile = await postImageInstance.save();
+
+    return new ResultDTO(InternalCode.Success, {
+      fileId: savedFile.id.toString(),
+      key: savedFile.key,
+    });
+  }
+
+  async findImageByFileId(fileId: string): Promise<ResultDTO<FileDocument>> {
+    const imageInstance = await this.FileModule.findById(
+      new Types.ObjectId(fileId),
+    );
+    if (!imageInstance) return new ResultDTO(InternalCode.NotFound);
+
+    return new ResultDTO(InternalCode.Success, imageInstance);
   }
 }
