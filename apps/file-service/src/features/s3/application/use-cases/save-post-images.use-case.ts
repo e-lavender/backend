@@ -6,6 +6,7 @@ import { File, FileModelType } from '../../domain/s3.entity';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { FileTypeEnum } from '../../../../../enums';
 import { InternalCode } from '../../../../../../../libs/enums';
+import { fileIdAndKey } from '../../../../../../../libs/types';
 
 export class SavePostImagesCommand {
   constructor(
@@ -27,41 +28,40 @@ export class SavePostImagesUseCase
 
   async execute(
     command: SavePostImagesCommand,
-  ): Promise<ResultDTO<{ fileId: string; key: string }[]>> {
+  ): Promise<ResultDTO<fileIdAndKey[]>> {
     const { files, userId, postId } = command;
 
     // сохраняем каждую картинку из массива files
-    const savePostImagesResult: { fileId: string; key: string }[] =
-      await Promise.all(
-        files.map(async (file) => {
-          // сначала в s3
-          const saveToS3Result = await this.s3Adapter.savePostImages(
-            userId,
-            postId,
-            file.buffer,
-            file.mimetype,
-          );
-          // if (saveToS3Result.hasError())
-          // return saveToS3Result as ResultDTO<null>;
+    const savePostImagesResult: fileIdAndKey[] = await Promise.all(
+      files.map(async (file) => {
+        // сначала в s3
+        const saveToS3Result = await this.s3Adapter.savePostImages(
+          userId,
+          postId,
+          file.buffer,
+          file.mimetype,
+        );
+        // if (saveToS3Result.hasError())
+        // return saveToS3Result as ResultDTO<null>;
 
-          const metadata = file;
-          delete metadata.buffer;
+        const metadata = file;
+        delete metadata.buffer;
 
-          // затем в mongo сохраняем подробную информацию о картинке
-          const fileInstance = this.FileModel.makeInstance(
-            saveToS3Result.payload.data.ETag,
-            +userId,
-            FileTypeEnum.Img,
-            saveToS3Result.payload.key,
-            metadata,
-            this.FileModel,
-          );
-          const fileIdIdAndKey = await this.s3Repository.savePostImage(
-            fileInstance,
-          );
-          return fileIdIdAndKey.payload;
-        }),
-      );
+        // затем в mongo сохраняем подробную информацию о картинке
+        const fileInstance = this.FileModel.makeInstance(
+          saveToS3Result.payload.data.ETag,
+          +userId,
+          FileTypeEnum.Img,
+          saveToS3Result.payload.key,
+          metadata,
+          this.FileModel,
+        );
+        const fileIdIdAndKey = await this.s3Repository.savePostImage(
+          fileInstance,
+        );
+        return fileIdIdAndKey.payload;
+      }),
+    );
 
     return new ResultDTO(InternalCode.Success, savePostImagesResult);
   }

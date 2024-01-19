@@ -6,6 +6,7 @@ import { FileTypeEnum } from '../../../../../enums';
 import { S3Repository } from '../../infrastructure/s3.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
+import { fileIdAndKey } from '../../../../../../../libs/types';
 
 export class SaveAvatarCommand {
   constructor(public img: Express.Multer.File, public userId: string) {}
@@ -19,9 +20,7 @@ export class SaveAvatarUseCase implements ICommandHandler<SaveAvatarCommand> {
     @InjectModel(File.name) private FileModel: FileModelType,
   ) {}
 
-  async execute(
-    command: SaveAvatarCommand,
-  ): Promise<ResultDTO<{ fileId: string; key: string }>> {
+  async execute(command: SaveAvatarCommand): Promise<ResultDTO<fileIdAndKey>> {
     const avatarResult = await this.s3Repository.findByUserId(+command.userId);
     if (!avatarResult.hasError()) await avatarResult.payload.deleteOne();
 
