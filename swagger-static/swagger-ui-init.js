@@ -704,9 +704,6 @@ window.onload = function() {
             }
           },
           "responses": {
-            "200": {
-              "description": ""
-            },
             "204": {
               "description": "Img is accepted."
             }

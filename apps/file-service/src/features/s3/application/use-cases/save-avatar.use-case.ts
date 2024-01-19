@@ -23,8 +23,7 @@ export class SaveAvatarUseCase implements ICommandHandler<SaveAvatarCommand> {
     command: SaveAvatarCommand,
   ): Promise<ResultDTO<{ fileId: string; key: string }>> {
     const avatarResult = await this.s3Repository.findByUserId(+command.userId);
-    if (avatarResult.hasError()) return avatarResult as ResultDTO<null>;
-    await avatarResult.payload.deleteOne();
+    if (!avatarResult.hasError()) await avatarResult.payload.deleteOne();
 
     const saveResult = await this.s3Adapter.saveAvatar(
       +command.userId,
