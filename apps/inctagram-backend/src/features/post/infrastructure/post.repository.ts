@@ -11,7 +11,6 @@ export class PostRepository {
   constructor(private prisma: PrismaService) {}
 
   async createPost(
-    // data: Prisma.PostCreateInput,
     data: Prisma.PostUncheckedCreateInput,
   ): Promise<ResultDTO<ViewPostModel>> {
     const post = await this.prisma.post.create({

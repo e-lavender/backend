@@ -8,6 +8,7 @@ import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { randomUUID } from 'crypto';
+import { fileIdAndKey } from '../../../../../../libs/types';
 
 export class CreatePostCommand {
   constructor(
@@ -28,18 +29,16 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     try {
       const { userId, inputModel, files } = command;
 
-      // здесь сохраняем фотографии в s3 и получаем ссылки для поля imageUrl: string[]
-      // cmd - команда для s3controller
+      // сохраняем фотографии в s3 и получаем ссылки для поля imageUrl: string[]
       const postId = randomUUID();
-      const savePostImagesResult: { fileId: string; key: string }[] =
-        await lastValueFrom(
-          this.client.send(
-            { cmd: 'save_post_images' },
-            { files: files, userId: userId, postId: postId },
-          ),
-        );
+      const savePostImagesResult: fileIdAndKey[] = await lastValueFrom(
+        this.client.send(
+          { cmd: 'save_post_images' },
+          { files: files, userId: userId, postId: postId },
+        ),
+      );
 
-      // сюда надо положить массивы fileId и key
+      // кладем массивы fileId и key и создаем пост
       const data = {
         id: postId,
         userId,
@@ -51,7 +50,6 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
 
       return new ResultDTO(InternalCode.Success, createPostResult.payload);
     } catch (e) {
-      console.log({ e_1: e });
       return new ResultDTO(InternalCode.Internal_Server);
     }
   }

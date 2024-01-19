@@ -91,4 +91,20 @@ export class S3Adapter {
       return new ResultDTO(InternalCode.Internal_Server);
     }
   }
+
+  async deletePostImage(key: string): Promise<ResultDTO<null>> {
+    const bucketParams = {
+      Bucket: 'inctagram1',
+      Key: key,
+    };
+
+    const command = new DeleteObjectCommand(bucketParams);
+
+    try {
+      await this.s3Client.send(command);
+      return new ResultDTO(InternalCode.Success);
+    } catch (e) {
+      return new ResultDTO(InternalCode.Internal_Server);
+    }
+  }
 }

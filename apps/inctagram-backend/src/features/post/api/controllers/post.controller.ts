@@ -106,20 +106,11 @@ export class PostController extends ExceptionAndResponseHelper {
     @Body() body: CreateDescriptionModel,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ViewPostModel> {
-    // console.log({ files: files }, { body: body });
-
     const createPostResult = await this.commandBus.execute(
       new CreatePostCommand(userId, body, files),
     );
 
     return this.sendExceptionOrResponse(createPostResult);
-    // todo - с этими пайпами падает 400 ошибка
-    // new ParseFilePipe({
-    //   validators: [
-    //     new MaxFileSizeValidator({ maxSize: 20_000_000, message: 'file too large' }),
-    //     new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-    //   ],
-    // }),
   }
 
   @ApiOperation({
