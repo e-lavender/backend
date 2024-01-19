@@ -22,7 +22,6 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
   async execute(command: DeletePostCommand): Promise<any> {
     const { userId, postId } = command;
     const post = await this.postQueryRepository.getPost(postId);
-    console.log({ del_post_use_case: post.payload.fileId });
 
     // если этого поста нет - 404
     if (!post) return new ResultDTO(InternalCode.NotFound);
