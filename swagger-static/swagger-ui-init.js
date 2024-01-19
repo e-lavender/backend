@@ -876,7 +876,7 @@ window.onload = function() {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdatePostModel"
+                  "$ref": "#/components/schemas/CreateDescriptionModel"
                 }
               }
             }
@@ -1224,15 +1224,18 @@ window.onload = function() {
             "createdAt": {
               "type": "string"
             },
-            "photoUrl": {
-              "type": "string"
+            "imageUrl": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
             "id",
             "description",
             "createdAt",
-            "photoUrl"
+            "imageUrl"
           ]
         },
         "PaginationViewModel": {
@@ -1318,22 +1321,15 @@ window.onload = function() {
             "images"
           ]
         },
-        "UpdatePostModel": {
+        "CreateDescriptionModel": {
           "type": "object",
           "properties": {
             "description": {
               "type": "string",
               "minimum": 0,
               "maximum": 500
-            },
-            "photoUrl": {
-              "type": "string"
             }
-          },
-          "required": [
-            "description",
-            "photoUrl"
-          ]
+          }
         },
         "PublicViewPostModel": {
           "type": "object",
@@ -1341,8 +1337,11 @@ window.onload = function() {
             "userName": {
               "type": "string"
             },
-            "photoUrl": {
-              "type": "string"
+            "imageUrl": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             "description": {
               "type": "string"
@@ -1356,7 +1355,7 @@ window.onload = function() {
           },
           "required": [
             "userName",
-            "photoUrl",
+            "imageUrl",
             "description",
             "comments"
           ]

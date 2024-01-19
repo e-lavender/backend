@@ -65,4 +65,30 @@ export class S3Adapter {
       return new ResultDTO(InternalCode.Internal_Server);
     }
   }
+
+  async savePostImages(
+    userId: number,
+    postId: string,
+    buffer: Buffer,
+    mimetype: string,
+  ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
+    const key = `content/users/${userId}/posts/${postId}/${uuidv4()}_image.png`;
+
+    const bucketParams = {
+      Bucket: 'inctagram1',
+      Key: key,
+      Body: buffer,
+      ContentType: mimetype,
+    };
+
+    const command = new PutObjectCommand(bucketParams);
+
+    try {
+      const saveResult = await this.s3Client.send(command);
+      return new ResultDTO(InternalCode.Success, { key, data: saveResult });
+    } catch (e) {
+      console.log({ e_2: e });
+      return new ResultDTO(InternalCode.Internal_Server);
+    }
+  }
 }

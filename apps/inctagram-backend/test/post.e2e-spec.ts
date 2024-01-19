@@ -143,7 +143,6 @@ describe('PostController (e2e)', () => {
   //   const { accessToken1 } = expect.getState();
   //   const correctPostInput = {
   //     description: `correct_description`,
-  //     photoUrl: `correct_mock`,
   //   };
   //
   //   const createFirstPostsResponse = await request(server)
@@ -158,8 +157,8 @@ describe('PostController (e2e)', () => {
   //   expect(createFirstPostsResponse.body).toEqual({
   //     errorsMessages: [
   //       {
-  //         field: 'photoUrl',
-  //         message: 'photoUrl should not be empty',
+  //         field: 'imageUrl',
+  //         message: 'imageUrl should not be empty',
   //       },
   //     ],
   //   });
@@ -205,65 +204,63 @@ describe('PostController (e2e)', () => {
 
   it('7 - POST:post - 200 - 1st user create 2 posts', async () => {
     const { accessToken1 } = expect.getState();
-    console.log('7----');
 
     const firstPostInput = {
       description: 'first_correct_description',
-      photoUrl: 'mock',
     };
     const secondPostInput = {
       description: 'second_correct_description',
-      photoUrl: 'mock',
     };
 
-    const filePath = path.resolve(__dirname, 'utils', 'test_img.jpg');
-    // console.log({ filePath: filePath });
+    const filePath = path.resolve(__dirname, 'files', 'correct_img.jpg');
 
-    try {
-      const createFirstPostsResponse = await request(server)
-        .post('/api/v1/post')
-        .auth(accessToken1, { type: 'bearer' })
-        .field('description', firstPostInput.description)
-        .attach('files', filePath, {
-          contentType: 'multipart/form-data',
-        })
-        .attach('files', filePath, {
-          contentType: 'multipart/form-data',
-        });
-
-      // .end((err) => console.log({ err: err }));
-
-      console.log({ t_7: createFirstPostsResponse });
-      expect(createFirstPostsResponse).toBeDefined();
-      expect(createFirstPostsResponse.status).toEqual(HttpStatus.CREATED);
-      expect(createFirstPostsResponse.body).toEqual({
-        id: expect.any(String),
-        description: firstPostInput.description,
-        createdAt: expect.any(String),
-        photoUrl: expect.any(String),
+    const createFirstPostsResponse = await request(server)
+      .post('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' })
+      .field('description', firstPostInput.description)
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
+      })
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
       });
 
-      // const createSecondPostsResponse = await request(server)
-      //   .post('/api/v1/post')
-      //   .auth(accessToken1, { type: 'bearer' })
-      //   .field('description', firstPostInput.description);
-      //
-      // expect(createSecondPostsResponse).toBeDefined();
-      // expect(createSecondPostsResponse.status).toEqual(HttpStatus.CREATED);
-      // expect(createSecondPostsResponse.body).toEqual({
-      //   id: expect.any(String),
-      //   description: secondPostInput.description,
-      //   createdAt: expect.any(String),
-      //   photoUrl: expect.any(String),
-      // });
+    expect(createFirstPostsResponse).toBeDefined();
+    expect(createFirstPostsResponse.status).toEqual(HttpStatus.CREATED);
+    expect(createFirstPostsResponse.body).toEqual({
+      id: expect.any(String),
+      description: firstPostInput.description,
+      createdAt: expect.any(String),
+      imageUrl: expect.any(Array),
+    });
 
-      expect.setState({
-        firstPost: createFirstPostsResponse.body,
-        // secondPost: createSecondPostsResponse.body,
+    const createSecondPostsResponse = await request(server)
+      .post('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' })
+      .field('description', secondPostInput.description)
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
+      })
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
+      })
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
       });
-    } catch (e) {
-      console.log({ error: e });
-    }
+
+    expect(createSecondPostsResponse).toBeDefined();
+    expect(createSecondPostsResponse.status).toEqual(HttpStatus.CREATED);
+    expect(createSecondPostsResponse.body).toEqual({
+      id: expect.any(String),
+      description: secondPostInput.description,
+      createdAt: expect.any(String),
+      imageUrl: expect.any(Array),
+    });
+
+    expect.setState({
+      firstPost: createFirstPostsResponse.body,
+      secondPost: createSecondPostsResponse.body,
+    });
   });
   it('8 - GET:post - 200 - 1st user get himself posts', async () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
@@ -283,27 +280,6 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  it('8 - PUT:post - 400 - 1st user try update post without photo', async () => {
-    const { accessToken1, firstPost, correctPostInput } = expect.getState();
-
-    const updateFirstPostsResponse = await request(server)
-      .put(`/api/v1/post/${firstPost.id}`)
-      .auth(accessToken1, { type: 'bearer' })
-      .send({
-        description: correctPostInput.description,
-      });
-
-    expect(updateFirstPostsResponse).toBeDefined();
-    expect(updateFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
-    expect(updateFirstPostsResponse.body).toEqual({
-      errorsMessages: [
-        {
-          field: 'photoUrl',
-          message: 'photoUrl should not be empty',
-        },
-      ],
-    });
-  });
   it('9 - PUT:post - 400 - 1st user try update description more 500 symbols', async () => {
     const { accessToken1, firstPost, incorrectPostInput } = expect.getState();
 
@@ -312,7 +288,6 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: incorrectPostInput.description,
-        photoUrl: `correct_mock`,
       });
 
     expect(updateFirstPostsResponse).toBeDefined();
@@ -332,11 +307,9 @@ describe('PostController (e2e)', () => {
     const { accessToken1, firstPost, secondPost } = expect.getState();
     const updatedFirstPostInput = {
       description: 'updated_first_correct_description',
-      photoUrl: 'correct_mock',
     };
     const updatedSecondPostInput = {
       description: 'updated_second_correct_description',
-      photoUrl: 'correct_mock',
     };
 
     const updateFirstPostsResponse = await request(server)
@@ -344,7 +317,6 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: updatedFirstPostInput.description,
-        photoUrl: updatedFirstPostInput.photoUrl,
       });
 
     expect(updateFirstPostsResponse).toBeDefined();
@@ -356,7 +328,6 @@ describe('PostController (e2e)', () => {
       .auth(accessToken1, { type: 'bearer' })
       .send({
         description: updatedSecondPostInput.description,
-        photoUrl: updatedSecondPostInput.photoUrl,
       });
 
     expect(updateSecondPostsResponse).toBeDefined();

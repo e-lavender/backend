@@ -8,5 +8,5 @@ export class ViewPostModel {
   @ApiProperty()
   createdAt: string;
   @ApiProperty()
-  photoUrl: string;
+  imageUrl: string[];
 }

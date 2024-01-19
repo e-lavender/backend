@@ -18,6 +18,7 @@ export class SaveAvatarUseCase implements ICommandHandler<SaveAvatarCommand> {
     private s3Repository: S3Repository,
     @InjectModel(File.name) private FileModel: FileModelType,
   ) {}
+
   async execute(
     command: SaveAvatarCommand,
   ): Promise<ResultDTO<{ fileId: string; key: string }>> {

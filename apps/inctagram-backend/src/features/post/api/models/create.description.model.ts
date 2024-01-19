@@ -1,9 +1,9 @@
 import { IsOptional, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateDescriptionModel {
-  @ApiProperty({
+  @ApiPropertyOptional({
     minimum: 0,
     maximum: 500,
   })

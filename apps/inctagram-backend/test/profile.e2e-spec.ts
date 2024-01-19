@@ -341,7 +341,7 @@ describe('ProfileController (e2e)', () => {
   it('13 - PUT:avatar/upload - 204 - create avatar', async () => {
     const { accessToken1 } = expect.getState();
 
-    const filePath = path.resolve(__dirname, 'utils', 'test_img.jpg');
+    const filePath = path.resolve(__dirname, 'files', 'correct_img.jpg');
 
     const createAvatar = await request(server)
       .put('/api/v1/avatar/upload')

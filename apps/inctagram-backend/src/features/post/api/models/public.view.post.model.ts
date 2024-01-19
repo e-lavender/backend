@@ -4,7 +4,7 @@ export class PublicViewPostModel {
   @ApiProperty()
   userName: string;
   @ApiProperty()
-  photoUrl: string;
+  imageUrl: string[];
   @ApiProperty()
   description: string;
   @ApiProperty()
