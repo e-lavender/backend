@@ -5,6 +5,8 @@ import { SaveAvatarCommand } from '../application/use-cases/save-avatar.use-case
 import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.use-case';
 import { ExceptionAndResponseHelper } from '../../../../../../libs/core/exceptionAndResponse';
 import { ApproachType } from '../../../../../../libs/enums';
+import { SavePostImagesCommand } from '../application/use-cases/save-post-images.use-case';
+import { fileIdAndKey } from '../../../../../../libs/types';
 
 @Controller()
 export class S3Controller extends ExceptionAndResponseHelper {
@@ -13,7 +15,7 @@ export class S3Controller extends ExceptionAndResponseHelper {
   }
 
   @MessagePattern({ cmd: 'save_avatar' })
-  async saveAvatar(data: any): Promise<{ fileId: string; key: string }> {
+  async saveAvatar(data: any): Promise<fileIdAndKey> {
     const saveResult = await this.commandBus.execute(
       new SaveAvatarCommand(data.file, data.userId),
     );
@@ -29,4 +31,16 @@ export class S3Controller extends ExceptionAndResponseHelper {
 
     return this.sendExceptionOrResponse(deleteResult);
   }
+
+  //create post
+  @MessagePattern({ cmd: 'save_post_images' })
+  async savePostImages(data: any): Promise<fileIdAndKey[]> {
+    const saveResult = await this.commandBus.execute(
+      new SavePostImagesCommand(data.files, data.userId, data.postId),
+    );
+
+    return this.sendExceptionOrResponse(saveResult);
+  }
+  //update post
+  //delete post
 }

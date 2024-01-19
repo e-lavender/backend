@@ -20,6 +20,7 @@ describe('ProfileController (e2e)', () => {
   let server: any;
 
   beforeAll(async () => {
+    // подключение основного приложеиня
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -29,6 +30,7 @@ describe('ProfileController (e2e)', () => {
     await app.init();
     server = app.getHttpServer();
 
+    // подключение файлового микросервиса
     const fileModuleFixture: TestingModule = await Test.createTestingModule({
       imports: [FileServiceModule],
     }).compile();
@@ -43,6 +45,7 @@ describe('ProfileController (e2e)', () => {
     } as TcpOptions);
     await fileApp.init();
 
+    // очистка БД
     const cleanDb = new CleanDbService(new PrismaService());
     await cleanDb.deleteAvatars();
     // await cleanDb.deleteProfiles();
@@ -338,7 +341,7 @@ describe('ProfileController (e2e)', () => {
   it('13 - PUT:avatar/upload - 204 - create avatar', async () => {
     const { accessToken1 } = expect.getState();
 
-    const filePath = path.resolve(__dirname, 'utils', 'test_img.jpg');
+    const filePath = path.resolve(__dirname, 'files', 'correct_img.jpg');
 
     const createAvatar = await request(server)
       .put('/api/v1/avatar/upload')
@@ -379,5 +382,9 @@ describe('ProfileController (e2e)', () => {
     expect(getAvatar).toBeDefined();
     expect(getAvatar.status).toEqual(HttpStatus.NOT_FOUND);
     expect(getAvatar.body).toEqual({});
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });

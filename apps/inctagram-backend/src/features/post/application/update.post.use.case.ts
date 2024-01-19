@@ -1,15 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdatePostModel } from '../api/models/update.post.model';
 import { PostRepository } from '../infrastructure/post.repository';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { InternalCode } from '../../../../../../libs/enums';
+import { CreateDescriptionModel } from '../api/models/create.description.model';
 
 export class UpdatePostCommand {
   constructor(
     public userId: number,
     public postId: string,
-    public inputModel: UpdatePostModel,
+    public inputModel: CreateDescriptionModel,
   ) {}
 }
 

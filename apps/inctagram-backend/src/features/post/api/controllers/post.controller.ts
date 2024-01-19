@@ -37,7 +37,6 @@ import { JwtAccessAuthGuard } from '../../../auth/guards/jwt-access-auth.guard';
 import { CreatePostCommand } from '../../application/create.post.use.case';
 import { CreateDescriptionModel } from '../models/create.description.model';
 import { ViewPostModel } from '../models/view.post.model';
-import { UpdatePostModel } from '../models/update.post.model';
 import { PostQueryRepository } from '../../infrastructure/post.query.repository';
 import { UpdatePostCommand } from '../../application/update.post.use.case';
 import { DeletePostCommand } from '../../application/delete.post.use.case';
@@ -71,7 +70,7 @@ export class PostController extends ExceptionAndResponseHelper {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMyPosts(
+  async getPosts(
     @CurrentUserId() userId: number,
     @Query() query: DefaultPaginationInput,
   ): Promise<PaginationViewModel<ViewPostModel>> {
@@ -98,20 +97,29 @@ export class PostController extends ExceptionAndResponseHelper {
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post()
-  @UseInterceptors(FilesInterceptor('files', 10, { limits: { fieldSize: 20 } }))
+  @UseInterceptors(FilesInterceptor('files', 10))
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UploadPhotosModel })
   @HttpCode(HttpStatus.CREATED)
   async createPost(
     @CurrentUserId() userId: number,
-    @Body() inputModel: CreateDescriptionModel,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() body: CreateDescriptionModel,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ViewPostModel> {
+    // console.log({ files: files }, { body: body });
+
     const createPostResult = await this.commandBus.execute(
-      new CreatePostCommand(userId, inputModel, files),
+      new CreatePostCommand(userId, body, files),
     );
 
     return this.sendExceptionOrResponse(createPostResult);
+    // todo - с этими пайпами падает 400 ошибка
+    // new ParseFilePipe({
+    //   validators: [
+    //     new MaxFileSizeValidator({ maxSize: 20_000_000, message: 'file too large' }),
+    //     new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+    //   ],
+    // }),
   }
 
   @ApiOperation({
@@ -137,10 +145,10 @@ export class PostController extends ExceptionAndResponseHelper {
   async updatePost(
     @CurrentUserId() userId: number,
     @Param('id') postId: string,
-    @Body() inputModel: UpdatePostModel,
+    @Body() body: CreateDescriptionModel,
   ): Promise<void> {
     const updatePostResult = await this.commandBus.execute(
-      new UpdatePostCommand(userId, postId, inputModel),
+      new UpdatePostCommand(userId, postId, body),
     );
 
     return this.sendExceptionOrResponse(updatePostResult);

@@ -49,7 +49,7 @@ export class PublicPostQueryRepository {
         });
         return {
           userName: names.userName,
-          photoUrl: p.photoUrl,
+          imageUrl: p.key,
           description: p.description,
           comments: [],
         };
@@ -70,7 +70,7 @@ export class PublicPostQueryRepository {
   ): PublicViewPostModel {
     return {
       userName: profile.payload.userName,
-      photoUrl: post.photoUrl,
+      imageUrl: post.key,
       description: post.description,
       comments: [],
     };

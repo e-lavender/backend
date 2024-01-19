@@ -42,12 +42,12 @@ model UserEmailConfirmation {
 }
 
 model Avatar {
-  userId Int @id()
+  userId Int    @id()
   fileId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   key    String
 
-  @@unique([userId,fileId,key])
+  @@unique([userId, fileId, key])
   @@map("avatars")
 }
 
@@ -91,7 +91,8 @@ model Post {
   id          String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
   description String?
   createdAt   DateTime @default(now()) @db.Timestamp()
-  photoUrl    String
+  fileId      String[]
+  key         String[]
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 

@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { ViewPostModel } from '../api/models/view.post.model';
 import { InternalCode } from '../../../../../../libs/enums';
-import { UpdatePostModel } from '../api/models/update.post.model';
+import { CreateDescriptionModel } from '../api/models/create.description.model';
 
 @Injectable()
 export class PostRepository {
@@ -20,20 +20,20 @@ export class PostRepository {
         id: true,
         description: true,
         createdAt: true,
-        photoUrl: true,
+        key: true,
       },
     });
     return new ResultDTO(InternalCode.Success, {
       id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
-      photoUrl: post.photoUrl,
+      imageUrl: post.key,
     });
   }
 
   async updatePost(
     id: string,
-    inputModel: UpdatePostModel,
+    inputModel: CreateDescriptionModel,
   ): Promise<ResultDTO<null>> {
     await this.prisma.post.update({
       where: { id },
