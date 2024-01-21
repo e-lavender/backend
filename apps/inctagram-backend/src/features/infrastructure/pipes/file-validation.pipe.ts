@@ -12,6 +12,7 @@ export class FileValidationPipe implements PipeTransform {
     private validType: string[],
     private count?: { min: number; max: number },
   ) {}
+
   transform(value: any, metadata: ArgumentMetadata) {
     const maxSize = this.maxSize * (1024 * 1024);
     const error = {
@@ -45,7 +46,9 @@ export class FileValidationPipe implements PipeTransform {
       }
     } else {
       if (value.size > maxSize) {
-        error.messages.push('The file size should not be larger than 10mb');
+        error.messages.push(
+          `The file size should not be larger than ${this.maxSize}MB`,
+        );
       }
 
       if (!this.validType.includes(value.mimetype.split('/')[1])) {

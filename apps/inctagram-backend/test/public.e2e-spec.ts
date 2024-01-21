@@ -1,13 +1,22 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import {
+  HttpStatus,
+  INestApplication,
+  INestMicroservice,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { appSettings } from '../../../libs/core/app.settings';
 import * as request from 'supertest';
 import { CleanDbService } from './utils/clean.db.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import path from 'path';
+import { FileServiceModule } from '../../file-service/src/file-service.module';
+import { getConfiguration } from '../../file-service/config/configuration';
+import { TcpOptions, Transport } from '@nestjs/microservices';
 
 describe('PublicProfileAndPostController (e2e)', () => {
   let app: INestApplication;
+  let fileApp: INestMicroservice;
   let server: any;
 
   beforeAll(async () => {
@@ -20,6 +29,21 @@ describe('PublicProfileAndPostController (e2e)', () => {
     appSettings(app, AppModule);
     await app.init();
     server = app.getHttpServer();
+
+    // подключение файлового микросервиса
+    const fileModuleFixture: TestingModule = await Test.createTestingModule({
+      imports: [FileServiceModule],
+    }).compile();
+
+    const config = getConfiguration();
+    fileApp = fileModuleFixture.createNestMicroservice({
+      transport: Transport.TCP,
+      options: {
+        host: config.services.file.host,
+        port: +config.services.file.port,
+      },
+    } as TcpOptions);
+    await fileApp.init();
 
     // очистка БД
     const cleanDb = new CleanDbService(new PrismaService());
@@ -110,12 +134,14 @@ describe('PublicProfileAndPostController (e2e)', () => {
     };
     const firstPostInput = {
       description: 'first_correct_description',
-      photoUrl: `correct_mock`,
     };
     const secondPostInput = {
       description: 'second_correct_description',
-      photoUrl: `correct_mock`,
     };
+
+    // const filePath2 = path.resolve(__dirname, 'files', 'correct_img.jpg');
+    const filePath =
+      '/Users/artyom/Documents/IT/Incubator/inctagram/backend/apps/inctagram-backend/test/files/correct_img.jpg';
 
     const updateFirstProfileResponse = await request(server)
       .put('/api/v1/profile')
@@ -130,15 +156,19 @@ describe('PublicProfileAndPostController (e2e)', () => {
         aboutMe: correctUpdateFirstProfile.aboutMe,
       });
 
+    console.log({ t_4: updateFirstProfileResponse.body.errorsMessages });
     expect(updateFirstProfileResponse).toBeDefined();
     expect(updateFirstProfileResponse.status).toEqual(HttpStatus.NO_CONTENT);
 
     const createFirstPostsResponse = await request(server)
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
-      .send({
-        description: firstPostInput.description,
-        photoUrl: firstPostInput.photoUrl,
+      .field('description', firstPostInput.description)
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
+      })
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
       });
 
     expect(createFirstPostsResponse).toBeDefined();
@@ -147,15 +177,15 @@ describe('PublicProfileAndPostController (e2e)', () => {
       id: expect.any(String),
       description: firstPostInput.description,
       createdAt: expect.any(String),
-      photoUrl: firstPostInput.photoUrl,
+      imageUrl: expect.any(Array),
     });
 
     const createSecondPostsResponse = await request(server)
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
-      .send({
-        description: secondPostInput.description,
-        photoUrl: secondPostInput.photoUrl,
+      .field('description', secondPostInput.description)
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
       });
 
     expect(createSecondPostsResponse).toBeDefined();
@@ -164,7 +194,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
       id: expect.any(String),
       description: secondPostInput.description,
       createdAt: expect.any(String),
-      photoUrl: secondPostInput.photoUrl,
+      imageUrl: expect.any(Array),
     });
 
     expect.setState({
@@ -210,7 +240,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     expect(getFirstPublicPost.status).toEqual(HttpStatus.OK);
     expect(getFirstPublicPost.body).toEqual({
       userName: firstUser.login,
-      photoUrl: firstPost.photoUrl,
+      imageUrl: firstPost.imageUrl,
       description: firstPost.description,
       comments: [],
     });
@@ -223,7 +253,7 @@ describe('PublicProfileAndPostController (e2e)', () => {
     expect(getSecondPublicPost.status).toEqual(HttpStatus.OK);
     expect(getSecondPublicPost.body).toEqual({
       userName: firstUser.login,
-      photoUrl: secondPost.photoUrl,
+      imageUrl: secondPost.imageUrl,
       description: secondPost.description,
       comments: [],
     });
