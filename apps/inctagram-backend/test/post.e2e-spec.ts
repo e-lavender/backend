@@ -139,34 +139,36 @@ describe('PostController (e2e)', () => {
     });
   });
 
-  // it('5 - POST:post - 400 - 1st user try create post without photo', async () => {
-  //   const { accessToken1 } = expect.getState();
-  //   const correctPostInput = {
-  //     description: `correct_description`,
-  //   };
-  //
-  //   const createFirstPostsResponse = await request(server)
-  //     .post('/api/v1/post')
-  //     .auth(accessToken1, { type: 'bearer' })
-  //     .send({
-  //       description: correctPostInput.description,
-  //     });
-  //
-  //   expect(createFirstPostsResponse).toBeDefined();
-  //   expect(createFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
-  //   expect(createFirstPostsResponse.body).toEqual({
-  //     errorsMessages: [
-  //       {
-  //         field: 'imageUrl',
-  //         message: 'imageUrl should not be empty',
-  //       },
-  //     ],
-  //   });
-  //
-  //   expect.setState({ correctPostInput });
-  // });
+  it('5 - POST:post - 400 - 1st user try create post without photo', async () => {
+    const { accessToken1 } = expect.getState();
+
+    const correctPostInput = {
+      description: `correct_description`,
+    };
+
+    const createFirstPostsResponse = await request(server)
+      .post('/api/v1/post')
+      .auth(accessToken1, { type: 'bearer' })
+      .send({
+        description: correctPostInput.description,
+      });
+
+    expect(createFirstPostsResponse).toBeDefined();
+    expect(createFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(createFirstPostsResponse.body).toEqual({
+      errorsMessages: [
+        {
+          field: 'imageUrl',
+          message: 'imageUrl should not be empty',
+        },
+      ],
+    });
+
+    expect.setState({ correctPostInput });
+  });
   it('6 - POST:post - 400 - 1st user try create description more 500 symbols', async () => {
     const { accessToken1 } = expect.getState();
+
     const incorrectPostInput = {
       description: `description 501 symbol =-=-=-=-=-=-=-=-=-=-=-=-=-=
       description 501 symbol =-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -179,12 +181,14 @@ describe('PostController (e2e)', () => {
       description 501 symbol =-=-=-=-=-=-=-=-=-=-=-=-=-=
       description 501 symbol =-=-=-=-=-=-=-=-=-=-=-=-=-=!`,
     };
+    const filePath = path.resolve(__dirname, 'files', 'correct_img.jpg');
 
     const createFirstPostsResponse = await request(server)
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
-      .send({
-        description: incorrectPostInput.description,
+      .field('description', incorrectPostInput.description)
+      .attach('files', filePath, {
+        contentType: 'multipart/form-data',
       });
 
     expect(createFirstPostsResponse).toBeDefined();
