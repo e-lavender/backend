@@ -45,6 +45,7 @@ import { DefaultPaginationInput } from '../pagination/pagination.input.model';
 import { PaginationViewModel } from '../pagination/pagination.view.model';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadPhotosModel } from '../models/upload.photos.model';
+import { FileValidationPipe } from '../../../infrastructure/pipes/file-validation.pipe';
 
 @ApiTags('Post')
 @Controller('post')
@@ -70,7 +71,7 @@ export class PostController extends ExceptionAndResponseHelper {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPosts(
+  async getMyPosts(
     @CurrentUserId() userId: number,
     @Query() query: DefaultPaginationInput,
   ): Promise<PaginationViewModel<ViewPostModel>> {
@@ -104,7 +105,8 @@ export class PostController extends ExceptionAndResponseHelper {
   async createPost(
     @CurrentUserId() userId: number,
     @Body() body: CreateDescriptionModel,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles(new FileValidationPipe(20000000, ['png', 'jpeg', 'jpg']))
+    files: Express.Multer.File[],
   ): Promise<ViewPostModel> {
     const createPostResult = await this.commandBus.execute(
       new CreatePostCommand(userId, body, files),

@@ -1,12 +1,9 @@
 import {
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
-  MaxFileSizeValidator,
-  ParseFilePipe,
   Put,
   UploadedFile,
   UseGuards,
@@ -31,6 +28,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { FileValidationPipe } from '../../infrastructure/pipes/file-validation.pipe';
 
 @ApiTags('Avatar')
 @Controller('avatar')
@@ -78,14 +76,7 @@ export class AvatarController extends ExceptionAndResponseHelper {
   })
   async uploadAvatar(
     @CurrentUserId() userId: number,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10485760 }),
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-        ],
-      }),
-    )
+    @UploadedFile(new FileValidationPipe(10000000, ['png', 'jpeg', 'jpg']))
     file: Express.Multer.File,
   ): Promise<void> {
     const saveResult = await this.commandBus.execute(
