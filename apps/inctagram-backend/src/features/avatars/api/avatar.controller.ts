@@ -76,7 +76,7 @@ export class AvatarController extends ExceptionAndResponseHelper {
   })
   async uploadAvatar(
     @CurrentUserId() userId: number,
-    @UploadedFile(new FileValidationPipe(10000000, ['png', 'jpeg', 'jpg']))
+    @UploadedFile(new FileValidationPipe(10, ['png', 'jpeg', 'jpg']))
     file: Express.Multer.File,
   ): Promise<void> {
     const saveResult = await this.commandBus.execute(

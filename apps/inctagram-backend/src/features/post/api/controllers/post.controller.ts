@@ -105,7 +105,12 @@ export class PostController extends ExceptionAndResponseHelper {
   async createPost(
     @CurrentUserId() userId: number,
     @Body() body: CreateDescriptionModel,
-    @UploadedFiles(new FileValidationPipe(20_000_000, ['png', 'jpeg', 'jpg']))
+    @UploadedFiles(
+      new FileValidationPipe(20, ['png', 'jpeg', 'jpg'], {
+        min: 1,
+        max: 10,
+      }),
+    )
     files: Express.Multer.File[],
   ): Promise<ViewPostModel> {
     const createPostResult = await this.commandBus.execute(
