@@ -26,7 +26,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const exceptionResponse: any = exception.getResponse();
-    console.dir(exceptionResponse.message[0]);
     if (
       status === HttpStatus.BAD_REQUEST &&
       Array.isArray(exceptionResponse.message)
