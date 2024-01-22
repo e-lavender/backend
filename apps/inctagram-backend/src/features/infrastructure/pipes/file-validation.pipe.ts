@@ -16,22 +16,26 @@ export class FileValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     const maxSize = this.maxSize * (1024 * 1024);
     const error = {
-      field: value.fieldname ?? value[0].fieldname,
+      field: '',
       messages: [],
     };
 
     if (this.count) {
-      if (value?.length < this.count.min || value?.length > this.count.max) {
+      if (
+        !(value?.length >= this.count.min) ||
+        !(value?.length <= this.count.max)
+      ) {
+        console.log(value?.length);
         error.messages.push(
           `Count files should be more ${this.count.min} and less ${this.count.max}`,
         );
       }
 
-      const typesIsValid = value.every((file) => {
+      const typesIsValid = value?.every((file) => {
         return this.validType.includes(file.mimetype.split('/')[1]);
       });
 
-      const sizeIsValid = value.every((file) => {
+      const sizeIsValid = value?.every((file) => {
         return file.size <= maxSize;
       });
 
@@ -54,6 +58,10 @@ export class FileValidationPipe implements PipeTransform {
       if (!this.validType.includes(value.mimetype.split('/')[1])) {
         error.messages.push('The file format is not valid');
       }
+    }
+
+    if (value?.fieldname || Array.isArray(value)) {
+      error.field = value?.fieldname ?? value[0].fieldname;
     }
 
     if (error.messages.length) {
