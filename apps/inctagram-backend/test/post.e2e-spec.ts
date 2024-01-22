@@ -158,8 +158,8 @@ describe('PostController (e2e)', () => {
     expect(createFirstPostsResponse.body).toEqual({
       errorsMessages: [
         {
-          field: 'imageUrl',
-          message: 'imageUrl should not be empty',
+          field: 'files',
+          message: 'Count files should be more or equal 1 and less or equal 10',
         },
       ],
     });
@@ -187,9 +187,7 @@ describe('PostController (e2e)', () => {
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
       .field('description', incorrectPostInput.description)
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      });
+      .attach('files', filePath);
 
     expect(createFirstPostsResponse).toBeDefined();
     expect(createFirstPostsResponse.status).toEqual(HttpStatus.BAD_REQUEST);
@@ -222,12 +220,8 @@ describe('PostController (e2e)', () => {
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
       .field('description', firstPostInput.description)
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      })
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      });
+      .attach('files', filePath)
+      .attach('files', filePath);
 
     expect(createFirstPostsResponse).toBeDefined();
     expect(createFirstPostsResponse.status).toEqual(HttpStatus.CREATED);
@@ -242,15 +236,9 @@ describe('PostController (e2e)', () => {
       .post('/api/v1/post')
       .auth(accessToken1, { type: 'bearer' })
       .field('description', secondPostInput.description)
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      })
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      })
-      .attach('files', filePath, {
-        contentType: 'multipart/form-data',
-      });
+      .attach('files', filePath)
+      .attach('files', filePath)
+      .attach('files', filePath);
 
     expect(createSecondPostsResponse).toBeDefined();
     expect(createSecondPostsResponse.status).toEqual(HttpStatus.CREATED);

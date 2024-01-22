@@ -25,9 +25,9 @@ export class FileValidationPipe implements PipeTransform {
         !(value?.length >= this.count.min) ||
         !(value?.length <= this.count.max)
       ) {
-        console.log(value?.length);
+        error.field = 'files';
         error.messages.push(
-          `Count files should be more ${this.count.min} and less ${this.count.max}`,
+          `Count files should be more or equal ${this.count.min} and less or equal ${this.count.max}`,
         );
       }
 
