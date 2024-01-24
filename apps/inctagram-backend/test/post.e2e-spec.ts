@@ -14,6 +14,22 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { CleanDbService } from './utils/clean.db.service';
 import * as path from 'path';
 
+// class UserService {
+//   constructor(repo) {}
+//   method1() {}
+//   method2() {}
+// }
+//
+// class UserServuceMock extends UserService {
+//   constructor(repo) {
+//     super(repo);
+//   }
+//
+//   method2() {
+//     return File;
+//   }
+// }
+
 describe('PostController (e2e)', () => {
   let app: INestApplication;
   let fileApp: INestMicroservice;
@@ -23,12 +39,18 @@ describe('PostController (e2e)', () => {
     // подключение основного приложеиня
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      // .overrideProvider(FileServiceAdapter) - todo - сделать мок для файлового микросервиса, не тестировать микросервисы в связке
+      // .useClass()
+      .compile();
 
     app = moduleFixture.createNestApplication();
     appSettings(app, AppModule);
     await app.init();
     server = app.getHttpServer();
+
+    // todo - разобраться, почему эти тесты требуют предварительного запуска файлового микросервиса вручную
+    // возможно прописать запуск тестов в package.json, чтобы они запускались при деплое
 
     // подключение файлового микросервиса
     const fileModuleFixture: TestingModule = await Test.createTestingModule({

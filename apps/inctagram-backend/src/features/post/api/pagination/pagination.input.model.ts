@@ -40,4 +40,6 @@ export class DefaultPaginationInput {
   itemsCount(prismaCount: { _count: { userId: number } }): number {
     return prismaCount._count.userId;
   }
+
+  // todo - передать id поста, от которого передавать следующие посты с пагинацией
 }

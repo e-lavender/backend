@@ -31,6 +31,8 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
 
       // сохраняем фотографии в s3 и получаем ссылки для поля imageUrl: string[]
       const postId = randomUUID();
+
+      // todo - вынести в отдельный адаптер по работе с другим микросервисом
       const savePostImagesResult: fileIdAndKey[] = await lastValueFrom(
         this.client.send(
           { cmd: 'save_post_images' },
@@ -39,14 +41,19 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
       );
 
       // кладем массивы fileId и key и создаем пост
-      const data = {
+      const postData = {
         id: postId,
         userId,
         description: inputModel.description,
         fileId: savePostImagesResult.map((file) => file.fileId),
         key: savePostImagesResult.map((file) => file.key),
       };
-      const createPostResult = await this.postRepository.createPost(data);
+      // const imagesData = {
+      //   postId,
+      //   fileId: savePostImagesResult.map((file) => file.fileId),
+      //   key: savePostImagesResult.map((file) => file.key),
+      // };
+      const createPostResult = await this.postRepository.createPost(postData);
 
       return new ResultDTO(InternalCode.Success, createPostResult.payload);
     } catch (e) {

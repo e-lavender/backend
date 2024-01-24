@@ -7,6 +7,7 @@ import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { FileTypeEnum } from '../../../../../enums';
 import { InternalCode } from '../../../../../../../libs/enums';
 import { fileIdAndKey } from '../../../../../../../libs/types';
+import { SavePostImageToS3Model } from '../../api/models/save.post.image.to.s3.model';
 
 export class SavePostImagesCommand {
   constructor(
@@ -35,19 +36,20 @@ export class SavePostImagesUseCase
     const savePostImagesResult: fileIdAndKey[] = await Promise.all(
       files.map(async (file) => {
         // сначала в s3
-        const saveToS3Result = await this.s3Adapter.savePostImages(
+        const dto: SavePostImageToS3Model = {
           userId,
           postId,
-          file.buffer,
-          file.mimetype,
-        );
+          buffer: file.buffer,
+          mimetype: file.mimetype,
+        };
+        const saveToS3Result = await this.s3Adapter.savePostImage(dto);
         // todo - добавить обработку ошибки здесь
         // if (saveToS3Result.hasError()) return saveToS3Result as ResultDTO<null>;
 
         const metadata = file;
         delete metadata.buffer;
 
-        // затем в mongo сохраняем подробную информацию о картинке
+        // затем в mongo подробную информацию о картинке
         const fileInstance: FileDocument = this.FileModel.makeInstance(
           saveToS3Result.payload.data.ETag,
           +userId,

@@ -11,10 +11,11 @@ export class PostRepository {
   constructor(private prisma: PrismaService) {}
 
   async createPost(
-    data: Prisma.PostUncheckedCreateInput,
+    postData: Prisma.PostUncheckedCreateInput,
+    // imagesData: Prisma.PostImagesUncheckedCreateInput,
   ): Promise<ResultDTO<ViewPostModel>> {
     const post = await this.prisma.post.create({
-      data: { ...data },
+      data: { ...postData },
       select: {
         id: true,
         description: true,
@@ -22,6 +23,12 @@ export class PostRepository {
         key: true,
       },
     });
+
+    // const postImages = await this.prisma.post_images.create({
+    //   data: { ...imagesData },
+    //   select: { key: true },
+    // });
+
     return new ResultDTO(InternalCode.Success, {
       id: post.id,
       description: post.description,

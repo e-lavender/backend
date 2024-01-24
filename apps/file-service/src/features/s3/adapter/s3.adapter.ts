@@ -1,13 +1,14 @@
 import {
   DeleteObjectCommand,
   PutObjectCommand,
-  PutObjectCommandOutput,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
+import { SavePostImageToS3Model } from '../api/models/save.post.image.to.s3.model';
+import { S3SaveOutputModel } from '../api/models/s3.save.output.model';
 
 @Injectable()
 export class S3Adapter {
@@ -30,8 +31,8 @@ export class S3Adapter {
     userId: number,
     buffer: Buffer,
     mimetype: string,
-  ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
-    const key = `content/users/${userId}/avatars/${uuidv4()}_avatar.png`;
+  ): Promise<ResultDTO<S3SaveOutputModel>> {
+    const key = `content/users/${userId}/avatars/${uuid()}_avatar.png`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
@@ -66,19 +67,17 @@ export class S3Adapter {
     }
   }
 
-  async savePostImages(
-    userId: number,
-    postId: string,
-    buffer: Buffer,
-    mimetype: string,
-  ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
-    const key = `content/users/${userId}/posts/${postId}/${uuidv4()}_image.png`;
+  async savePostImage(
+    dto: SavePostImageToS3Model,
+  ): Promise<ResultDTO<S3SaveOutputModel>> {
+    // todo - префикс для key должен храниться в .env в перемнных
+    const key = `content/users/${dto.userId}/posts/${dto.postId}/${uuid()}.png`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
       Key: key,
-      Body: buffer,
-      ContentType: mimetype,
+      Body: dto.buffer,
+      ContentType: dto.mimetype,
     };
 
     const command = new PutObjectCommand(bucketParams);
@@ -87,7 +86,6 @@ export class S3Adapter {
       const saveResult = await this.s3Client.send(command);
       return new ResultDTO(InternalCode.Success, { key, data: saveResult });
     } catch (e) {
-      console.log({ e_2: e });
       return new ResultDTO(InternalCode.Internal_Server);
     }
   }

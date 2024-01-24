@@ -59,11 +59,13 @@ import { PublicProfileController } from './features/profile/api/controllers/publ
 import { PublicProfileQueryRepository } from './features/profile/infrastructure/public.profile.query.repository';
 import { PublicPostController } from './features/post/api/controllers/public.post.controller';
 import { PublicPostQueryRepository } from './features/post/infrastructure/public.post.query.repository';
-import { MulterModule } from '@nestjs/platform-express';
 
 const services = [GlobalConfigService, PrismaService];
 
-const validators = [UniqueLoginAndEmailValidator];
+const validators = [
+  UniqueLoginAndEmailValidator,
+  ValidConfirmOrRecoveryCodeValidator,
+];
 
 const useCases = [
   CreatePostUseCase,
@@ -111,6 +113,12 @@ const repositories = [
   PublicPostQueryRepository,
 ];
 
+const strategies = [
+  LocalAuthStrategy,
+  JwtAccessAuthStrategy,
+  JwtRefreshAuthStrategy,
+];
+
 @Module({
   imports: [
     CqrsModule,
@@ -125,9 +133,6 @@ const repositories = [
         process.env.NODE_ENV === 'development' ? '/' : '/api/v1/swagger',
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
-    MulterModule.register({
-      dest: '../test/utils', // возможно его не нужно здесь регистрировать
-    }),
   ],
   controllers: [
     AuthController,
@@ -152,17 +157,14 @@ const repositories = [
         });
       },
     },
+    ...pipes,
     ...services,
     ...validators,
     ...useCases,
     ...repositories,
+    ...strategies,
     EmailAdapter,
     EmailManager,
-    ...pipes,
-    ValidConfirmOrRecoveryCodeValidator,
-    LocalAuthStrategy,
-    JwtAccessAuthStrategy,
-    JwtRefreshAuthStrategy,
   ],
 })
 export class AppModule {}

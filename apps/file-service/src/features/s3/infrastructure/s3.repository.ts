@@ -48,13 +48,4 @@ export class S3Repository {
       key: savedFile.key,
     });
   }
-
-  async findImageByFileId(fileId: string): Promise<ResultDTO<FileDocument>> {
-    const imageInstance = await this.FileModule.findById(
-      new Types.ObjectId(fileId),
-    );
-    if (!imageInstance) return new ResultDTO(InternalCode.NotFound);
-
-    return new ResultDTO(InternalCode.Success, imageInstance);
-  }
 }
