@@ -31,7 +31,7 @@ export class S3Adapter {
     buffer: Buffer,
     mimetype: string,
   ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
-    const key = `content/users/${userId}/avatars/${uuidv4()}_avatar.png`;
+    const key = `content/users/${userId}/avatars/${uuidv4()}_avatar.${mimetype}`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
@@ -72,7 +72,7 @@ export class S3Adapter {
     buffer: Buffer,
     mimetype: string,
   ): Promise<ResultDTO<{ key: string; data: PutObjectCommandOutput }>> {
-    const key = `content/users/${userId}/posts/${postId}/${uuidv4()}_image.png`;
+    const key = `content/users/${userId}/posts/${postId}/${uuidv4()}_image.${mimetype}`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
