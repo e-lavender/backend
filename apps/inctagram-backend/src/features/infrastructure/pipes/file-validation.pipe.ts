@@ -68,7 +68,6 @@ export class FileValidationPipe implements PipeTransform {
     if (error.messages.length) {
       throw new BadRequestException({ message: [error] });
     }
-
     return value;
   }
 }

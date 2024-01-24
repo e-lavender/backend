@@ -17,6 +17,10 @@ export class S3Controller extends ExceptionAndResponseHelper {
 
   @MessagePattern({ cmd: 'save_avatar' })
   async saveAvatar(data: any): Promise<fileIdAndKey> {
+    console.log(
+      'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',
+      data,
+    );
     const saveResult = await this.commandBus.execute(
       new SaveAvatarCommand(data.file, data.userId),
     );
