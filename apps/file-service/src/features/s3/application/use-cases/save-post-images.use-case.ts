@@ -62,7 +62,10 @@ export class SavePostImagesUseCase
           fileInstance,
         );
 
-        return fileIdIdAndKey.payload;
+        return {
+          ...fileIdIdAndKey.payload,
+          postId,
+        };
       }),
     );
 

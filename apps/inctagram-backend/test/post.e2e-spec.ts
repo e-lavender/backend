@@ -93,6 +93,15 @@ describe('PostController (e2e)', () => {
     // const registerFirstUserResponse = await request(server)
     //   .post('/api/v1/auth/registration')
     //   .send({
+    //     login: firstUser.login,
+    //     email: firstUser.email,
+    //     password: firstUser.password,
+    //   });
+    // expect(registerFirstUserResponse.status).toEqual(HttpStatus.NO_CONTENT);
+    //
+    // const registerSecondUserResponse = await request(server)
+    //   .post('/api/v1/auth/registration')
+    //   .send({
     //     login: secondUser.login,
     //     email: secondUser.email,
     //     password: secondUser.password,

@@ -30,7 +30,9 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
     if (post.payload.userId !== userId)
       return new ResultDTO(InternalCode.Forbidden);
 
-    // удаляем сам пост и ссылки на картинки картинки из postgres
+    const filesId = await this.postQueryRepository.getFilesId(postId);
+
+    // удаляем сам пост и ссылки на картинки из postgres
     const deletePostResult = await this.postRepository.deletePost(postId);
     if (deletePostResult.hasError()) return deletePostResult as ResultDTO<null>;
 
@@ -39,7 +41,7 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
       await lastValueFrom(
         this.client.send(
           { cmd: 'delete_post_images' },
-          { fileId: post.payload.fileId },
+          { fileId: filesId.payload },
         ),
       );
 

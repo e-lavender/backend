@@ -44,6 +44,7 @@ export class S3Repository {
     const savedFile = await postImageInstance.save();
 
     return new ResultDTO(InternalCode.Success, {
+      // postId: savedFile.
       fileId: savedFile.id.toString(),
       key: savedFile.key,
     });

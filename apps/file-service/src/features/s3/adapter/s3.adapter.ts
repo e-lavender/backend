@@ -9,6 +9,7 @@ import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode } from '../../../../../../libs/enums';
 import { SavePostImageToS3Model } from '../api/models/save.post.image.to.s3.model';
 import { S3SaveOutputModel } from '../api/models/s3.save.output.model';
+import { SavaAvatarToS3Model } from '../api/models/save.avatar.to.s3.model';
 
 @Injectable()
 export class S3Adapter {
@@ -28,17 +29,15 @@ export class S3Adapter {
   }
 
   async saveAvatar(
-    userId: number,
-    buffer: Buffer,
-    mimetype: string,
+    dto: SavaAvatarToS3Model,
   ): Promise<ResultDTO<S3SaveOutputModel>> {
-    const key = `content/users/${userId}/avatars/${uuid()}_avatar.png`;
+    const key = `content/users/${dto.userId}/avatars/${uuid()}_avatar.png`;
 
     const bucketParams = {
       Bucket: 'inctagram1',
       Key: key,
-      Body: buffer,
-      ContentType: mimetype,
+      Body: dto.buffer,
+      ContentType: dto.mimetype,
     };
 
     const command = new PutObjectCommand(bucketParams);
@@ -51,7 +50,7 @@ export class S3Adapter {
     }
   }
 
-  async deleteAvatar(key: string): Promise<any> {
+  async deleteAvatar(key: string): Promise<ResultDTO<null>> {
     const bucketParams = {
       Bucket: 'inctagram1',
       Key: key,

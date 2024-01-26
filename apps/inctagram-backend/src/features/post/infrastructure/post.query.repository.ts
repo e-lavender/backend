@@ -27,6 +27,12 @@ export class PostQueryRepository {
     query = new DefaultPaginationInput();
 
     const posts = await this.prisma.post.findMany({
+      include: {
+        image: {
+          select: { key: true },
+          orderBy: { index: 'desc' },
+        },
+      },
       skip: query.skip(),
       take: query.pageSize,
       where: { userId },
@@ -42,7 +48,12 @@ export class PostQueryRepository {
       },
       where: { userId: userId },
     });
-    const viewPosts = posts.map((p: Post) => this._mapDbToView(p));
+
+    // todo - map внутри map?
+    const viewPosts = posts.map((p) => {
+      const key = p.image.map((i) => i.key);
+      return this._mapDbToView(p, key);
+    });
 
     const paginationPosts: PaginationViewModel<ViewPostModel> = {
       pagesCount: query.pagesCount(postsCount),
@@ -55,12 +66,25 @@ export class PostQueryRepository {
     return new ResultDTO(InternalCode.Success, paginationPosts);
   }
 
-  _mapDbToView(post: Post): ViewPostModel {
+  async getFilesId(postId: string): Promise<ResultDTO<string[]>> {
+    const postImages = await this.prisma.postImage.findMany({
+      where: { postId },
+      select: { fileId: true },
+    });
+    if (!postImages) return new ResultDTO(InternalCode.NotFound);
+
+    return new ResultDTO(
+      InternalCode.Success,
+      postImages.map((fId) => fId.fileId),
+    );
+  }
+
+  _mapDbToView(post: Post, imageUrl: string[]): ViewPostModel {
     return {
       id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
-      imageUrl: post.key,
+      imageUrl,
     };
   }
 }

@@ -14,7 +14,6 @@ export class FileValidationPipe implements PipeTransform {
   ) {}
 
   transform(value: any, metadata: ArgumentMetadata) {
-    console.log({ value: value });
     const maxSize = this.maxSize * (1024 * 1024);
     const error = {
       field: '',

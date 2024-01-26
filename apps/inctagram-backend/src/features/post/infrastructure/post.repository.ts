@@ -12,7 +12,7 @@ export class PostRepository {
 
   async createPost(
     postData: Prisma.PostUncheckedCreateInput,
-    // imagesData: Prisma.PostImagesUncheckedCreateInput,
+    imagesData: Prisma.PostImageUncheckedCreateInput[],
   ): Promise<ResultDTO<ViewPostModel>> {
     const post = await this.prisma.post.create({
       data: { ...postData },
@@ -20,20 +20,29 @@ export class PostRepository {
         id: true,
         description: true,
         createdAt: true,
-        key: true,
       },
     });
 
-    // const postImages = await this.prisma.post_images.create({
-    //   data: { ...imagesData },
-    //   select: { key: true },
-    // });
+    let index = 0;
+    // создавать записи в бд в цикле
+
+    const postImages = await Promise.all(
+      imagesData.map(async (imageData) => {
+        index++;
+        return this.prisma.postImage.create({
+          data: { ...imageData, index },
+          select: { key: true, index: true },
+        });
+      }),
+    );
 
     return new ResultDTO(InternalCode.Success, {
       id: post.id,
       description: post.description,
       createdAt: post.createdAt.toISOString(),
-      imageUrl: post.key,
+      imageUrl: postImages
+        .sort((a, b) => b.index - a.index)
+        .map((img) => img.key),
     });
   }
 
