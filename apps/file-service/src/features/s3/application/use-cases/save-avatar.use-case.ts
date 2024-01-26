@@ -7,6 +7,7 @@ import { S3Repository } from '../../infrastructure/s3.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import { ResultDTO } from '../../../../../../../libs/dtos/resultDTO';
 import { fileIdAndKey } from '../../../../../../../libs/types';
+import { SavaAvatarToS3Model } from '../../api/models/save.avatar.to.s3.model';
 
 export class SaveAvatarCommand {
   constructor(public img: Express.Multer.File, public userId: string) {}
@@ -24,11 +25,12 @@ export class SaveAvatarUseCase implements ICommandHandler<SaveAvatarCommand> {
     const avatarResult = await this.s3Repository.findByUserId(+command.userId);
     if (!avatarResult.hasError()) await avatarResult.payload.deleteOne();
 
-    const saveResult = await this.s3Adapter.saveAvatar(
-      +command.userId,
-      command.img.buffer,
-      command.img.mimetype,
-    );
+    const dto: SavaAvatarToS3Model = {
+      userId: +command.userId,
+      buffer: command.img.buffer,
+      mimetype: command.img.mimetype,
+    };
+    const saveResult = await this.s3Adapter.saveAvatar(dto);
     if (saveResult.hasError()) return saveResult as ResultDTO<null>;
 
     const metadata = command.img;

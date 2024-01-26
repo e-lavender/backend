@@ -62,7 +62,10 @@ import { PublicPostQueryRepository } from './features/post/infrastructure/public
 
 const services = [GlobalConfigService, PrismaService];
 
-const validators = [UniqueLoginAndEmailValidator];
+const validators = [
+  UniqueLoginAndEmailValidator,
+  ValidConfirmOrRecoveryCodeValidator,
+];
 
 const useCases = [
   CreatePostUseCase,
@@ -110,6 +113,12 @@ const repositories = [
   PublicPostQueryRepository,
 ];
 
+const strategies = [
+  LocalAuthStrategy,
+  JwtAccessAuthStrategy,
+  JwtRefreshAuthStrategy,
+];
+
 @Module({
   imports: [
     CqrsModule,
@@ -148,17 +157,14 @@ const repositories = [
         });
       },
     },
+    ...pipes,
     ...services,
-    ...validators,
     ...useCases,
+    ...validators,
+    ...strategies,
     ...repositories,
     EmailAdapter,
     EmailManager,
-    ...pipes,
-    ValidConfirmOrRecoveryCodeValidator,
-    LocalAuthStrategy,
-    JwtAccessAuthStrategy,
-    JwtRefreshAuthStrategy,
   ],
 })
 export class AppModule {}

@@ -346,12 +346,10 @@ describe('ProfileController (e2e)', () => {
     const createAvatar = await request(server)
       .put('/api/v1/avatar/upload')
       .auth(accessToken1, { type: 'bearer' })
-      .attach('avatar', filePath, {
-        contentType: 'multipart/form-data',
-      });
+      .attach('avatar', filePath);
 
     expect(createAvatar).toBeDefined();
-    expect(createAvatar.status).toEqual(HttpStatus.OK);
+    expect(createAvatar.status).toEqual(HttpStatus.NO_CONTENT);
     expect(createAvatar.body).toEqual({});
 
     const getAvatar = await request(server)

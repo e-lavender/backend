@@ -88,13 +88,23 @@ model Profile {
 }
 
 model Post {
-  id          String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
+  id          String      @default(dbgenerated("uuid_generate_v4()")) @db.Uuid() @id()
   description String?
-  createdAt   DateTime @default(now()) @db.Timestamp()
-  fileId      String[]
-  key         String[]
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now()) @db.Timestamp()
+  image       PostImage[]
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 
   @@map("post")
+}
+
+model PostImage {
+  post       Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId     String    @db.Uuid()
+  fileId     String    @id()
+  key        String
+  index      Int       @default(1)
+
+  @@unique([fileId, key])
+  @@map("post_image")
 }
