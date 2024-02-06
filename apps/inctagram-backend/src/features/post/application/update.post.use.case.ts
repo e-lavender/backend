@@ -25,7 +25,7 @@ export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
     const post = await this.postQueryRepository.getPost(postId);
 
     // если этого поста нет - 404
-    if (!post) return new ResultDTO(InternalCode.NotFound);
+    if (!post || post.code === 0) return new ResultDTO(InternalCode.NotFound);
 
     // если этот пост не принадлежит ему - 403
     if (post.payload.userId !== userId)

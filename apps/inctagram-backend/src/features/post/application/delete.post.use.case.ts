@@ -19,12 +19,12 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
     @Inject(Services.FileService) private client: ClientProxy,
   ) {}
 
-  async execute(command: DeletePostCommand): Promise<any> {
+  async execute(command: DeletePostCommand): Promise<ResultDTO<null>> {
     const { userId, postId } = command;
     const post = await this.postQueryRepository.getPost(postId);
 
     // если этого поста нет - 404
-    if (!post) return new ResultDTO(InternalCode.NotFound);
+    if (!post || post.code === 0) return new ResultDTO(InternalCode.NotFound);
 
     // если этот пост не принадлежит ему - 403
     if (post.payload.userId !== userId)
