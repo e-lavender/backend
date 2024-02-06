@@ -1,18 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class UploadPhotosModel {
-  @ApiPropertyOptional({
-    minimum: 0,
-    maximum: 500,
-    description: "Post's description",
-  })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  @Length(0, 500)
-  description: string;
+export class UploadImagesModel {
   @ApiProperty({
     type: 'array',
     items: { type: 'string', format: 'binary' },

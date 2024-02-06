@@ -793,16 +793,16 @@ window.onload = function() {
           ]
         },
         "post": {
-          "operationId": "createPost",
-          "summary": "Create post",
-          "description": "This endpoint is used to create new post.",
+          "operationId": "uploadPostImages",
+          "summary": "Upload post images",
+          "description": "This endpoint is used to upload post images.",
           "parameters": [],
           "requestBody": {
             "required": true,
             "content": {
               "multipart/form-data": {
                 "schema": {
-                  "$ref": "#/components/schemas/UploadPhotosModel"
+                  "$ref": "#/components/schemas/UploadImagesModel"
                 }
               }
             }
@@ -1296,15 +1296,9 @@ window.onload = function() {
             "posts"
           ]
         },
-        "UploadPhotosModel": {
+        "UploadImagesModel": {
           "type": "object",
           "properties": {
-            "description": {
-              "type": "string",
-              "minimum": 0,
-              "maximum": 500,
-              "description": "Post's description"
-            },
             "images": {
               "type": "array",
               "items": {

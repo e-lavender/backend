@@ -44,7 +44,7 @@ import { BAD_REQUEST_SCHEMA } from '../../../../../../../libs/swagger/schemas/ba
 import { DefaultPaginationInput } from '../pagination/pagination.input.model';
 import { PaginationViewModel } from '../pagination/pagination.view.model';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadPhotosModel } from '../models/upload.photos.model';
+import { UploadImagesModel } from '../models/upload.photos.model';
 import { FileValidationPipe } from '../../../infrastructure/pipes/file-validation.pipe';
 
 @ApiTags('Post')
@@ -83,9 +83,47 @@ export class PostController extends ExceptionAndResponseHelper {
     return this.sendExceptionOrResponse(getPostsResult);
   }
 
+  // @ApiOperation({
+  //   summary: 'Create post',
+  //   description: 'This endpoint is used to create new post.',
+  // })
+  // @ApiBearerAuth()
+  // @ApiCreatedResponse({ type: ViewPostModel })
+  // @ApiBadRequestResponse({
+  //   description: 'If the inputModel has incorrect values.',
+  //   schema: BAD_REQUEST_SCHEMA,
+  // })
+  // @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  // @ApiTooManyRequestsResponse({
+  //   description: 'More than 5 attempts from one IP-address during 10 seconds',
+  // })
+  // @Post()
+  // @UseInterceptors(FilesInterceptor('files', 10))
+  // @ApiConsumes('multipart/form-data')
+  // @ApiBody({ type: UploadPhotosModel })
+  // @HttpCode(HttpStatus.CREATED)
+  // async createPost(
+  //   @CurrentUserId() userId: number,
+  //   @Body() body: CreateDescriptionModel,
+  //   // @FormData() body2: CreateDescriptionModel,
+  //   @UploadedFiles(
+  //     new FileValidationPipe(20, ['png', 'jpeg', 'jpg'], {
+  //       min: 1,
+  //       max: 10,
+  //     }),
+  //   )
+  //   files: Express.Multer.File[],
+  // ): Promise<ViewPostModel> {
+  //   const createPostResult = await this.commandBus.execute(
+  //     new CreatePostCommand(userId, body, files),
+  //   );
+  //
+  //   return this.sendExceptionOrResponse(createPostResult);
+  // }
+
   @ApiOperation({
-    summary: 'Create post',
-    description: 'This endpoint is used to create new post.',
+    summary: 'Upload post images',
+    description: 'This endpoint is used to upload post images.',
   })
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: ViewPostModel })
@@ -100,11 +138,10 @@ export class PostController extends ExceptionAndResponseHelper {
   @Post()
   @UseInterceptors(FilesInterceptor('files', 10))
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UploadPhotosModel })
+  @ApiBody({ type: UploadImagesModel })
   @HttpCode(HttpStatus.CREATED)
-  async createPost(
+  async uploadPostImages(
     @CurrentUserId() userId: number,
-    @Body() body: CreateDescriptionModel,
     @UploadedFiles(
       new FileValidationPipe(20, ['png', 'jpeg', 'jpg'], {
         min: 1,
@@ -114,7 +151,7 @@ export class PostController extends ExceptionAndResponseHelper {
     files: Express.Multer.File[],
   ): Promise<ViewPostModel> {
     const createPostResult = await this.commandBus.execute(
-      new CreatePostCommand(userId, body, files),
+      new CreatePostCommand(userId, files),
     );
 
     return this.sendExceptionOrResponse(createPostResult);

@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CreateDescriptionModel } from '../api/models/create.description.model';
 import { ResultDTO } from '../../../../../../libs/dtos/resultDTO';
 import { InternalCode, Services } from '../../../../../../libs/enums';
 import { PostRepository } from '../infrastructure/post.repository';
@@ -12,7 +11,7 @@ import { randomUUID } from 'crypto';
 export class CreatePostCommand {
   constructor(
     public userId: number,
-    public inputModel: CreateDescriptionModel,
+    // public inputModel: CreateDescriptionModel,
     public files: Express.Multer.File[],
   ) {}
 }
@@ -26,7 +25,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
 
   async execute(command: CreatePostCommand): Promise<ResultDTO<ViewPostModel>> {
     try {
-      const { userId, inputModel, files } = command;
+      const { userId, files } = command;
 
       const postId = randomUUID();
 
@@ -43,7 +42,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
       const postData = {
         id: postId,
         userId,
-        description: inputModel.description,
+        // description: inputModel.description,
       };
       const createPostResult = await this.postRepository.createPost(
         postData,
