@@ -24,16 +24,17 @@ export class PostRepository {
     });
 
     let index = 0;
-    // создавать записи в бд в цикле
 
     const postImages = await Promise.all(
-      imagesData.map(async (imageData) => {
-        index++;
-        return this.prisma.postImage.create({
-          data: { ...imageData, index },
-          select: { key: true, index: true },
-        });
-      }),
+      imagesData.map(
+        async (imageData: Prisma.PostImageUncheckedCreateInput) => {
+          index++;
+          return this.prisma.postImage.create({
+            data: { ...imageData, index },
+            select: { key: true, index: true },
+          });
+        },
+      ),
     );
 
     return new ResultDTO(InternalCode.Success, {
@@ -56,6 +57,7 @@ export class PostRepository {
         description: inputModel.description,
       },
     });
+
     return new ResultDTO(InternalCode.Success);
   }
 
@@ -63,6 +65,7 @@ export class PostRepository {
     await this.prisma.post.delete({
       where: { id },
     });
+
     return new ResultDTO(InternalCode.Success);
   }
 }

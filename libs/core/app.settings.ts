@@ -2,6 +2,7 @@ import {
   BadRequestException,
   DynamicModule,
   INestApplication,
+  ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -18,7 +19,7 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
     new ValidationPipe({
       forbidUnknownValues: false,
       exceptionFactory: (errors) => {
-        const customErrors = errors.map((err) => {
+        const customErrors = errors.map((err: ValidationError) => {
           return {
             field: err.property,
             messages: Object.values(err.constraints),
